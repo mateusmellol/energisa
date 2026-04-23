@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+/*
+ * Energisa — Design Tokens
+ * Source: Energisa Color System (Figma primitives collection)
+ * Font: Sora (Google Fonts)
+ */
+
+@theme {
+  /* ─── Dark Blue ─── */
+  --color-dark-blue-100: #F1F5F8;
+  --color-dark-blue-200: #9CBFE2;
+  --color-dark-blue-300: #218AF3;
+  --color-dark-blue-400: #0854A0;
+  --color-dark-blue-500: #001F3E;
+  --color-dark-blue-600: #04192D;
+  --color-dark-blue-700: #031221;
+  --color-dark-blue-800: #030C14;
+  --color-dark-blue-900: #020509;
+
+  /* ─── Light Green ─── */
+  --color-light-green-100: #F4F6F3;
+  --color-light-green-200: #D9E2D7;
+  --color-light-green-300: #BBD3B6;
+  --color-light-green-400: #9AC891;
+  --color-light-green-500: #74C465;
+  --color-light-green-600: #4EA33E;
+  --color-light-green-700: #356F2B;
+  --color-light-green-800: #1C3B17;
+  --color-light-green-900: #040704;
+
+  /* ─── Green ─── */
+  --color-green-100: #F1F8F6;
+  --color-green-200: #A9E6CE;
+  --color-green-300: #4FE6AA;
+  --color-green-400: #0BCF81;
+  --color-green-500: #00804D;
+  --color-green-600: #055E3A;
+  --color-green-700: #034229;
+  --color-green-800: #032517;
+  --color-green-900: #020906;
+
+  /* ─── Blue ─── */
+  --color-blue-100: #F2F4F7;
+  --color-blue-200: #BBC9DF;
+  --color-blue-300: #7A9AD2;
+  --color-blue-400: #346BC9;
+  --color-blue-500: #1E4890;
+  --color-blue-600: #17376E;
+  --color-blue-700: #10264C;
+  --color-blue-800: #09152A;
+  --color-blue-900: #030407;
+
+  /* ─── Neutral (warm tint H71°) ─── */
+  --color-neutral-0: #FDFDFC;
+  --color-neutral-50: #F8F8F7;
+  --color-neutral-100: #F6F8ED;
+  --color-neutral-150: #E6E7E4;
+  --color-neutral-200: #DADAD6;
+  --color-neutral-300: #BFC0BB;
+  --color-neutral-400: #A6A7A0;
+  --color-neutral-500: #8B8D85;
+  --color-neutral-600: #71726B;
+  --color-neutral-700: #555653;
+  --color-neutral-800: #3B3B39;
+  --color-neutral-850: #2D2D2C;
+  --color-neutral-900: #20201F;
+  --color-neutral-950: #121312;
+  --color-neutral-1000: #050505;
+
+  /* ─── Semantic aliases ─── */
+  --color-background: var(--color-neutral-0);
+  --color-foreground: var(--color-neutral-950);
+  --color-muted: var(--color-neutral-500);
+  --color-border: var(--color-neutral-200);
+  --color-accent: var(--color-green-400);
+  --color-primary: var(--color-dark-blue-500);
+
+  /* ─── Font ─── */
+  --font-sans: "Sora", system-ui, -apple-system, sans-serif;
+
+  /* ─── Transitions ─── */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 700ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Reset ─── */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  line-height: 1.4;
+  overflow-x: hidden;
+}
+
+/* ─── Utility: Container ─── */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 120px;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 20px;
+  }
+}

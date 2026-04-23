@@ -1,25 +1,11 @@
-# Energisa Project
 
-Projeto desenvolvido para a Energisa, focado em excelência visual e experiência do usuário.
+  # Build it
 
-## Estrutura do Projeto
+  This is a code bundle for Build it. The original project is available at https://www.figma.com/design/wVO31xm89iooDyZRLWpbVE/Build-it.
 
-- `index.html`: Ponto de entrada da aplicação.
-- `css/`: Estilos CSS (Vanilla).
-- `js/`: Lógica Javascript.
-- `assets/`: Recursos estáticos (imagens, ícones, fontes).
+  ## Running the code
 
-## Como rodar
+  Run `npm i` to install the dependencies.
 
-1. Instale as dependências:
-   ```bash
-   npm install
-   ```
-2. Inicie o servidor de desenvolvimento:
-   ```bash
-   npm run dev
-   ```
-3. Para gerar o build de produção:
-   ```bash
-   npm run build
-   ```
+  Run `npm run dev` to start the development server.
+  
