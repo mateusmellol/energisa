@@ -11,4 +11,15 @@ Projeto desenvolvido para a Energisa, focado em excelência visual e experiênci
 
 ## Como rodar
 
-Basta abrir o arquivo `index.html` em seu navegador ou utilizar um servidor local como o Live Server.
+1. Instale as dependências:
+   ```bash
+   npm install
+   ```
+2. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+3. Para gerar o build de produção:
+   ```bash
+   npm run build
+   ```

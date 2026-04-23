@@ -1,0 +1,26 @@
+{
+  "name": "energisa",
+  "version": "1.0.0",
+  "description": "Projeto desenvolvido para a Energisa, focado em excelência visual e experiência do usuário.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mateusmellol/energisa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mateusmellol/energisa/issues"
+  },
+  "homepage": "https://github.com/mateusmellol/energisa#readme",
+  "devDependencies": {
+    "vite": "^8.0.10"
+  }
+}
