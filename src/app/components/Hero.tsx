@@ -108,10 +108,10 @@ export function Hero() {
             <div className="flex flex-wrap items-center gap-4">
               <button
                 onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
-                className="relative px-8 py-4 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer animate-gradient-cycle"
+                className="relative px-8 py-4 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer"
                 style={{ 
-                  backgroundImage: "linear-gradient(135deg, #EAFE1F 0%, #65F429 50%, #EAFE1F 100%)",
-                  boxShadow: "0 10px 30px -10px rgba(101, 244, 41, 0.5), 0 0 20px rgba(234, 254, 31, 0.2)"
+                  backgroundColor: "#F6F8ED",
+                  boxShadow: "0 10px 30px -10px rgba(0,0,0,0.2)"
                 }}
               >
                 <span className="relative font-medium text-[16px] text-[#20201f]" style={{ fontFamily: "Sora, sans-serif" }}>
