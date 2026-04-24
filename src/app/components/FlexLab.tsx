@@ -1,6 +1,7 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from "motion/react";
 import { ProfileCard } from "./ProfileCard";
+import { TextAnimate } from "@/registry/magicui/text-animate";
 import { Zap, Leaf, ShieldCheck, Cpu, Globe, Activity } from "lucide-react";
 
 const PROJECTS = [
@@ -39,87 +40,91 @@ const BENEFITS = [
   { icon: Activity, label: "Monitoramento" },
 ];
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+// Returns motion props for a blur-up reveal gated by inView
+function blurUp(inView: boolean, delay = 0) {
+  return {
+    initial: { opacity: 0, y: 10, filter: "blur(8px)" },
+    animate: inView
+      ? { opacity: 1, y: 0, filter: "blur(0px)" }
+      : { opacity: 0, y: 10, filter: "blur(8px)" },
+    transition: { duration: 0.65, ease: EASE, delay },
+  };
+}
+
 export function FlexLab() {
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
+  const [inView, setInView] = useState(false);
 
-  // Scroll pinning logic for slide transitions (3 slides = 400vh to have 3 transitions)
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
-  // Reveal animation that works from both directions (entering from top or bottom)
   const { scrollYProgress: sectionProgress } = useScroll({
     target: containerRef,
-    // Tracks from the moment it enters the screen from the bottom (start end)
-    // until it leaves the screen from the top (end start)
     offset: ["start end", "end start"]
   });
 
+  useMotionValueEvent(sectionProgress, "change", (latest) => {
+    if (!inView && latest >= 0.2) setInView(true);
+  });
+
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    // Map scroll progress to slide index with generous buffers
-    // 0.0 - 0.4: Stay on Slide 0 (gives "dois scrolls" of time)
-    // 0.4 - 0.7: Slide 1
-    // 0.7 - 1.0: Slide 2
     const p = latest;
     let newIndex = 0;
     if (p < 0.4) newIndex = 0;
     else if (p < 0.7) newIndex = 1;
     else newIndex = 2;
-
-    if (newIndex !== index) {
-      setIndex(newIndex);
-    }
+    if (newIndex !== index) setIndex(newIndex);
   });
 
   const project = PROJECTS[index];
 
-  // Clip path driven by the section entering and leaving the viewport
-  // For a 250vh section:
-  // 0.0 to 0.28: entering from bottom (image opens)
-  // 0.28 to 0.71: pinned (image stays open)
-  // 0.71 to 1.0: leaving to top (image closes)
   const clipPath = useTransform(
     sectionProgress,
     [0, 0.28, 0.71, 1],
     [
-      "inset(0% 50% 0% 50%)", 
-      "inset(0% 0% 0% 0%)", 
-      "inset(0% 0% 0% 0%)", 
+      "inset(0% 50% 0% 50%)",
+      "inset(0% 0% 0% 0%)",
+      "inset(0% 0% 0% 0%)",
       "inset(0% 50% 0% 50%)"
     ]
   );
 
   return (
-    <section 
+    <section
       id="ecossistema"
-      ref={containerRef} 
-      className="relative w-full" 
-      style={{ height: "250vh", background: "#fdfdfc" }}
+      ref={containerRef}
+      className="relative w-full"
+      style={{ height: "250vh", background: "#F6F8ED" }}
     >
-      {/* Sticky Viewport Container - starting below the 80px header */}
       <div
-        className="sticky top-20 w-full flex flex-col justify-center overflow-hidden bg-[#fdfdfc] px-8 md:px-20"
+        className="sticky top-20 w-full flex flex-col justify-center overflow-hidden bg-[#F6F8ED] px-8 md:px-20"
         style={{ height: "calc(100vh - 80px)" }}
       >
         <div className="max-w-[1440px] mx-auto w-full">
-          
+
           <AnimatePresence mode="wait">
             <motion.div
               key={project.id}
               initial={{ opacity: 0, x: 100, filter: "blur(20px)" }}
               animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, x: -100, filter: "blur(20px)" }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.45, ease: EASE }}
               className="flex flex-col gap-6 md:gap-10 w-full"
             >
               {/* Text Content */}
               <div className="flex flex-col md:flex-row gap-12 md:gap-16 items-start">
+
                 {/* Left Column */}
                 <div className="flex flex-col md:w-[420px] shrink-0 gap-8">
                   <div className="flex flex-col gap-3 text-left">
+
+                    {/* H2 — by character */}
                     <h2
                       style={{
                         fontFamily: "Sora, sans-serif",
@@ -129,8 +134,21 @@ export function FlexLab() {
                         lineHeight: 1.15,
                       }}
                     >
-                      {project.title}
+                      {inView ? (
+                        <TextAnimate
+                          animation="blurInUp"
+                          by="character"
+                          duration={0.55}
+                          stagger={0.022}
+                        >
+                          {project.title}
+                        </TextAnimate>
+                      ) : (
+                        <span style={{ opacity: 0 }}>{project.title}</span>
+                      )}
                     </h2>
+
+                    {/* Subtitle — by word */}
                     <p
                       style={{
                         fontFamily: "Sora, sans-serif",
@@ -139,30 +157,43 @@ export function FlexLab() {
                         lineHeight: 1.5,
                       }}
                     >
-                      {project.subtitle}
+                      {inView ? (
+                        <TextAnimate
+                          animation="blurInUp"
+                          by="word"
+                          duration={0.55}
+                          stagger={0.09}
+                          delay={0.3}
+                        >
+                          {project.subtitle}
+                        </TextAnimate>
+                      ) : (
+                        <span style={{ opacity: 0 }}>{project.subtitle}</span>
+                      )}
                     </p>
                   </div>
 
-                  {/* Navigation & Button */}
+                  {/* Button + dots */}
                   <div className="flex items-center gap-10 flex-wrap mt-2">
-                    <button
-                      className="transition-transform active:scale-95"
+                    <motion.button
+                      {...blurUp(inView, 0.5)}
+                      className="transition-all active:scale-95 hover:bg-white/5"
                       style={{
                         fontFamily: "Sora, sans-serif",
                         fontSize: "16px",
-                        color: "#fdfdfc",
-                        background: "#121312",
-                        border: "none",
+                        color: "#121312",
+                        background: "transparent",
+                        border: "1px solid rgba(18, 19, 18, 0.3)",
                         padding: "14px 32px",
                         cursor: "pointer",
-                        borderRadius: "2px",
+                        borderRadius: "4px",
                         minWidth: 157,
                       }}
                     >
                       Conhecer
-                    </button>
-                    
-                    <div className="flex gap-2.5 items-center">
+                    </motion.button>
+
+                    <motion.div {...blurUp(inView, 0.55)} className="flex gap-2.5 items-center">
                       {PROJECTS.map((_, i) => (
                         <button
                           key={i}
@@ -176,7 +207,7 @@ export function FlexLab() {
                             height: 6,
                             width: i === index ? 32 : 6,
                             borderRadius: 3,
-                            background: i === index ? "#121312" : "#dadad6",
+                            background: i === index ? "#121312" : "rgba(18,19,18,0.2)",
                             transition: "all 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
                             border: "none",
                             cursor: "pointer",
@@ -184,40 +215,57 @@ export function FlexLab() {
                           }}
                         />
                       ))}
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
 
                 {/* Right Column */}
                 <div className="flex-1">
                   <div className="flex flex-col gap-10 text-left ml-auto max-w-[600px]">
+
+                    {/* Description — by word */}
                     <p
                       style={{
                         fontFamily: "Sora, sans-serif",
                         fontSize: "clamp(16px, 1.5vw, 20px)",
-                        color: "#3b3b39",
+                        color: "#333432",
                         lineHeight: 1.6,
                       }}
                     >
-                      {project.description}
+                      {inView ? (
+                        <TextAnimate
+                          animation="blurInUp"
+                          by="word"
+                          duration={0.55}
+                          stagger={0.07}
+                          delay={0.25}
+                        >
+                          {project.description}
+                        </TextAnimate>
+                      ) : (
+                        <span style={{ opacity: 0 }}>{project.description}</span>
+                      )}
                     </p>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-8">
+                    {/* Benefits — staggered per icon */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-8 text-[#555653]">
                       {BENEFITS.map((benefit, i) => (
-                        <ProfileCard key={i} icon={benefit.icon} label={benefit.label} />
+                        <motion.div key={i} {...blurUp(inView, 0.4 + i * 0.07)}>
+                          <ProfileCard icon={benefit.icon} label={benefit.label} />
+                        </motion.div>
                       ))}
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Image Container */}
+              {/* Image */}
               <motion.div
                 ref={imageRef}
                 className="w-full rounded-sm overflow-hidden"
                 style={{
                   height: "min(360px, 30vw)",
-                  background: project.color,
+                  background: "#e6e7e4",
                   position: "relative",
                   clipPath: clipPath,
                 }}

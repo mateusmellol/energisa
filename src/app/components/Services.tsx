@@ -94,7 +94,7 @@ function GlassMosaic({ tiles, mousePos }: {
             height: TILE,
             right: col * TILE,
             top: row * TILE,
-            backgroundImage: `linear-gradient(${BASE_ANGLE + rotation}deg, #fdfdfc 5%, #dadad6 98%)`,
+            backgroundImage: `linear-gradient(${BASE_ANGLE + rotation}deg, #F6F8ED 5%, #dadad6 98%)`,
           }}
         />
       ))}
@@ -130,7 +130,7 @@ function ServiceCard({ card, tiles }: { card: { icon: React.ReactNode; label: st
           : "0 0px 0px 0 rgba(0,0,0,0)",
       }}
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      className="relative bg-[#fdfdfc] rounded flex flex-col justify-between p-4 h-44 cursor-pointer overflow-hidden"
+      className="relative bg-[#F6F8ED] rounded flex flex-col justify-between p-4 h-44 cursor-pointer overflow-hidden"
       style={{ border: "1px solid #8b8d85" }}
     >
       <GlassMosaic tiles={tiles} mousePos={mousePos} />
@@ -267,7 +267,7 @@ export function Services() {
   const cards = tab === "Casa" ? CARDS_CASA : CARDS_EMPRESA;
 
   return (
-    <section id="solucoes" className="bg-white py-16 px-8 md:px-20">
+    <section id="solucoes" className="bg-[#F6F8ED] py-32 px-8 md:px-20">
       <div className="max-w-[1440px] mx-auto flex flex-col gap-10">
         {/* Header */}
         <div className="flex flex-col gap-4">

@@ -1,7 +1,7 @@
 import { motion, Variants } from "motion/react";
 import React from "react";
 
-type AnimationType = "slideUp" | "fadeIn" | "blurIn";
+type AnimationType = "slideUp" | "fadeIn" | "blurIn" | "blurInUp";
 type ByType = "word" | "character" | "line";
 
 interface TextAnimateProps {
@@ -30,6 +30,11 @@ const variants: Record<AnimationType, Variants> = {
     hidden: { opacity: 0, filter: "blur(8px)" },
     visible: { opacity: 1, filter: "blur(0px)" },
     exit:   { opacity: 0, filter: "blur(8px)" },
+  },
+  blurInUp: {
+    hidden: { opacity: 0, filter: "blur(8px)", y: 10 },
+    visible: { opacity: 1, filter: "blur(0px)", y: 0 },
+    exit:   { opacity: 0, filter: "blur(8px)", y: 10 },
   },
 };
 

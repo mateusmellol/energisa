@@ -73,8 +73,8 @@ function GlassMosaic({ tiles, mousePos }: {
             height: TILE,
             right: col * TILE,
             top: row * TILE,
-            backgroundImage: `linear-gradient(${BASE_ANGLE + rotation}deg, #fdfdfc 5%, #dadad6 98%)`,
-            mixBlendMode: "luminosity",
+            backgroundImage: `linear-gradient(${BASE_ANGLE + rotation}deg, #fffde0 5%, #eeff88 98%)`,
+            mixBlendMode: "overlay",
           }}
         />
       ))}
@@ -143,7 +143,7 @@ function StatRow({
       style={{
         borderTop: "1px solid #e6e7e4",
         borderBottom: isLast ? "1px solid #e6e7e4" : "none",
-        minHeight: 112,
+        minHeight: 144,
       }}
     >
       {/* Colored bar */}
@@ -180,19 +180,17 @@ function StatRow({
         >
           {stat.text}
         </p>
-        <a
-          href="#"
+        <span
           className="relative z-10"
           style={{
             fontFamily: "Sora, sans-serif",
             fontSize: "13px",
             color: "rgba(18,19,18,0.4)",
-            textDecoration: "none",
             letterSpacing: "0.02em",
           }}
         >
           Saiba mais →
-        </a>
+        </span>
       </div>
 
       {/* Number */}
@@ -234,7 +232,7 @@ function StatRow({
 
 export function Statistics() {
   return (
-    <section id="impacto" style={{ background: "#fdfdfc" }} className="py-20 px-8 md:px-20">
+    <section id="impacto" style={{ background: "#F6F8ED" }} className="py-32 px-8 md:px-20">
       <div className="max-w-[1440px] mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start justify-between gap-4 mb-20">

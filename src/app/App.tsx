@@ -13,8 +13,8 @@ export default function App() {
       <Header />
       <Hero />
       <Services />
-      <FlexLab />
       <Statistics />
+      <FlexLab />
       <TimelineSection />
       <NewsSection />
       <Footer />
