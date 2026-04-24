@@ -1,0 +1,32 @@
+{
+  "eval_id": 0,
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "A resposta usa analogia com Figma ou design (ex: components = Figma components) para explicar React",
+      "passed": true,
+      "evidence": "Menciona explicitamente: 'pense em símbolos no Figma, mas em código' e 'Componente no código = componente no Figma'"
+    },
+    {
+      "text": "A resposta menciona implicações práticas para o fluxo de design (handoff, Figma, nomenclatura de componentes)",
+      "passed": true,
+      "evidence": "Seção inteira 'O que muda pra você como designer' cobre handoff, nomenclatura, estados e animações"
+    },
+    {
+      "text": "A resposta inclui pelo menos um recurso gratuito para aprender mais",
+      "passed": true,
+      "evidence": "Inclui Fireship, React Docs (Thinking in React) e referência ao NNG"
+    },
+    {
+      "text": "A resposta não usa jargão técnico sem explicar (props, state, JSX, virtual DOM — se mencionar, define)",
+      "passed": true,
+      "evidence": "Todos os termos técnicos (Component, Props, State, Re-render, JSX) têm definição na seção 'Vocabulário útil'"
+    },
+    {
+      "text": "A resposta é concisa — não mais do que ~400 palavras",
+      "passed": true,
+      "evidence": "Resposta está dentro de ~350 palavras"
+    }
+  ],
+  "pass_rate": 1.0
+}

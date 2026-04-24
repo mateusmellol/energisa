@@ -1,110 +1,107 @@
+const FEATURED = {
+  category: "Inovação",
+  date: "Abr 2025",
+  title: "Novos caminhos para a flexibilidade energética",
+  desc: "O energisa FlexLab é uma plataforma de inovação aberta que conecta ecossistema, infraestrutura robusta e aplicação prática — criando novos modelos de geração, distribuição e consumo de energia.",
+};
+
 const ARTICLES = [
   {
-    title: "FlexLab lança programa de eficiência energética para pequenas empresas",
-    desc: "Iniciativa atende mais de 200 negócios em Minas Gerais com consultoria gratuita e soluções de smart grid.",
+    category: "Institucional",
+    date: "Abr 2025",
+    title: "Livro revisita os 120 anos da nossa trajetória",
   },
   {
-    title: "Energisa supera meta de 800 municípios atendidos antes do prazo",
-    desc: "Expansão no interior do Brasil garante acesso à energia elétrica para mais de 1,2 milhão de novas famílias.",
+    category: "Promoção",
+    date: "Abr 2025",
+    title: "Show de Prêmios: pague com Pix e concorra a mais de 500 prêmios",
   },
   {
-    title: "Nova usina solar do Grupo Energisa entra em operação no Nordeste",
-    desc: "Capacidade instalada de 120 MW representa avanço significativo na transição para energia renovável.",
-  },
-  {
-    title: "Relatório de sustentabilidade 2024: carbono neutro em 2030",
-    desc: "Documento detalha metas e investimentos em energia limpa, eficiência e responsabilidade socioambiental.",
+    category: "Serviços",
+    date: "Abr 2025",
+    title: "Economize até 30% na fatura com o (re)energisa em MS e MT",
   },
 ];
 
-interface NewsCardProps {
-  title: string;
-  desc: string;
-}
-
-function NewsCard({ title, desc }: NewsCardProps) {
+function SmallCard({ category, date, title }: { category: string; date: string; title: string }) {
   return (
     <div
-      className="flex flex-col w-full group cursor-pointer"
-      style={{ transition: "transform 0.25s ease" }}
+      className="flex flex-row gap-4 group cursor-pointer"
+      style={{ borderTop: "1px solid #e8e8e5", paddingTop: 20, paddingBottom: 4 }}
     >
-      {/* Image area */}
+      {/* Image placeholder */}
       <div
         style={{
-          height: 260,
-          background: "#121312",
-          position: "relative",
+          width: 88,
+          height: 72,
+          background: "#e8e8e5",
+          flexShrink: 0,
           overflow: "hidden",
+          position: "relative",
         }}
       >
-        {/* Subtle green glow overlay on hover */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(135deg, rgba(11,207,129,0.08) 0%, transparent 60%)",
+            background: "linear-gradient(135deg, rgba(11,207,129,0.2) 0%, transparent 60%)",
             opacity: 0,
-            transition: "opacity 0.3s ease",
+            transition: "opacity 250ms ease",
           }}
           className="group-hover:opacity-100"
         />
       </div>
 
-      {/* Content */}
-      <div
-        style={{
-          background: "#f8f8f7",
-          padding: "20px 20px 20px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-          borderBottom: "2px solid transparent",
-          transition: "border-color 0.25s ease",
-        }}
-        className="group-hover:[border-color:#0BCF81]"
-      >
-        <div className="flex flex-col gap-2">
-          <p
+      {/* Text */}
+      <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span
             style={{
               fontFamily: "Sora, sans-serif",
-              fontSize: "clamp(14px, 1.2vw, 16px)",
-              color: "#121312",
-              lineHeight: 1.5,
-              fontWeight: 400,
+              fontSize: "10px",
+              fontWeight: 600,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "#0BCF81",
             }}
           >
-            {title}
-          </p>
-          <p
+            {category}
+          </span>
+          <span
             style={{
               fontFamily: "Sora, sans-serif",
-              fontSize: "clamp(12px, 1vw, 14px)",
-              color: "#71726b",
-              lineHeight: 1.5,
+              fontSize: "11px",
+              color: "#aaa9a2",
             }}
           >
-            {desc}
-          </p>
+            {date}
+          </span>
         </div>
-
-        <button
+        <p
           style={{
             fontFamily: "Sora, sans-serif",
             fontSize: "13px",
+            fontWeight: 500,
             color: "#121312",
-            background: "transparent",
-            border: "none",
-            padding: 0,
-            cursor: "pointer",
-            textAlign: "left",
-            letterSpacing: "0.02em",
-            opacity: 0.5,
-            transition: "opacity 0.2s ease",
+            lineHeight: 1.45,
+            transition: "color 200ms ease",
           }}
-          className="group-hover:opacity-100"
+          className="group-hover:text-[#0BCF81]"
         >
-          Ler mais →
-        </button>
+          {title}
+        </p>
+        <span
+          style={{
+            fontFamily: "Sora, sans-serif",
+            fontSize: "12px",
+            color: "#aaa9a2",
+            marginTop: 4,
+            transition: "color 200ms ease",
+          }}
+          className="group-hover:text-[#121312]"
+        >
+          Ler artigo →
+        </span>
       </div>
     </div>
   );
@@ -141,9 +138,118 @@ export function NewsSection() {
           </a>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Featured row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 mb-6">
+          {/* Left: large image */}
+          <div
+            style={{
+              background: "#121312",
+              aspectRatio: "16/10",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "radial-gradient(ellipse at 30% 50%, rgba(11,207,129,0.18) 0%, transparent 65%), radial-gradient(ellipse at 80% 20%, rgba(78,179,131,0.10) 0%, transparent 50%)",
+              }}
+            />
+          </div>
+
+          {/* Right: featured content */}
+          <div
+            style={{
+              background: "#f3f3f0",
+              padding: "40px 36px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+            <div className="flex flex-col gap-5">
+              <div className="flex items-center gap-3">
+                <span
+                  style={{
+                    fontFamily: "Sora, sans-serif",
+                    fontSize: "10px",
+                    fontWeight: 600,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "#0BCF81",
+                  }}
+                >
+                  {FEATURED.category}
+                </span>
+                <span
+                  style={{
+                    fontFamily: "Sora, sans-serif",
+                    fontSize: "12px",
+                    color: "#aaa9a2",
+                  }}
+                >
+                  {FEATURED.date}
+                </span>
+              </div>
+
+              <h3
+                style={{
+                  fontFamily: "Sora, sans-serif",
+                  fontSize: "clamp(20px, 2.2vw, 28px)",
+                  fontWeight: 600,
+                  color: "#121312",
+                  lineHeight: 1.3,
+                }}
+              >
+                {FEATURED.title}
+              </h3>
+
+              <p
+                style={{
+                  fontFamily: "Sora, sans-serif",
+                  fontSize: "clamp(14px, 1.1vw, 16px)",
+                  color: "#71726b",
+                  lineHeight: 1.65,
+                }}
+              >
+                {FEATURED.desc}
+              </p>
+            </div>
+
+            <a
+              href="#"
+              style={{
+                fontFamily: "Sora, sans-serif",
+                fontSize: "14px",
+                fontWeight: 500,
+                color: "#121312",
+                textDecoration: "none",
+                letterSpacing: "0.02em",
+                marginTop: 32,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                borderBottom: "1px solid #121312",
+                paddingBottom: 2,
+                width: "fit-content",
+                transition: "border-color 200ms ease, color 200ms ease",
+              }}
+              className="hover:text-[#0BCF81] hover:border-[#0BCF81]"
+            >
+              Ler artigo
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        {/* Secondary row — 3 horizontal cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {ARTICLES.map((a, i) => (
-            <NewsCard key={i} title={a.title} desc={a.desc} />
+            <SmallCard key={i} {...a} />
           ))}
         </div>
       </div>

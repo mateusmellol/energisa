@@ -1,0 +1,32 @@
+{
+  "eval_id": 2,
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "A resposta explica o que é Next.js de forma simples e com implicações para o designer",
+      "passed": true,
+      "evidence": "'React com roteamento e performance embutidos' + implicações: loading states, SEO, transições de página"
+    },
+    {
+      "text": "A resposta explica o que é TypeScript de forma simples e com implicações para o designer",
+      "passed": true,
+      "evidence": "'JavaScript com regras mais rígidas' + implicação: precisão nos estados de componentes"
+    },
+    {
+      "text": "A resposta fornece perguntas concretas que o designer pode fazer ao dev (ex: existe biblioteca de componentes? quais tokens/variáveis de design existem?)",
+      "passed": true,
+      "evidence": "5 perguntas numeradas, incluindo: biblioteca de componentes, sistema de espaçamento, estados necessários, preferência de handoff, limitações técnicas"
+    },
+    {
+      "text": "A resposta menciona pelo menos um recurso gratuito para cada tecnologia, ou recursos gerais de colaboração designer-dev",
+      "passed": true,
+      "evidence": "Links para Next.js (Fireship), TypeScript (Fireship), NNG Developer Handoff, NNG Design Tokens"
+    },
+    {
+      "text": "A resposta é prática e orientada à ação — não é só teoria",
+      "passed": true,
+      "evidence": "Seção 'O que perguntar amanhã' com perguntas prontas pra usar. Tom orientado ao próximo passo imediato."
+    }
+  ],
+  "pass_rate": 1.0
+}

@@ -1,285 +1,224 @@
-import { useRef, useState } from "react";
-import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from "motion/react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { ProfileCard } from "./ProfileCard";
-import { TextAnimate } from "@/registry/magicui/text-animate";
 import { Zap, Leaf, ShieldCheck, Cpu, Globe, Activity } from "lucide-react";
-
-const PROJECTS = [
-  {
-    id: "smart-grid",
-    title: "Inovação que nasce da energia",
-    subtitle: "O laboratório de inovação do Grupo Energisa",
-    description: "O FlexLab desenvolve soluções em energia renovável, eficiência energética e smart grid",
-    color: "#121312",
-    overlay: "linear-gradient(to top right, rgba(11,207,129,0.12), transparent 60%)"
-  },
-  {
-    id: "renovavel",
-    title: "O futuro é renovável",
-    subtitle: "Expandindo a matriz energética limpa",
-    description: "Desenvolvemos projetos de geração solar e eólica de alta performance para o mercado nacional",
-    color: "#0B2D1D",
-    overlay: "linear-gradient(to top right, rgba(234,254,31,0.1), transparent 60%)"
-  },
-  {
-    id: "eficiencia",
-    title: "Eficiência em cada watt",
-    subtitle: "Reduzindo perdas e otimizando consumo",
-    description: "Tecnologia de ponta para gestão inteligente de energia em grandes indústrias e redes complexas",
-    color: "#1A1B1A",
-    overlay: "linear-gradient(to top right, rgba(101,244,41,0.1), transparent 60%)"
-  }
-];
-
-const BENEFITS = [
-  { icon: Zap, label: "Smart Grid" },
-  { icon: Leaf, label: "Energia Limpa" },
-  { icon: ShieldCheck, label: "Eficiência" },
-  { icon: Cpu, label: "Inovação" },
-  { icon: Globe, label: "Sustentabilidade" },
-  { icon: Activity, label: "Monitoramento" },
-];
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// Returns motion props for a blur-up reveal gated by inView
-function blurUp(inView: boolean, delay = 0) {
-  return {
-    initial: { opacity: 0, y: 10, filter: "blur(8px)" },
-    animate: inView
-      ? { opacity: 1, y: 0, filter: "blur(0px)" }
-      : { opacity: 0, y: 10, filter: "blur(8px)" },
-    transition: { duration: 0.65, ease: EASE, delay },
-  };
-}
+const ITEMS = [
+  {
+    index: "001",
+    title: "FlexLab",
+    subtitle: "O laboratório de inovação do Grupo Energisa",
+    description:
+      "O FlexLab desenvolve soluções em energia renovável, eficiência energética e smart grid, conectando startups e parceiros para criar o futuro da energia no Brasil.",
+    benefits: [
+      { icon: Zap, label: "Smart Grid" },
+      { icon: Cpu, label: "Inovação" },
+      { icon: Activity, label: "Monitoramento" },
+    ],
+  },
+  {
+    index: "002",
+    title: "Energisa+",
+    subtitle: "Serviços digitais integrados para gestão de energia",
+    description:
+      "Com o Energisa+, clientes têm acesso a um portfólio completo de serviços além do fornecimento — desde solar fotovoltaico até gestão inteligente de consumo.",
+    benefits: [
+      { icon: Leaf, label: "Energia Limpa" },
+      { icon: Globe, label: "Sustentabilidade" },
+      { icon: ShieldCheck, label: "Eficiência" },
+    ],
+  },
+  {
+    index: "003",
+    title: "Portal do Cliente",
+    subtitle: "Autoatendimento digital em tempo real",
+    description:
+      "Canal digital completo para acompanhamento de faturas, solicitação de serviços e histórico de consumo, disponível 24 horas por dia.",
+    benefits: [
+      { icon: ShieldCheck, label: "Segurança" },
+      { icon: Activity, label: "Tempo Real" },
+      { icon: Cpu, label: "Digital" },
+    ],
+  },
+];
 
 export function FlexLab() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-  const [index, setIndex] = useState(0);
-  const [inView, setInView] = useState(false);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  const { scrollYProgress: sectionProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
-
-  useMotionValueEvent(sectionProgress, "change", (latest) => {
-    if (!inView && latest >= 0.2) setInView(true);
-  });
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const p = latest;
-    let newIndex = 0;
-    if (p < 0.4) newIndex = 0;
-    else if (p < 0.7) newIndex = 1;
-    else newIndex = 2;
-    if (newIndex !== index) setIndex(newIndex);
-  });
-
-  const project = PROJECTS[index];
-
-  const clipPath = useTransform(
-    sectionProgress,
-    [0, 0.28, 0.71, 1],
-    [
-      "inset(0% 50% 0% 50%)",
-      "inset(0% 0% 0% 0%)",
-      "inset(0% 0% 0% 0%)",
-      "inset(0% 50% 0% 50%)"
-    ]
-  );
+  const [active, setActive] = useState(0);
 
   return (
     <section
       id="ecossistema"
-      ref={containerRef}
-      className="relative w-full"
-      style={{ height: "250vh", background: "#F6F8ED" }}
+      className="w-full bg-[#F6F8ED] py-20 px-8 md:px-20"
     >
-      <div
-        className="sticky top-20 w-full flex flex-col justify-center overflow-hidden bg-[#F6F8ED] px-8 md:px-20"
-        style={{ height: "calc(100vh - 80px)" }}
-      >
-        <div className="max-w-[1440px] mx-auto w-full">
+      <div className="max-w-[1440px] mx-auto w-full flex flex-col gap-14">
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, x: 100, filter: "blur(20px)" }}
-              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, x: -100, filter: "blur(20px)" }}
-              transition={{ duration: 0.45, ease: EASE }}
-              className="flex flex-col gap-6 md:gap-10 w-full"
-            >
-              {/* Text Content */}
-              <div className="flex flex-col md:flex-row gap-12 md:gap-16 items-start">
+        {/* Header */}
+        <div className="flex flex-col gap-2">
+          <p
+            style={{ fontFamily: "Sora, sans-serif", fontSize: 11, letterSpacing: "0.15em" }}
+            className="text-[#8B8D85] uppercase font-medium"
+          >
+            Ecossistema
+          </p>
+          <h2
+            style={{
+              fontFamily: "Sora, sans-serif",
+              fontWeight: 400,
+              fontSize: "clamp(28px, 3vw, 42px)",
+              color: "#121312",
+              lineHeight: 1.2,
+            }}
+          >
+            Soluções que vão além da energia
+          </h2>
+        </div>
 
-                {/* Left Column */}
-                <div className="flex flex-col md:w-[420px] shrink-0 gap-8">
-                  <div className="flex flex-col gap-3 text-left">
-
-                    {/* H2 — by character */}
-                    <h2
+        {/* Accordion */}
+        <div className="flex flex-col">
+          {ITEMS.map((item, i) => {
+            const isOpen = active === i;
+            return (
+              <div key={item.index}>
+                <button
+                  onClick={() => setActive(i)}
+                  className="w-full text-left group"
+                >
+                  <div
+                    className="flex items-center gap-6 py-6 px-6 transition-all duration-300"
+                    style={{
+                      border: isOpen
+                        ? "1px solid rgba(18,19,18,0.18)"
+                        : "none",
+                      borderTop: isOpen
+                        ? "1px solid rgba(18,19,18,0.18)"
+                        : i === 0
+                        ? "none"
+                        : "1px solid rgba(18,19,18,0.12)",
+                      borderRadius: isOpen ? 16 : 0,
+                    }}
+                  >
+                    {/* Index */}
+                    <span
                       style={{
                         fontFamily: "Sora, sans-serif",
-                        fontWeight: 400,
-                        fontSize: "clamp(32px, 4vw, 49px)",
-                        color: "#121312",
-                        lineHeight: 1.15,
+                        fontSize: 10,
+                        letterSpacing: "0.18em",
+                        color: isOpen ? "#555653" : "#A6A7A0",
+                        whiteSpace: "nowrap",
+                        transition: "color 0.3s",
                       }}
+                      className="uppercase font-medium"
                     >
-                      {inView ? (
-                        <TextAnimate
-                          animation="blurInUp"
-                          by="character"
-                          duration={0.55}
-                          stagger={0.022}
-                        >
-                          {project.title}
-                        </TextAnimate>
-                      ) : (
-                        <span style={{ opacity: 0 }}>{project.title}</span>
-                      )}
-                    </h2>
+                      ECOSSISTEMA / {item.index}
+                    </span>
 
-                    {/* Subtitle — by word */}
-                    <p
+                    {/* Title */}
+                    <span
                       style={{
                         fontFamily: "Sora, sans-serif",
-                        fontSize: "clamp(15px, 1.3vw, 20px)",
-                        color: "#555653",
-                        lineHeight: 1.5,
+                        fontWeight: 300,
+                        fontSize: "clamp(28px, 4.5vw, 64px)",
+                        color: isOpen ? "#121312" : "#71726B",
+                        lineHeight: 1.05,
+                        letterSpacing: "-0.02em",
+                        transition: "color 0.3s",
+                        flex: 1,
+                        textAlign: "center",
                       }}
                     >
-                      {inView ? (
-                        <TextAnimate
-                          animation="blurInUp"
-                          by="word"
-                          duration={0.55}
-                          stagger={0.09}
-                          delay={0.3}
-                        >
-                          {project.subtitle}
-                        </TextAnimate>
-                      ) : (
-                        <span style={{ opacity: 0 }}>{project.subtitle}</span>
-                      )}
-                    </p>
+                      {item.title}
+                    </span>
+
+                    {/* Saiba mais */}
+                    <span
+                      style={{
+                        fontFamily: "Sora, sans-serif",
+                        fontSize: 10,
+                        letterSpacing: "0.18em",
+                        color: isOpen ? "#121312" : "#A6A7A0",
+                        whiteSpace: "nowrap",
+                        transition: "color 0.3s",
+                      }}
+                      className="uppercase font-medium"
+                    >
+                      Saiba mais
+                    </span>
                   </div>
+                </button>
 
-                  {/* Button + dots */}
-                  <div className="flex items-center gap-10 flex-wrap mt-2">
-                    <motion.button
-                      {...blurUp(inView, 0.5)}
-                      className="transition-all active:scale-95 hover:bg-white/5"
-                      style={{
-                        fontFamily: "Sora, sans-serif",
-                        fontSize: "16px",
-                        color: "#121312",
-                        background: "transparent",
-                        border: "1px solid rgba(18, 19, 18, 0.3)",
-                        padding: "14px 32px",
-                        cursor: "pointer",
-                        borderRadius: "4px",
-                        minWidth: 157,
-                      }}
+                {/* Expanded content */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="content"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.45, ease: EASE }}
+                      style={{ overflow: "hidden" }}
                     >
-                      Conhecer
-                    </motion.button>
-
-                    <motion.div {...blurUp(inView, 0.55)} className="flex gap-2.5 items-center">
-                      {PROJECTS.map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => {
-                            const section = containerRef.current;
-                            if (!section) return;
-                            const scrollPos = section.offsetTop + (i / PROJECTS.length) * section.offsetHeight;
-                            window.scrollTo({ top: scrollPos + 50, behavior: "smooth" });
-                          }}
+                      <div
+                        className="px-6 pb-10 pt-4 flex flex-col md:flex-row gap-10"
+                        style={{ borderTop: "1px solid rgba(18,19,18,0.08)" }}
+                      >
+                        {/* Image placeholder */}
+                        <div
+                          className="w-full md:w-[55%] rounded-xl flex-shrink-0"
                           style={{
-                            height: 6,
-                            width: i === index ? 32 : 6,
-                            borderRadius: 3,
-                            background: i === index ? "#121312" : "rgba(18,19,18,0.2)",
-                            transition: "all 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
-                            border: "none",
-                            cursor: "pointer",
-                            padding: 0
+                            height: "min(280px, 28vw)",
+                            background: "rgba(18,19,18,0.06)",
                           }}
                         />
-                      ))}
+
+                        {/* Info */}
+                        <div className="flex flex-col justify-between gap-8 flex-1">
+                          <div className="flex flex-col gap-5">
+                            <p
+                              style={{
+                                fontFamily: "Sora, sans-serif",
+                                fontSize: "clamp(14px, 1.2vw, 17px)",
+                                color: "#555653",
+                                lineHeight: 1.65,
+                              }}
+                            >
+                              {item.description}
+                            </p>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                              {item.benefits.map((b, j) => (
+                                <ProfileCard key={j} icon={b.icon} label={b.label} />
+                              ))}
+                            </div>
+                          </div>
+
+                          <button
+                            style={{
+                              fontFamily: "Sora, sans-serif",
+                              fontSize: 15,
+                              color: "#F6F8ED",
+                              background: "#121312",
+                              border: "none",
+                              padding: "13px 30px",
+                              borderRadius: 999,
+                              cursor: "pointer",
+                              alignSelf: "flex-start",
+                            }}
+                          >
+                            Descobrir
+                          </button>
+                        </div>
+                      </div>
                     </motion.div>
-                  </div>
-                </div>
-
-                {/* Right Column */}
-                <div className="flex-1">
-                  <div className="flex flex-col gap-10 text-left ml-auto max-w-[600px]">
-
-                    {/* Description — by word */}
-                    <p
-                      style={{
-                        fontFamily: "Sora, sans-serif",
-                        fontSize: "clamp(16px, 1.5vw, 20px)",
-                        color: "#333432",
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      {inView ? (
-                        <TextAnimate
-                          animation="blurInUp"
-                          by="word"
-                          duration={0.55}
-                          stagger={0.07}
-                          delay={0.25}
-                        >
-                          {project.description}
-                        </TextAnimate>
-                      ) : (
-                        <span style={{ opacity: 0 }}>{project.description}</span>
-                      )}
-                    </p>
-
-                    {/* Benefits — staggered per icon */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-8 text-[#555653]">
-                      {BENEFITS.map((benefit, i) => (
-                        <motion.div key={i} {...blurUp(inView, 0.4 + i * 0.07)}>
-                          <ProfileCard icon={benefit.icon} label={benefit.label} />
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                  )}
+                </AnimatePresence>
               </div>
+            );
+          })}
 
-              {/* Image */}
-              <motion.div
-                ref={imageRef}
-                className="w-full rounded-sm overflow-hidden"
-                style={{
-                  height: "min(360px, 30vw)",
-                  background: "#e6e7e4",
-                  position: "relative",
-                  clipPath: clipPath,
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: project.overlay,
-                  }}
-                />
-              </motion.div>
-            </motion.div>
-          </AnimatePresence>
+          {/* Bottom border */}
+          <div style={{ borderTop: "1px solid rgba(18,19,18,0.12)" }} />
         </div>
       </div>
     </section>

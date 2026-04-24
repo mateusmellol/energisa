@@ -17,7 +17,7 @@ export function Header() {
       transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
       className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/80 border-b border-neutral-200"
     >
-      <div className="container flex items-center justify-between h-20">
+      <div className="page-container flex items-center justify-between h-20">
         {/* Logo — Figma node 183:2405 */}
         <div className="flex items-center">
           <span className="text-xl font-semibold tracking-tight text-dark-blue-500">
@@ -48,8 +48,13 @@ export function Header() {
         </nav>
 
         {/* CTA Button — Figma node 183:2423 */}
-        <button className="hidden md:flex items-center justify-center px-6 py-3 bg-dark-blue-500 text-white text-sm font-medium rounded-lg hover:bg-dark-blue-600 transition-colors">
-          Suporte
+        <button
+          className="hidden md:flex items-center justify-center px-6 py-3 text-neutral-950 text-sm font-medium rounded-lg transition-colors"
+          style={{ backgroundColor: "#D4EC28" }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#c2d920")}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#D4EC28")}
+        >
+          Começar agora
         </button>
       </div>
     </motion.header>

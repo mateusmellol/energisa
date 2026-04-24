@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { motion as motionPresets } from "@/lib/tokens";
 
@@ -8,7 +8,7 @@ import { motion as motionPresets } from "@/lib/tokens";
  * Ecosystem — Figma node 183:2755
  *
  * Two parts:
- * 1. FlexLab showcase (183:2812) — Logo, title, description, profiles, button, progress, image
+ * 1. FlexLab accordion (ecosystem items) — expandable rows
  * 2. Statistics section (183:3115) — "A Energisa acompanha você" + 3 expanding stat rows
  */
 
@@ -63,85 +63,180 @@ const stats = [
   },
 ];
 
+const ecosystemItems = [
+  {
+    index: "001",
+    title: "FlexLab",
+    description:
+      "Plataforma de inovação aberta da Energisa, conectando startups, pesquisadores e parceiros para desenvolver soluções energéticas do futuro.",
+    detail:
+      "O FlexLab é o hub de inovação da Energisa, onde tecnologia e energia se encontram para criar soluções sustentáveis e eficientes para o setor elétrico brasileiro.",
+    profiles: [
+      { name: "Ana Oliveira", role: "Head de Inovação" },
+      { name: "Carlos Mendes", role: "Tech Lead" },
+      { name: "Sofia Lima", role: "Design Estratégico" },
+    ],
+  },
+  {
+    index: "002",
+    title: "Energisa+",
+    description:
+      "Serviços digitais integrados para gestão de energia, eficiência e sustentabilidade para residências e empresas.",
+    detail:
+      "Com o Energisa+, clientes têm acesso a um portfólio completo de serviços além do fornecimento de energia — desde solar fotovoltaico até gestão inteligente de consumo.",
+    profiles: [
+      { name: "Roberto Silva", role: "Produto" },
+      { name: "Mariana Costa", role: "UX Research" },
+      { name: "Felipe Souza", role: "Engenharia" },
+    ],
+  },
+  {
+    index: "003",
+    title: "Portal do Cliente",
+    description:
+      "Canal digital completo para autoatendimento, acompanhamento de faturas e solicitação de serviços em tempo real.",
+    detail:
+      "O Portal do Cliente centraliza toda a relação entre o consumidor e a Energisa, com acesso 24/7 a segunda via, histórico de consumo, agendamentos e muito mais.",
+    profiles: [
+      { name: "Paula Ramos", role: "CX Manager" },
+      { name: "Lucas Neves", role: "Backend" },
+      { name: "Aline Torres", role: "UX/UI" },
+    ],
+  },
+];
+
+function EcosystemAccordion() {
+  const [active, setActive] = useState(0);
+
+  return (
+    <div className="flex flex-col">
+      {ecosystemItems.map((item, i) => {
+        const isOpen = active === i;
+        return (
+          <div key={item.index}>
+            {/* Row trigger */}
+            <button
+              onClick={() => setActive(i)}
+              className={`w-full text-left transition-colors duration-300 ${
+                isOpen ? "" : "hover:bg-neutral-50"
+              }`}
+            >
+              <div
+                className={`relative flex items-center gap-6 py-6 px-6 transition-all duration-300 ${
+                  isOpen
+                    ? "border border-neutral-200 rounded-2xl"
+                    : "border-t border-neutral-150"
+                }`}
+              >
+                {/* Index */}
+                <span className="text-xs font-medium tracking-widest text-neutral-400 uppercase whitespace-nowrap">
+                  ECOSSISTEMA / {item.index}
+                </span>
+
+                {/* Title */}
+                <span
+                  className={`flex-1 text-center text-[clamp(2rem,5vw,4rem)] font-light leading-tight tracking-tight transition-colors duration-300 ${
+                    isOpen ? "text-neutral-950" : "text-neutral-700"
+                  }`}
+                >
+                  {item.title}
+                </span>
+
+                {/* Saiba mais */}
+                <span
+                  className={`text-xs font-medium tracking-widest uppercase whitespace-nowrap transition-colors duration-300 ${
+                    isOpen ? "text-neutral-950" : "text-neutral-400"
+                  }`}
+                >
+                  Saiba mais
+                </span>
+              </div>
+            </button>
+
+            {/* Expanded content */}
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  key="content"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-6 pt-6 pb-10 grid grid-cols-12 gap-6">
+                    {/* Image placeholder */}
+                    <div className="col-span-7 h-64 bg-neutral-150 rounded-xl" />
+
+                    {/* Info */}
+                    <div className="col-span-5 flex flex-col justify-between gap-8">
+                      <div className="flex flex-col gap-4">
+                        <p className="text-base leading-relaxed text-neutral-600">
+                          {item.detail}
+                        </p>
+                        <div className="flex flex-col gap-3">
+                          {item.profiles.map((p) => (
+                            <div key={p.name} className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-full bg-neutral-200 flex-shrink-0" />
+                              <div>
+                                <p className="text-sm font-medium text-neutral-950">
+                                  {p.name}
+                                </p>
+                                <p className="text-xs text-neutral-500">{p.role}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <button className="self-start px-7 py-3.5 bg-neutral-950 rounded-full text-sm font-medium text-white hover:bg-neutral-800 transition-colors">
+                        Descobrir
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      })}
+
+      {/* Bottom border for last row when closed */}
+      <div className="border-t border-neutral-150" />
+    </div>
+  );
+}
+
 export function Ecosystem() {
   return (
     <section className="relative w-full" id="ecossistema">
-      {/* FlexLab Showcase — Figma node 183:2812 */}
+      {/* FlexLab Accordion */}
       <div className="py-14 bg-white">
-        <div className="container">
-          <div className="flex items-start justify-between gap-16">
-            {/* Left: FlexLab info — Figma node 183:2810 */}
-            <motion.div
-              {...motionPresets.fadeInUp}
-              className="flex flex-col gap-[250px] max-w-[491px]"
-            >
-              <div className="w-[117px] h-[38px] bg-neutral-200 rounded flex items-center justify-center text-xs text-neutral-600">
-                FlexLab
-              </div>
-              <div className="flex flex-col gap-2">
-                <h2 className="text-[39px] font-regular leading-tight text-neutral-950">
-                  FlexLab
-                </h2>
-                <p className="text-base text-neutral-500">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing.
-                </p>
-              </div>
-            </motion.div>
+        <div className="page-container">
+          <motion.div
+            {...motionPresets.fadeInUp}
+            className="mb-12"
+          >
+            <p className="text-xs font-medium tracking-widest text-neutral-400 uppercase mb-3">
+              Ecossistema
+            </p>
+            <h2 className="text-[clamp(2rem,3.5vw,3rem)] font-light leading-tight text-neutral-950">
+              Soluções que vão além da energia
+            </h2>
+          </motion.div>
 
-            {/* Right: Description + Profiles + Button — Figma node 183:2761 */}
-            <motion.div
-              {...motionPresets.fadeInUp}
-              transition={{ delay: 0.2 }}
-              className="flex flex-col gap-24 max-w-[494px]"
-            >
-              <div className="flex flex-col gap-10">
-                <p className="text-base leading-relaxed text-neutral-600">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                  eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
-
-                {/* Profiles — Figma node 183:2773 */}
-                <div className="flex gap-5">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-neutral-200" />
-                      <div>
-                        <p className="text-sm font-medium text-neutral-950">
-                          Nome exemplo
-                        </p>
-                        <p className="text-xs text-neutral-500">Descrição</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Button + Progress — Figma node 183:2794 */}
-              <div className="flex items-center justify-between">
-                <button className="px-8 py-4 bg-dark-blue-500 rounded-full text-sm font-medium text-white hover:bg-dark-blue-600 transition-colors">
-                  Descobrir
-                </button>
-                <div className="w-[205px] h-3 bg-neutral-150 rounded-full overflow-hidden">
-                  <div className="h-full w-1/3 bg-green-400 rounded-full" />
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Large image — Figma node 183:2760 */}
-          <div className="mt-10 w-full h-[512px] bg-neutral-200 rounded-2xl" />
+          <EcosystemAccordion />
         </div>
       </div>
 
       {/* Statistics — Figma node 183:3115 */}
       <div className="py-14 bg-white">
-        <div className="container">
+        <div className="page-container">
           {/* Stats header — Figma node 186:3148 */}
           <motion.div
             {...motionPresets.fadeInUp}
-            className="flex items-start justify-between mb-20"
+            className="grid grid-cols-12 gap-4 items-start mb-20"
           >
-            <div className="max-w-[530px]">
+            <div className="col-span-6">
               <h2 className="text-[52px] font-regular leading-[1.15] text-neutral-950 mb-2">
                 A Energisa acompanha você
               </h2>
@@ -149,7 +244,7 @@ export function Ecosystem() {
                 Lorem ipsum dolor sit amet, consectetur adipiscing.
               </p>
             </div>
-            <p className="text-xs text-neutral-400 max-w-[530px]">
+            <p className="col-start-8 col-span-5 text-xs text-neutral-400">
               Dados de 2025
             </p>
           </motion.div>

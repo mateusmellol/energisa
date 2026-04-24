@@ -1,0 +1,23 @@
+{
+  "skill_name": "stack-for-designers",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "O que é React? Ouço isso o tempo todo mas nunca entendi direito.",
+      "expected_output": "Explicação clara do que é React usando analogia com design (componentes = Figma components), por que existe, o que muda pra um designer no handoff e no Figma, vocabulário básico, e links gratuitos pra aprender mais.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "Tô olhando as notas do projeto NinaSeg aqui. O dev configurou a stack como React + Tailwind + Supabase. O que isso significa na prática pro meu fluxo como designer?",
+      "expected_output": "Explicação proativa de cada tecnologia da stack (React, Tailwind, Supabase) com foco em como cada uma afeta o trabalho do designer — sistema de espaçamento do Tailwind (4px base), componentes React espelhando Figma, estados de UI para dados do Supabase.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Amanhã tenho uma reunião com o dev do projeto. Ele mencionou que usa Next.js e TypeScript. Nunca trabalhei com um dev que usa isso. O que eu preciso saber e o que devo perguntar pra ele?",
+      "expected_output": "Explicação prática do que Next.js e TypeScript significam para o designer, vocabulário relevante, perguntas concretas para fazer ao dev no handoff (loading states, componentes existentes, design tokens), e links pra aprofundar.",
+      "files": []
+    }
+  ]
+}

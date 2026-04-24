@@ -3,106 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import svgPaths from "../../imports/Site/svg-swy5fdu2p6";
 import { TextAnimate } from "@/registry/magicui/text-animate";
 
-// --- Glass mosaic config ---
-const BASE_ANGLE = 108.63;
-const TILE = 36; // px
-const SPOTLIGHT_RADIUS = 110; // px
-
-type TileConfig = { col: number; row: number; rotation: number };
-
-// Static tile patterns — one per card, fixed so they never change on refresh.
-// col 0 = rightmost edge, col 3 = leftmost. Dense on the right, sparse on the left.
-const CARD_TILES: TileConfig[][] = [
-  // Falta de energia
-  [
-    { col: 0, row: 0, rotation:  90 },
-    { col: 0, row: 1, rotation: 180 },
-    { col: 0, row: 3, rotation:   0 },
-    { col: 0, row: 4, rotation: -90 },
-    { col: 1, row: 0, rotation: -90 },
-    { col: 1, row: 2, rotation:  90 },
-    { col: 1, row: 4, rotation: 180 },
-    { col: 2, row: 1, rotation:   0 },
-    { col: 2, row: 3, rotation:  90 },
-    { col: 3, row: 0, rotation: -90 },
-  ],
-  // Pagamento
-  [
-    { col: 0, row: 0, rotation: 180 },
-    { col: 0, row: 2, rotation:  90 },
-    { col: 0, row: 3, rotation: -90 },
-    { col: 0, row: 4, rotation:   0 },
-    { col: 1, row: 1, rotation: 180 },
-    { col: 1, row: 3, rotation:   0 },
-    { col: 1, row: 4, rotation:  90 },
-    { col: 2, row: 0, rotation: -90 },
-    { col: 2, row: 2, rotation: 180 },
-    { col: 3, row: 1, rotation:  90 },
-  ],
-  // Renegociar
-  [
-    { col: 0, row: 1, rotation:   0 },
-    { col: 0, row: 2, rotation: -90 },
-    { col: 0, row: 3, rotation: 180 },
-    { col: 0, row: 4, rotation:  90 },
-    { col: 1, row: 0, rotation: 180 },
-    { col: 1, row: 2, rotation: -90 },
-    { col: 1, row: 4, rotation:   0 },
-    { col: 2, row: 1, rotation:  90 },
-    { col: 2, row: 3, rotation: -90 },
-    { col: 3, row: 2, rotation: 180 },
-  ],
-  // Segunda via
-  [
-    { col: 0, row: 0, rotation: -90 },
-    { col: 0, row: 1, rotation:  90 },
-    { col: 0, row: 3, rotation:   0 },
-    { col: 0, row: 4, rotation: 180 },
-    { col: 1, row: 0, rotation:   0 },
-    { col: 1, row: 2, rotation:  90 },
-    { col: 1, row: 3, rotation: -90 },
-    { col: 2, row: 1, rotation: 180 },
-    { col: 2, row: 4, rotation:   0 },
-    { col: 3, row: 0, rotation:  90 },
-  ],
-];
-
-// --- Components ---
-
-// Always rendered — mask-image (not opacity) controls what's visible.
-// When mousePos is null the mask points off-screen with radius 0, so nothing shows.
-// This avoids the brief flash that occurs when toggling opacity.
-function GlassMosaic({ tiles, mousePos }: {
-  tiles: TileConfig[];
-  mousePos: { x: number; y: number } | null;
-}) {
-  const maskImage = mousePos
-    ? `radial-gradient(circle ${SPOTLIGHT_RADIUS}px at ${mousePos.x}px ${mousePos.y}px, black 20%, transparent 100%)`
-    : `radial-gradient(circle 0px at -999px -999px, black 0%, transparent 0%)`;
-
-  return (
-    <div
-      className="absolute inset-0 pointer-events-none overflow-hidden rounded"
-      style={{ maskImage, WebkitMaskImage: maskImage }}
-    >
-      {tiles.map(({ col, row, rotation }, i) => (
-        <div
-          key={i}
-          className="absolute backdrop-blur-[6px]"
-          style={{
-            width: TILE,
-            height: TILE,
-            right: col * TILE,
-            top: row * TILE,
-            backgroundImage: `linear-gradient(${BASE_ANGLE + rotation}deg, #F6F8ED 5%, #dadad6 98%)`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function ServiceCard({ card, tiles }: { card: { icon: React.ReactNode; label: string; description: string }; tiles: TileConfig[] }) {
+function ServiceCard({ card }: { card: { icon: React.ReactNode; label: string; description: string } }) {
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -133,8 +34,6 @@ function ServiceCard({ card, tiles }: { card: { icon: React.ReactNode; label: st
       className="relative bg-[#F6F8ED] rounded flex flex-col justify-between p-4 h-44 cursor-pointer overflow-hidden"
       style={{ border: "1px solid #8b8d85" }}
     >
-      <GlassMosaic tiles={tiles} mousePos={mousePos} />
-
       <div className="relative z-10">{card.icon}</div>
 
       {/* Bottom group — justify-between pins it to the bottom.
@@ -329,7 +228,7 @@ export function Services() {
             className="grid grid-cols-2 md:grid-cols-4 gap-4"
           >
             {cards.map((card, i) => (
-              <ServiceCard key={card.label} card={card} tiles={CARD_TILES[i]} />
+              <ServiceCard key={card.label} card={card} />
             ))}
           </motion.div>
         </AnimatePresence>

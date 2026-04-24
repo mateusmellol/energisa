@@ -37,13 +37,13 @@ export function Timeline({
 }: TimelineProps) {
   return (
     <section className="relative w-full min-h-[926px] bg-neutral-0 overflow-hidden">
-      <div className="container relative z-10 py-16">
+      <div className="page-container relative z-10 py-16">
         {/* Content layout: text left, globe right */}
-        <div className="flex items-start justify-between">
+        <div className="grid grid-cols-12 gap-4 items-start">
           {/* Left column — text content */}
           <motion.div
             {...motionPresets.fadeInUp}
-            className="max-w-[497px] flex flex-col gap-7"
+            className="col-span-5 flex flex-col gap-7"
           >
             {/* Tabs — Antes | Agora | Futuro */}
             <div className="flex gap-4">
@@ -78,7 +78,7 @@ export function Timeline({
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-            className="w-[710px] h-[717px] rounded-full bg-neutral-950 flex items-center justify-center"
+            className="col-start-6 col-span-7 w-full aspect-square max-h-[717px] rounded-full bg-neutral-950 flex items-center justify-center"
           >
             {/* Globe interativo será implementado aqui */}
             <div className="text-neutral-600 text-sm">

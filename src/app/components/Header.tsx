@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import svgPaths from "../../imports/Header/svg-exccz6k13i";
 import imgButton from "figma:asset/ef92594731423388a0c490d6f715c05317eb5700.png";
+import { motion } from "motion/react";
 
 function Logo() {
   return (
@@ -125,7 +126,12 @@ export function Header() {
     : "backdrop-blur-sm bg-black/10 border-b border-transparent text-[#f6f8ed]";
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-20 h-20 transition-all duration-300 ease-out ${headerClasses}`}>
+    <motion.header
+      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-20 h-20 transition-all duration-300 ease-out ${headerClasses}`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.9, delay: 0.5, ease: [0.4, 0, 0.2, 1] }}
+    >
       <Logo />
 
       <nav className="flex items-center gap-8">
@@ -163,6 +169,6 @@ export function Header() {
       >
         Serviços
       </button>
-    </header>
+    </motion.header>
   );
 }

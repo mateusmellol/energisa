@@ -1,0 +1,32 @@
+{
+  "eval_id": 1,
+  "configuration": "without_skill",
+  "expectations": [
+    {
+      "text": "A resposta explica as três tecnologias: React, Tailwind E Supabase",
+      "passed": true,
+      "evidence": "Paragráfos separados para React, Tailwind e Supabase"
+    },
+    {
+      "text": "A resposta menciona o sistema de espaçamento do Tailwind (4px base ou múltiplos de 4)",
+      "passed": true,
+      "evidence": "'classes utilitárias com escala de espaçamento e tipografia definidas (4, 8, 12, 16, 24, 32px...)'"
+    },
+    {
+      "text": "A resposta conecta React com a estrutura de componentes no Figma",
+      "passed": true,
+      "evidence": "'Um botão Button/Primary/Default no Figma vira um <Button variant=\"primary\" /> no código'"
+    },
+    {
+      "text": "A resposta menciona loading states, empty states ou estados de erro em relação ao Supabase/dados dinâmicos",
+      "passed": true,
+      "evidence": "'você precisa projetar os estados de loading, sucesso e erro do formulário'"
+    },
+    {
+      "text": "A resposta é orientada ao fluxo de trabalho do designer, não ao funcionamento técnico interno das ferramentas",
+      "passed": true,
+      "evidence": "Resumo prático ao final com ações concretas. Tom orientado ao designer."
+    }
+  ],
+  "pass_rate": 1.0
+}

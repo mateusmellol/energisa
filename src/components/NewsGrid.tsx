@@ -45,9 +45,9 @@ const articles = [
 export function NewsGrid() {
   return (
     <section className="relative w-full py-36 bg-white overflow-hidden">
-      <div className="container">
+      <div className="page-container">
         {/* Cards row — Figma node 186:3340 */}
-        <div className="flex gap-10 overflow-x-auto pb-4">
+        <div className="grid grid-cols-12 gap-4">
           {articles.map((article, i) => (
             <motion.article
               key={article.id}
@@ -55,7 +55,7 @@ export function NewsGrid() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="flex-none w-[349px] flex flex-col cursor-pointer group"
+              className="col-span-3 flex flex-col cursor-pointer group"
             >
               {/* Image — Figma node 186:3311 */}
               <div className="w-full h-[400px] bg-neutral-950 rounded-t-lg" />

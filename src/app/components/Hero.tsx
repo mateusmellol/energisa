@@ -1,7 +1,12 @@
+"use client";
+
 import imgHero from "figma:asset/bb442800d2b3f93e66c7c76b9873036398a0172a.png";
 import imgButton from "figma:asset/ef92594731423388a0c490d6f715c05317eb5700.png";
 import svgPaths from "../../imports/Site/svg-swy5fdu2p6";
 import { BadgeDelta } from "./ui/badge-delta";
+import { motion } from "motion/react";
+
+const EASE = [0.4, 0, 0.2, 1] as const;
 
 /* ─── Stock Widget (Pill Format) ────────────────────────────────────── */
 function StockWidget() {
@@ -51,8 +56,14 @@ function StockWidget() {
 export function Hero() {
   return (
     <section className="relative overflow-hidden flex flex-col" style={{ minHeight: "100svh" }}>
-      {/* Background photo */}
-      <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+      {/* Background photo — fade in, no scale */}
+      <motion.div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.8, ease: "easeInOut" }}
+      >
         <img
           alt=""
           src={imgHero}
@@ -68,7 +79,7 @@ export function Hero() {
             background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)",
           }}
         />
-      </div>
+      </motion.div>
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col flex-1 px-8 md:px-20 pt-32 pb-32">
@@ -76,8 +87,20 @@ export function Hero() {
         <div className="flex flex-col items-start gap-8 mt-auto pt-16 w-full max-w-[1440px] mx-auto">
 
           <div className="flex flex-col items-start max-w-[800px]">
-            <StockWidget />
-            <h1
+            {/* StockWidget entrance */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.9, delay: 0.7, ease: EASE }}
+            >
+              <StockWidget />
+            </motion.div>
+
+            {/* Title entrance */}
+            <motion.h1
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.0, delay: 0.85, ease: EASE }}
               style={{
                 fontFamily: "Sora, sans-serif",
                 fontWeight: 500,
@@ -89,23 +112,33 @@ export function Hero() {
             >
               A Energisa <br />
               move o Brasil
-            </h1>
+            </motion.h1>
           </div>
 
           <div className="flex flex-col items-start gap-8 max-w-[540px]">
-            <p
+            {/* Subtitle entrance */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.0, delay: 1.1, ease: EASE }}
               style={{
                 fontFamily: "Sora, sans-serif",
                 fontSize: "clamp(15px, 1.2vw, 18px)",
-                color: "rgba(246, 248, 237, 0.85)", // Muted for hierarchy
+                color: "rgba(246, 248, 237, 0.85)",
                 lineHeight: 1.6,
                 fontWeight: 300,
               }}
             >
               De Norte a Sul. Quando uma luz acende, a Energisa está por trás.
-            </p>
+            </motion.p>
 
-            <div className="flex flex-wrap items-center gap-4">
+            {/* Buttons entrance */}
+            <motion.div
+              className="flex flex-wrap items-center gap-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.9, delay: 1.3, ease: EASE }}
+            >
               <button
                 onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
                 className="relative px-8 py-4 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer"
@@ -126,7 +159,7 @@ export function Hero() {
               >
                 Ecossistema
               </button>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

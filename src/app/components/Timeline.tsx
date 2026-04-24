@@ -14,7 +14,7 @@ const TABS = [
       { icon: Globe, label: "Expansão" },
       { icon: Zap, label: "Distribuição" },
     ],
-    globe: { phi: 0.85, theta: 0.31, scale: 0.82, highlight: 'mg' },
+    globe: { phi: 0.90, theta: -0.18, highlight: 'mg' },
   },
   {
     id: "agora",
@@ -26,7 +26,7 @@ const TABS = [
       { icon: Leaf, label: "Energia Limpa" },
       { icon: Zap, label: "Eficiência" },
     ],
-    globe: { phi: 0.95, theta: 0.26, scale: 0.78, highlight: 'br' },
+    globe: { phi: 1.00, theta: -0.24, highlight: 'br' },
   },
   {
     id: "futuro",
@@ -38,23 +38,23 @@ const TABS = [
       { icon: Leaf, label: "Sustentabilidade" },
       { icon: Globe, label: "Alcance Global" },
     ],
-    globe: { phi: 1.15, theta: 0.09, scale: 0.74, highlight: 'sa' },
+    globe: { phi: 1.12, theta: -0.30, highlight: 'sa' },
   },
 ];
 
 export function TimelineSection() {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(1);
   const current = TABS[active];
 
   return (
     <section
       id="timeline"
       className="relative overflow-hidden"
-      style={{ background: "#121312", minHeight: "100svh" }}
+      style={{ background: "#121312", minHeight: "110svh" }}
     >
       <div
-        className="max-w-[1440px] mx-auto relative px-8 md:px-20 py-24 flex flex-col gap-16"
-        style={{ minHeight: "100svh" }}
+        className="max-w-[1440px] mx-auto relative px-8 md:px-20 py-32 flex flex-col gap-16"
+        style={{ minHeight: "110svh" }}
       >
         {/* Tabs */}
         <div className="flex items-center gap-10 relative z-10">
@@ -85,7 +85,7 @@ export function TimelineSection() {
           ))}
         </div>
 
-          {/* Main content */}
+        {/* Main content */}
         <div className="relative z-10 flex flex-col gap-10" style={{ maxWidth: 460 }}>
           <AnimatePresence mode="wait">
             <motion.div
@@ -150,26 +150,42 @@ export function TimelineSection() {
 
         {/* Globe — absolute right, anchored to the grid container (not the section) */}
         <div
-          className="hidden md:flex absolute top-0 right-0 pointer-events-auto items-center"
-          style={{ width: "56%", height: "100%" }}
+          className="hidden md:flex absolute top-0 right-0 pointer-events-auto items-center justify-end"
+          style={{ width: "55%", height: "100%" }}
         >
-          <div style={{ width: "100%", padding: "60px 16px 60px 0" }}>
-            <VoxelGlobe
-              className="w-full"
-              targetPhi={TABS[active].globe.phi}
-              targetTheta={TABS[active].globe.theta}
-              targetScale={TABS[active].globe.scale}
-              highlightRegion={(TABS[active].globe as any).highlight}
-            />
-          </div>
-          {/* Fade left edge into bg */}
+          {/* Glowing background blob behind the globe - temporarily removed 
           <div
-            className="absolute inset-y-0 left-0 pointer-events-none"
+            className="absolute pointer-events-none"
             style={{
-              width: "35%",
-              background: "linear-gradient(to right, #121312, transparent)",
+              width: "120%",
+              height: "120%",
+              right: "-10%",
+              top: "-10%",
+              background: "radial-gradient(circle at 60% 50%, rgba(255, 199, 9, 0.08) 0%, rgba(255, 199, 9, 0.03) 30%, rgba(18, 19, 18, 0) 70%)",
+              zIndex: 0,
             }}
           />
+          */}
+
+          <div style={{ width: '100%', height: '100%', position: 'relative', zIndex: 1 }}>
+            <VoxelGlobe
+              className="w-full h-full"
+              targetPhi={TABS[active].globe.phi}
+              targetTheta={TABS[active].globe.theta}
+              highlightRegion={TABS[active].globe.highlight}
+            />
+            {/* Fade overlays to blend the 3D element into the section */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: `
+                  linear-gradient(to right, #121312 0%, transparent 25%),
+                  linear-gradient(to top, #121312 0%, transparent 25%),
+                  linear-gradient(to bottom, #121312 0%, transparent 15%)
+                `,
+              }}
+            />
+          </div>
         </div>
       </div>
     </section>
