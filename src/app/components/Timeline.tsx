@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import imgGlobe from "figma:asset/249de7226f0a73ca1906ad78d8cf5bb510be4e42.png";
+import { VoxelGlobe } from "./VoxelGlobe";
 
 const GRADIENT = "linear-gradient(135deg, #EAFE1F 0%, #65F429 100%)";
 
@@ -12,6 +12,9 @@ const TABS = [
     location: "MG",
     title: "Começamos assim",
     body: "Em 1905, nascia em Cataguases, Minas Gerais, uma pequena empresa de energia que viria a transformar o cenário energético brasileiro. Com raízes profundas no interior do país, a Energisa cresceu junto com as comunidades que atende.",
+    // Zoomed in on Minas Gerais (lat -18, lon -44)
+    // phi = lon × π/180 = -44 × 0.01745 = -0.77  |  theta = -lat × π/180 = +0.31
+    globe: { phi: -0.77, theta: 0.31, scale: 0.95 },
   },
   {
     id: "agora",
@@ -20,6 +23,8 @@ const TABS = [
     location: "SP",
     title: "Estamos prontos para inovar",
     body: "Com investimentos massivos em tecnologia e inovação, a Energisa se posiciona na vanguarda da transição energética. O FlexLab lidera projetos de energia renovável e smart grid em todo o Brasil.",
+    // Brazil view (lat -15, lon -51)
+    globe: { phi: -0.89, theta: 0.26, scale: 0.90 },
   },
   {
     id: "futuro",
@@ -28,6 +33,8 @@ const TABS = [
     location: "RJ",
     title: "Acolhemos o novo",
     body: "A meta é clara: 100% de energia renovável até 2030. Com o ecossistema Energisa, estamos redefinindo como o Brasil se conecta com o futuro da energia.",
+    // Latin America view (lat -5, lon -62)
+    globe: { phi: -1.08, theta: 0.09, scale: 0.85 },
   },
 ];
 
@@ -37,6 +44,7 @@ export function TimelineSection() {
 
   return (
     <section
+      id="timeline"
       className="relative overflow-hidden"
       style={{ background: "#121312", minHeight: "100svh" }}
     >
@@ -45,25 +53,30 @@ export function TimelineSection() {
         style={{ minHeight: "100svh" }}
       >
         {/* Tabs */}
-        <div className="flex items-center gap-2 relative z-10">
+        <div className="flex items-center gap-8 relative z-10">
           {TABS.map((tab, i) => (
             <button
               key={tab.id}
               onClick={() => setActive(i)}
+              className="relative pb-2 cursor-pointer active:scale-[0.97] transition-transform duration-100"
               style={{
                 fontFamily: "Sora, sans-serif",
-                fontSize: "clamp(13px, 1.1vw, 16px)",
-                color: i === active ? "#121312" : "rgba(253,253,252,0.45)",
-                background: i === active ? GRADIENT : "transparent",
-                padding: "6px 18px",
-                border: i === active ? "none" : "1px solid rgba(253,253,252,0.12)",
-                cursor: "pointer",
-                transition: "all 0.25s ease",
-                borderRadius: "2px",
-                lineHeight: 1.5,
+                fontSize: "20px",
+                color: i === active ? "#F6F8ED" : "rgba(246, 248, 237, 0.4)",
+                transition: "color 0.2s ease, transform 0.1s ease",
+                background: "transparent",
+                border: "none",
+                padding: 0,
               }}
             >
               {tab.label}
+              {i === active && (
+                <motion.div
+                  layoutId="timeline-tab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#F6F8ED]"
+                  transition={{ duration: 0.3, ease: [0.65, 0, 0.35, 1] }}
+                />
+              )}
             </button>
           ))}
         </div>
@@ -86,7 +99,7 @@ export function TimelineSection() {
                     fontFamily: "Sora, sans-serif",
                     fontWeight: 400,
                     fontSize: "clamp(28px, 3.2vw, 39px)",
-                    color: "#fdfdfc",
+                    color: "#F6F8ED",
                     lineHeight: 1.2,
                   }}
                 >
@@ -96,7 +109,7 @@ export function TimelineSection() {
                   style={{
                     fontFamily: "Sora, sans-serif",
                     fontSize: "clamp(15px, 1.3vw, 20px)",
-                    color: "rgba(253,253,252,0.55)",
+                    color: "rgba(246, 248, 237, 0.7)",
                     lineHeight: 1.65,
                   }}
                 >
@@ -119,9 +132,9 @@ export function TimelineSection() {
                   <div
                     key={val}
                     style={{
-                      border: "1px solid rgba(253,253,252,0.1)",
+                      border: "1px solid rgba(246, 248, 237, 0.2)",
                       padding: "18px 28px",
-                      background: "rgba(253,253,252,0.03)",
+                      background: "rgba(246, 248, 237, 0.05)",
                     }}
                   >
                     <span
@@ -129,7 +142,7 @@ export function TimelineSection() {
                         fontFamily: "Sora, sans-serif",
                         fontWeight: 400,
                         fontSize: "clamp(30px, 3.5vw, 49px)",
-                        color: "#fdfdfc",
+                        color: "#F6F8ED",
                         lineHeight: 1,
                         display: "block",
                       }}
@@ -149,7 +162,7 @@ export function TimelineSection() {
                         width: i === active ? 28 : 6,
                         height: 6,
                         borderRadius: 3,
-                        background: i === active ? GRADIENT : "rgba(253,253,252,0.2)",
+                        background: i === active ? GRADIENT : "rgba(246, 248, 237, 0.25)",
                         border: "none",
                         cursor: "pointer",
                         transition: "all 0.3s ease",
@@ -166,35 +179,23 @@ export function TimelineSection() {
 
       {/* Globe — absolute right, full height */}
       <div
-        className="hidden md:block absolute top-0 right-0 overflow-hidden pointer-events-none"
-        style={{ width: "52%", height: "100%" }}
+        className="hidden md:block absolute top-0 right-0 pointer-events-auto"
+        style={{ width: "52%", height: "100%", display: "flex", alignItems: "center" }}
       >
-        <img
-          alt=""
-          src={imgGlobe}
-          className="absolute max-w-none"
-          style={{
-            width: "162.58%",
-            height: "157.32%",
-            left: "-33.31%",
-            top: "-10%",
-            opacity: 0.9,
-          }}
+        <div style={{ width: "100%", padding: "40px 40px 40px 0" }}>
+          <VoxelGlobe
+          className="w-full"
+          targetPhi={TABS[active].globe.phi}
+          targetTheta={TABS[active].globe.theta}
+          targetScale={TABS[active].globe.scale}
         />
-        {/* Gradient fade: blend left edge into dark bg */}
+        </div>
+        {/* Fade left edge into bg */}
         <div
-          className="absolute inset-y-0 left-0"
+          className="absolute inset-y-0 left-0 pointer-events-none"
           style={{
-            width: "35%",
+            width: "30%",
             background: "linear-gradient(to right, #121312, transparent)",
-          }}
-        />
-        {/* Gradient fade: bottom edge */}
-        <div
-          className="absolute inset-x-0 bottom-0"
-          style={{
-            height: "20%",
-            background: "linear-gradient(to top, #121312, transparent)",
           }}
         />
       </div>
