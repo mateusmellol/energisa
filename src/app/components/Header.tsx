@@ -95,11 +95,21 @@ function Logo() {
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isInTimeline, setIsInTimeline] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Transition only when the header is about to leave the Hero section
-      setIsScrolled(window.scrollY > window.innerHeight - 80);
+      const scrollPos = window.scrollY;
+      // Scrolled past hero
+      setIsScrolled(scrollPos > window.innerHeight - 80);
+
+      // Check if inside Timeline (Dark Section)
+      const timeline = document.getElementById('timeline');
+      if (timeline) {
+        const rect = timeline.getBoundingClientRect();
+        // If the section is currently under the header (top 0 to 80px)
+        setIsInTimeline(rect.top <= 80 && rect.bottom >= 80);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -107,13 +117,15 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Determine header appearance
+  const headerClasses = isInTimeline
+    ? "backdrop-blur-lg bg-black/40 border-b border-white/10 text-[#fdfdfc] shadow-lg"
+    : isScrolled
+    ? "backdrop-blur-lg bg-[#F6F8ED]/80 border-b border-black/5 text-neutral-900 shadow-sm"
+    : "backdrop-blur-sm bg-black/10 border-b border-transparent text-[#f6f8ed]";
+
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-20 h-20 transition-all duration-300 ease-out ${isScrolled
-        ? "backdrop-blur-lg bg-white/70 border-b border-white/20 text-neutral-900 shadow-sm"
-        : "backdrop-blur-sm bg-black/10 border-b border-transparent text-[#f6f8ed]"
-        }`}
-    >
+    <header className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-20 h-20 transition-all duration-300 ease-out ${headerClasses}`}>
       <Logo />
 
       <nav className="flex items-center gap-8">
@@ -125,30 +137,32 @@ export function Header() {
           Soluções
         </a>
         <a
-          href="#ecossistema"
-          className="font-sans font-medium leading-[24px] text-[16px] whitespace-nowrap hover:opacity-70 transition-opacity"
-          style={{ fontFamily: 'var(--font-sora)' }}
-        >
-          Ecossistema
-        </a>
-        <a
           href="#impacto"
           className="font-sans font-medium leading-[24px] text-[16px] whitespace-nowrap hover:opacity-70 transition-opacity"
           style={{ fontFamily: 'var(--font-sora)' }}
         >
           Impacto
         </a>
+        <a
+          href="#ecossistema"
+          className="font-sans font-medium leading-[24px] text-[16px] whitespace-nowrap hover:opacity-70 transition-opacity"
+          style={{ fontFamily: 'var(--font-sora)' }}
+        >
+          Ecossistema
+        </a>
       </nav>
 
       <button
         onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
-        className="relative px-8 py-4 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer animate-gradient-cycle"
+        className={`relative px-8 py-4 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer ${
+          isInTimeline ? "border border-white/20 hover:bg-white/5" : ""
+        }`}
         style={{ 
-          backgroundImage: "linear-gradient(135deg, #EAFE1F 0%, #65F429 50%, #EAFE1F 100%)",
-          boxShadow: "0 10px 30px -10px rgba(101, 244, 41, 0.5), 0 0 20px rgba(234, 254, 31, 0.2)"
+          backgroundColor: isInTimeline ? "transparent" : "#F6F8ED",
+          boxShadow: isInTimeline ? "none" : "0 4px 12px rgba(0,0,0,0.05)",
         }}
       >
-        <span className="relative font-medium text-[16px] text-[#20201f]" style={{ fontFamily: "Sora, sans-serif" }}>
+        <span className={`relative font-medium text-[16px] ${isInTimeline ? "text-[#fdfdfc]" : "text-[#20201f]"}`} style={{ fontFamily: "Sora, sans-serif" }}>
           Serviços
         </span>
       </button>
