@@ -109,13 +109,13 @@ export function Hero() {
               <button
                 onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
                 className="relative px-8 py-4 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer"
-                style={{ 
-                  backgroundColor: "#F6F8ED",
+                style={{
+                  backgroundColor: "#D4EC28",
                   boxShadow: "0 10px 30px -10px rgba(0,0,0,0.2)"
                 }}
               >
                 <span className="relative font-medium text-[16px] text-[#20201f]" style={{ fontFamily: "Sora, sans-serif" }}>
-                  Começar
+                  Começar agora
                 </span>
               </button>
 

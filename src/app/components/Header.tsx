@@ -154,17 +154,14 @@ export function Header() {
 
       <button
         onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
-        className={`relative px-8 py-4 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer ${
-          isInTimeline ? "border border-white/20 hover:bg-white/5" : ""
+        className={`px-8 py-4 rounded-[4px] border font-medium text-[16px] transition-all active:scale-[0.97] hover:bg-white/5 cursor-pointer ${
+          isScrolled && !isInTimeline
+            ? "border-black/20 text-[#20201f] hover:bg-black/5"
+            : "border-white/20 text-[#f6f8ed] hover:bg-white/5"
         }`}
-        style={{ 
-          backgroundColor: isInTimeline ? "transparent" : "#F6F8ED",
-          boxShadow: isInTimeline ? "none" : "0 4px 12px rgba(0,0,0,0.05)",
-        }}
+        style={{ fontFamily: "Sora, sans-serif" }}
       >
-        <span className={`relative font-medium text-[16px] ${isInTimeline ? "text-[#fdfdfc]" : "text-[#20201f]"}`} style={{ fontFamily: "Sora, sans-serif" }}>
-          Serviços
-        </span>
+        Serviços
       </button>
     </header>
   );
