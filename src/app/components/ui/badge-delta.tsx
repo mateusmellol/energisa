@@ -51,7 +51,7 @@ const badgeDeltaVariants = cva(
         deltaType: "increase",
         variant: "solid",
         className:
-          "bg-[linear-gradient(135deg,rgba(234,254,31,0.35),rgba(101,244,41,0.35))] backdrop-blur-md",
+          "bg-white/10 text-[#f6f8ed] border border-white/10 backdrop-blur-md",
       },
       {
         deltaType: "decrease",
@@ -119,7 +119,7 @@ const DeltaIcon = ({
   }
 
   const Icon = icons[deltaType][iconStyle]
-  return <Icon className="size-3.5 translate-y-[2px]" strokeWidth={3} stroke={stroke} aria-hidden={true} />
+  return <Icon className="size-3.5" strokeWidth={3} stroke={stroke || "currentColor"} aria-hidden={true} />
 }
 
 export function BadgeDelta({
@@ -176,14 +176,10 @@ export function BadgeDelta({
           </linearGradient>
         </defs>
       </svg>
-      <span className={cn(
-        "flex items-center gap-1",
-        variant === "solid" && deltaType === "increase" && "bg-clip-text text-transparent bg-[linear-gradient(135deg,#EAFE1F,#65F429)]"
-      )}>
+      <span className="flex items-center gap-1">
         <DeltaIcon
           deltaType={deltaType}
           iconStyle={iconStyle}
-          stroke={variant === "solid" && deltaType === "increase" ? "url(#brand-gradient)" : undefined}
         />
         {value}
       </span>

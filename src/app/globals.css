@@ -69,7 +69,7 @@
   --color-neutral-1000: #050505;
 
   /* ─── Semantic aliases ─── */
-  --color-background: var(--color-neutral-0);
+  --color-background: var(--color-neutral-100);
   --color-foreground: var(--color-neutral-950);
   --color-muted: var(--color-neutral-500);
   --color-border: var(--color-neutral-200);
