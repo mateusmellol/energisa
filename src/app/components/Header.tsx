@@ -172,7 +172,7 @@ export function Header() {
 
         <button
           onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
-          className={`px-8 py-4 rounded-[4px] border font-medium text-[16px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.97] hover:bg-white/5 cursor-pointer ${(isScrolled || isInEcossistema) && !isInTimeline
+          className={`h-[56px] px-8 rounded-[4px] border font-medium text-[16px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.97] hover:bg-white/5 cursor-pointer ${(isScrolled || isInEcossistema) && !isInTimeline
             ? "border-black/20 text-[#20201f] hover:bg-black/5"
             : "border-white/20 text-[#FFFFFF] hover:bg-white/5"
             }`}
