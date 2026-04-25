@@ -1,18 +1,17 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
+import { motion as m, useSpring, useMotionValue } from "motion/react";
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { CameraControls, QuadraticBezierLine } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
-import { KernelSize, BlendFunction } from 'postprocessing';
+import { KernelSize } from 'postprocessing';
 
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import * as THREE from 'three';
 
 const GLOBE_RADIUS = 2;
-const LAT_STEPS = 80;
-const LON_STEPS = 160;
-const GLASS_COLOR = '#cccccc';
+const LAT_STEPS = 60;
+const LON_STEPS = 120;
 const HIGHLIGHT_COLOR = '#D4EC28';
-const HOVER_COLOR = '#ffffff';
 
 export interface TileData {
   matrix: THREE.Matrix4;
@@ -95,7 +94,7 @@ function isInRegion(lat: number, lon: number, region: string): boolean {
   return false;
 }
 
-const ELEVATION = 0.18; // How many units highlighted tiles are raised
+// No elevation — highlighted tiles stay at their original position, only color changes
 
 function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef, resetKey }: {
   tiles: TileData[];
@@ -110,18 +109,14 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef, r
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const tempColor = useMemo(() => new THREE.Color(), []);
 
-  // Geometry
+  // Shared geometry for both meshes
   const roundedGeom = useMemo(() => new RoundedBoxGeometry(1, 1, 1, 4, 0.15), []);
 
-  // Pre-compute per-tile data
+  // Pre-compute per-tile data — single base matrix (no elevation, no scale change on highlight)
   const tileInfo = useMemo(() => tiles.map((t) => {
-    const pos = new THREE.Vector3();
-    pos.setFromMatrixPosition(t.matrix);
-    const dir = pos.clone().normalize();
-    const elevatedPos = pos.clone().add(dir.clone().multiplyScalar(ELEVATION));
-    dummy.position.copy(elevatedPos);
     const m = t.matrix;
     const e = m.elements;
+    dummy.position.setFromMatrixPosition(m);
     dummy.rotation.setFromRotationMatrix(new THREE.Matrix4().set(
       e[0], e[4], e[8], 0,
       e[1], e[5], e[9], 0,
@@ -132,45 +127,31 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef, r
     const sy = new THREE.Vector3(e[4], e[5], e[6]).length();
     const sz = new THREE.Vector3(e[8], e[9], e[10]).length();
 
-    // Elevated state: slightly larger glowing dots for highlights
-    dummy.scale.set(sx * 0.4, sy * 0.4, sz * 0.4);
-    dummy.updateMatrix();
-    const elevMatrix = dummy.matrix.clone();
-
-    // Base state: tiny glowing dots (point-cloud aesthetic)
     dummy.scale.set(sx * 0.2, sy * 0.2, sz * 0.2);
     dummy.updateMatrix();
     const baseMatrix = dummy.matrix.clone();
 
-    return { baseMatrix, elevMatrix, latDeg: t.latDeg, lonDeg: t.lonDeg };
+    return { baseMatrix, latDeg: t.latDeg, lonDeg: t.lonDeg };
   }), [tiles, dummy]);
 
-  // Initialize glass mesh
+  const hideMatrix = useMemo(() => new THREE.Matrix4().makeScale(0, 0, 0), []);
+
+  // Initialize glass mesh (base dots — always visible when not highlighted)
   useEffect(() => {
     const mesh = glassMeshRef.current;
     if (!mesh) return;
     tileInfo.forEach((t, i) => mesh.setMatrixAt(i, t.baseMatrix));
     mesh.instanceMatrix.needsUpdate = true;
-    if (!mesh.instanceColor) {
-      mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(tileInfo.length * 3), 3);
-    }
-    tileInfo.forEach((_, i) => mesh.setColorAt(i, tempColor.set('#a3a3a3')));
-    mesh.instanceColor.needsUpdate = true;
-  }, [tileInfo, tempColor]);
+  }, [tileInfo]);
 
-  // Initialize solid mesh (hidden)
+  // Initialize solid mesh (highlighted dots — hidden initially)
   useEffect(() => {
     const mesh = solidMeshRef.current;
     if (!mesh) return;
     const hide = new THREE.Matrix4().makeScale(0, 0, 0);
     for (let i = 0; i < tileInfo.length; i++) mesh.setMatrixAt(i, hide);
     mesh.instanceMatrix.needsUpdate = true;
-    if (!mesh.instanceColor) {
-      mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(tileInfo.length * 3), 3);
-    }
-    for (let i = 0; i < tileInfo.length; i++) mesh.setColorAt(i, tempColor.set(HIGHLIGHT_COLOR));
-    mesh.instanceColor.needsUpdate = true;
-  }, [tileInfo, tempColor]);
+  }, [tileInfo]);
 
   // --- Wave transition state ---
   const transitionRef = useRef({
@@ -185,19 +166,30 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef, r
   // Initialize tile states once tileInfo is ready
   useEffect(() => {
     if (tileInfo.length === 0) return;
+    if (currentStatesRef.current) return;
+
+    const solidMesh = solidMeshRef.current;
+    const glassMesh = glassMeshRef.current;
+
     currentStatesRef.current = new Float32Array(tileInfo.length);
     targetStatesRef.current = new Float32Array(tileInfo.length);
     for (let i = 0; i < tileInfo.length; i++) {
       const active = highlightRegion ? isInRegion(tileInfo[i].latDeg, tileInfo[i].lonDeg, highlightRegion) : false;
       currentStatesRef.current[i] = active ? 1 : 0;
       targetStatesRef.current[i] = active ? 1 : 0;
+
+      if (solidMesh && glassMesh) {
+        solidMesh.setMatrixAt(i, active ? tileInfo[i].baseMatrix : hideMatrix);
+        glassMesh.setMatrixAt(i, active ? hideMatrix : tileInfo[i].baseMatrix);
+      }
     }
+
+    if (solidMesh) solidMesh.instanceMatrix.needsUpdate = true;
+    if (glassMesh) glassMesh.instanceMatrix.needsUpdate = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tileInfo]);
 
-  // Per-transition wave distances: computed fresh each time region changes
-  // normalized within the tiles that are actually changing, so wave always
-  // spreads evenly regardless of region size.
+  // Per-transition wave distances
   const tileTransitionDists = useRef<Float32Array>(new Float32Array(0));
 
   // When region changes, setup the wave transition
@@ -220,12 +212,10 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef, r
 
     const isShrinking = targetActiveCount < currentActiveCount;
 
-    // Use the destination region center as wave origin
     const waveRegion = highlightRegion ?? transitionRef.current.prevRegion;
     const regionCenter = waveRegion ? REGION_CENTERS[waveRegion] : undefined;
     const center = regionCenter ?? { lat: -15, lon: -50 };
 
-    // Compute distances only for tiles that are changing, normalize within that set
     const dists = new Float32Array(tileInfo.length);
     let minDist = Infinity;
     let maxDist = 0;
@@ -239,33 +229,44 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef, r
       }
     }
 
-    // Normalize 0→1 within the changing set, starting exactly at 0 for the first tile
     const normalized = new Float32Array(tileInfo.length);
     const range = (maxDist - minDist) || 1;
     for (let i = 0; i < tileInfo.length; i++) {
-      if (curr[i] !== target[i]) {
-        normalized[i] = (dists[i] - minDist) / range;
-      } else {
-        normalized[i] = 0;
-      }
+      normalized[i] = curr[i] !== target[i] ? (dists[i] - minDist) / range : 0;
     }
     tileTransitionDists.current = normalized;
 
-    transitionRef.current = {
-      progress: 0,
-      isShrinking,
-      prevRegion: highlightRegion,
-    };
+    transitionRef.current = { progress: 0, isShrinking, prevRegion: highlightRegion };
   }, [highlightRegion, tileInfo]);
 
-  const hideMatrix = useMemo(() => new THREE.Matrix4().makeScale(0, 0, 0), []);
+  const highlightColor = useMemo(() => new THREE.Color(HIGHLIGHT_COLOR), []);
+  const whiteColor = useMemo(() => new THREE.Color('#ffffff'), []);
 
   // Animation loop
+  const isTransitioningRef = useRef(false);
+  const waveTimeRef = useRef(0);
+  const floatTimeRef = useRef(0);
+  const tileRandomPhaseRef = useRef<Float32Array>(new Float32Array(0));
+
+  // Smooth spring rotation
+  const thetaMV = useMotionValue(targetTheta);
+  const phiMV = useMotionValue(targetPhi);
+  const thetaSpring = useSpring(thetaMV, { stiffness: 45, damping: 14, restDelta: 0.001 });
+  const phiSpring = useSpring(phiMV, { stiffness: 45, damping: 14, restDelta: 0.001 });
+
+  useEffect(() => {
+    thetaMV.set(targetTheta);
+    phiMV.set(targetPhi);
+  }, [targetTheta, targetPhi, thetaMV, phiMV]);
+
   useFrame((_, delta) => {
+    floatTimeRef.current += delta;
+    const floatX = Math.sin(floatTimeRef.current * 0.4) * 0.015;
+    const floatY = Math.cos(floatTimeRef.current * 0.3) * 0.02;
+
     if (groupRef.current) {
-      groupRef.current.rotation.x += (targetTheta - groupRef.current.rotation.x) * 0.12;
-      groupRef.current.rotation.y += (targetPhi - groupRef.current.rotation.y) * 0.12;
-      groupRef.current.rotation.y += delta * 0.08;
+      groupRef.current.rotation.x = thetaSpring.get() + floatX;
+      groupRef.current.rotation.y = phiSpring.get() + floatY;
     }
 
     const solidMesh = solidMeshRef.current;
@@ -273,40 +274,57 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef, r
     const curr = currentStatesRef.current;
     const target = targetStatesRef.current;
     if (!solidMesh || !glassMesh || !curr || !target) return;
-
     const tState = transitionRef.current;
+    waveTimeRef.current += delta * 1.25;
 
-    // Advance wave — fast (~0.5s total)
-    if (tState.progress < 1) {
-      tState.progress = Math.min(1, tState.progress + delta * 2.0);
+    if (tileRandomPhaseRef.current.length !== tileInfo.length) {
+      const phases = new Float32Array(tileInfo.length);
+      for (let i = 0; i < tileInfo.length; i++) phases[i] = Math.random() * Math.PI * 2;
+      tileRandomPhaseRef.current = phases;
     }
 
-    for (let i = 0; i < tileInfo.length; i++) {
-      // If expanding: wave radiates outward from center (distNorm 0→1)
-      // If shrinking: wave collapses inward from edges (1-distNorm)
-      const distNorm = tileTransitionDists.current[i] ?? 0;
-      const threshold = tState.isShrinking ? (1 - distNorm) : distNorm;
+    // Wave transition — swap glass ↔ solid as wave front passes each tile
+    if (tState.progress < 1) {
+      isTransitioningRef.current = true;
+      tState.progress = Math.min(1, tState.progress + delta * 2.0);
 
-      // Flip tile as soon as progress passes the threshold
-      if (tState.progress > threshold) {
-        curr[i] = target[i];
+      for (let i = 0; i < tileInfo.length; i++) {
+        const distNorm = tileTransitionDists.current[i] ?? 0;
+        const threshold = tState.isShrinking ? (1 - distNorm) : distNorm;
+        if (tState.progress > threshold) curr[i] = target[i];
+
+        const shouldShow = curr[i] === 1;
+        solidMesh.setMatrixAt(i, shouldShow ? tileInfo[i].baseMatrix : hideMatrix);
+        glassMesh.setMatrixAt(i, shouldShow ? hideMatrix : tileInfo[i].baseMatrix);
       }
 
-      const shouldShow = curr[i] === 1;
-
-      // Layer 2 (solid): show elevated tile when active
-      solidMesh.setMatrixAt(i, shouldShow ? tileInfo[i].elevMatrix : hideMatrix);
-      // Layer 1 (glass): hide tile when it's active in layer 2 to prevent overlap
-      glassMesh.setMatrixAt(i, shouldShow ? hideMatrix : tileInfo[i].baseMatrix);
+      solidMesh.instanceMatrix.needsUpdate = true;
+      glassMesh.instanceMatrix.needsUpdate = true;
+    } else if (isTransitioningRef.current) {
+      isTransitioningRef.current = false;
     }
 
-    solidMesh.instanceMatrix.needsUpdate = true;
-    glassMesh.instanceMatrix.needsUpdate = true;
+    // Pulse animation on highlighted dots — color lerp yellow → white, no geometry change
+    const phases = tileRandomPhaseRef.current;
+    let hasHighlight = false;
+    if (!solidMesh.instanceColor) {
+      solidMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(tileInfo.length * 3), 3);
+    }
+    for (let i = 0; i < tileInfo.length; i++) {
+      if (curr[i] === 1) {
+        hasHighlight = true;
+        const phase = phases[i] ?? 0;
+        const pulse = (Math.sin(waveTimeRef.current + phase) + 1) * 0.5;
+        solidMesh.setColorAt(i, tempColor.copy(highlightColor).lerp(whiteColor, pulse * 0.6));
+      }
+    }
+
+    if (hasHighlight && solidMesh.instanceColor) solidMesh.instanceColor.needsUpdate = true;
   });
 
   return (
     <group ref={groupRef}>
-      {/* Base glass globe — hollow glass cubes with defined edges */}
+      {/* Base dots — gray, shown when tile is NOT highlighted */}
       <instancedMesh
         ref={glassMeshRef}
         args={[undefined, undefined, tileInfo.length]}
@@ -314,52 +332,105 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef, r
         renderOrder={1}
       >
         <primitive object={roundedGeom} attach="geometry" />
-        {/* Base globe — matrix of tiny semi-transparent glowing dots */}
         <meshPhysicalMaterial
           transparent
           depthWrite={false}
-          transmission={0.7}
-          opacity={0.8}
-          color="#737373"
-          emissive="#000000"
-          emissiveIntensity={0.0}
+          color="#262626"
           roughness={0.1}
           metalness={0.2}
-          ior={1.45}
-          thickness={0.5}
-          clearcoat={0.8}
-          clearcoatRoughness={0.1}
-          envMapIntensity={0.5}
           side={THREE.FrontSide}
         />
       </instancedMesh>
 
-      {/* Solid elevated highlight mesh — animated spread */}
+      {/* Highlight dots — same geometry/size, only color+emissive differs */}
       <instancedMesh
         ref={solidMeshRef}
         args={[undefined, undefined, tileInfo.length]}
         renderOrder={2}
       >
         <primitive object={roundedGeom} attach="geometry" />
-        {/* Semi-transparent glass with yellow tint for highlights */}
         <meshPhysicalMaterial
-          transparent
-          depthWrite={false}
-          transmission={0.2}
-          opacity={1.0}
+          vertexColors
           color={HIGHLIGHT_COLOR}
           emissive={HIGHLIGHT_COLOR}
-          emissiveIntensity={0.5}
+          emissiveIntensity={2.8}
+          transparent
+          opacity={0.9}
           roughness={0.05}
-          metalness={0.9}
-          ior={1.6}
-          thickness={0.2}
-          clearcoat={1.0}
-          clearcoatRoughness={0.05}
-          envMapIntensity={1.5}
+          metalness={0.1}
           side={THREE.FrontSide}
         />
       </instancedMesh>
+
+      {/* Energy Connections Arcs */}
+      <EnergyArcs
+        key={resetKey}
+        tiles={tileInfo}
+        highlightRegion={highlightRegion}
+        resetKey={resetKey}
+      />
+    </group>
+  );
+}
+
+function EnergyArcs({ tiles, highlightRegion, resetKey }: { tiles: TileData[], highlightRegion?: string, resetKey: string }) {
+  const arcCount = 30;
+  const arcs = useMemo(() => {
+    if (!highlightRegion) return [];
+    const regionTiles = tiles.filter(t => t.region === highlightRegion);
+    if (regionTiles.length < 2) return [];
+
+    const result = [];
+    for (let i = 0; i < arcCount; i++) {
+      const start = regionTiles[Math.floor(Math.random() * regionTiles.length)].pos;
+      const end = regionTiles[Math.floor(Math.random() * regionTiles.length)].pos;
+
+      const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+      const dist = start.distanceTo(end);
+      mid.normalize().multiplyScalar(GLOBE_RADIUS + 0.15 + dist * 0.6);
+
+      result.push({ start, end, mid });
+    }
+    return result;
+  }, [tiles, highlightRegion, resetKey]);
+
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+    if (groupRef.current) {
+      groupRef.current.children.forEach((child: any) => {
+        if (child.material) {
+          child.material.dashOffset = -time * 2.5;
+          child.material.opacity = 0.7 + Math.sin(time * 15 + Math.random()) * 0.3;
+        }
+      });
+    }
+  });
+
+  if (arcs.length === 0) return null;
+
+  return (
+    <group ref={groupRef}>
+      {arcs.map((arc, i) => (
+        <QuadraticBezierLine
+          key={`${resetKey}-${i}`}
+          start={arc.start}
+          end={arc.end}
+          mid={arc.mid}
+          color="#D4EC28"
+          lineWidth={10}
+          dashed
+          dashScale={3}
+          dashSize={0.7}
+          dashGap={0.3}
+          transparent
+          opacity={0.9}
+          depthTest={false}
+          depthWrite={false}
+          renderOrder={100}
+        />
+      ))}
     </group>
   );
 }
@@ -379,12 +450,7 @@ export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegi
   const groupRef = useRef<THREE.Group>(null);
   const controlsRef = useRef<any>(null);
 
-  // Reset OrbitControls when targets change
-  useEffect(() => {
-    if (controlsRef.current) {
-      controlsRef.current.reset();
-    }
-  }, [targetPhi, targetTheta]);
+
 
   useEffect(() => {
     const img = new Image();
@@ -442,6 +508,14 @@ export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegi
     };
   }, []);
 
+  // Smooth camera reset
+  useEffect(() => {
+    if (controlsRef.current) {
+      // setLookAt(posX, posY, posZ, targetX, targetY, targetZ, enableTransition)
+      controlsRef.current.setLookAt(0, 0, 8, 0, 0, 0, true);
+    }
+  }, [highlightRegion]);
+
   return (
     <div
       className={`relative select-none ${className}`}
@@ -458,24 +532,30 @@ export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegi
       {tiles !== null && (
         <Canvas
           camera={{ position: [0, 0, 8], fov: 45 }}
-          dpr={[1, 2]}
-          gl={{ antialias: true }}
+          dpr={1}
+          gl={{ antialias: false, powerPreference: 'high-performance', alpha: false }}
+          onCreated={({ gl }) => gl.setClearColor('#121312', 1)}
         >
-          {/* Primary Lighting Setup (3-Point) */}
-          <ambientLight intensity={0.4} />
-          
+          {/* Primary Lighting Setup */}
+          <ambientLight intensity={0.6} />
+
           {/* Key Light (Frontal/Yellowish) */}
-          <directionalLight position={[5, 5, 5]} intensity={1.2} color="#fffcf0" />
-          
+          <directionalLight position={[5, 5, 5]} intensity={1.5} color="#fffcf0" />
+
           {/* Fill Light (Side/Neutral) */}
-          <directionalLight position={[-5, 2, 2]} intensity={0.5} color="#ffffff" />
-          
-          {/* Rim Light (Back/Blueish for depth) */}
-          <pointLight position={[0, 0, -10]} intensity={1.5} color="#4040ff" />
-          
+          <directionalLight position={[-5, 2, 2]} intensity={0.8} color="#ffffff" />
+
+          {/* Rim Light (Back/White for depth) */}
+          <pointLight position={[0, 0, -10]} intensity={2.0} color="#ffffff" />
+
+          {/* New Accents for coverage */}
+          <pointLight position={[-5, -5, 5]} intensity={0.8} color="#ffffff" />
+          <pointLight position={[10, 0, 0]} intensity={1.0} color="#ffffff" />
+          <pointLight position={[0, 10, -10]} intensity={1.2} color="#ffffff" />
+
           {/* Top/Bottom Accents */}
-          <pointLight position={[0, 10, 0]} intensity={0.5} />
-          <pointLight position={[0, -10, 0]} intensity={0.3} />
+          <pointLight position={[0, 10, 0]} intensity={0.8} />
+          <pointLight position={[0, -10, 0]} intensity={0.5} />
 
           {tiles.length > 0 && (
             <GlobeMesh
@@ -487,21 +567,30 @@ export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegi
               resetKey={highlightRegion ?? 'default'}
             />
           )}
-          <OrbitControls
+          <CameraControls
             ref={controlsRef}
-            enableZoom={false}
-            enablePan={false}
-            rotateSpeed={0.5}
-            makeDefault
+            minDistance={8}
+            maxDistance={8}
+            dollyToCursor={false}
+            mouseButtons={{
+              left: 1, // ACTION.ROTATE
+              middle: 0,
+              right: 0,
+              wheel: 0,
+            }}
+            touches={{
+              one: 32, // ACTION.TOUCH_ROTATE
+              two: 0,
+              three: 0,
+            }}
           />
 
           <EffectComposer>
             <Bloom
-              intensity={0.3}
-              luminanceThreshold={0.2}
-              luminanceSmoothing={0.9}
-              kernelSize={KernelSize.SMALL}
-              blendFunction={BlendFunction.ADD}
+              intensity={0.6}
+              luminanceThreshold={0.65}
+              luminanceSmoothing={0.85}
+              kernelSize={KernelSize.MEDIUM}
             />
           </EffectComposer>
         </Canvas>
