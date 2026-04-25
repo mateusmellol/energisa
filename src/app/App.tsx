@@ -1,23 +1,47 @@
+import { useRef } from "react";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
 import { Services } from "./components/Services";
-import { FlexLab } from "./components/FlexLab";
+import { Ecossistema } from "./components/Ecossistema";
 import { Statistics } from "./components/Statistics";
 import { TimelineSection } from "./components/Timeline";
 import { NewsSection } from "./components/NewsSection";
 import { Footer } from "./components/Footer";
 
+import { GridPattern } from "../registry/magicui/grid-pattern";
+import { cn } from "../lib/utils";
+import { motion, useScroll, useTransform } from "motion/react";
+
 export default function App() {
+  const containerRef = useRef(null);
+  const { scrollYProgress: cardProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "start start"]
+  });
+
+  const yHero = useTransform(cardProgress, [0, 1], ["0%", "-20%"]);
+  const scaleHero = useTransform(cardProgress, [0, 1], [1, 1.05]);
+
+
   return (
-    <div className="overflow-clip w-full">
+    <div className="w-full bg-[#121312]">
       <Header />
-      <Hero />
-      <Services />
-      <Statistics />
-      <FlexLab />
-      <TimelineSection />
-      <NewsSection />
-      <Footer />
+      {/* Sticky Hero Background */}
+      <div className="sticky top-0 h-svh w-full z-0 overflow-hidden">
+        <motion.div style={{ y: yHero, scale: scaleHero }} className="h-full w-full">
+          <Hero />
+        </motion.div>
+      </div>
+
+      {/* Main Content "Card" sliding over Hero */}
+      <main ref={containerRef} className="relative z-10 bg-[#FFFFFF] shadow-[0_-40px_80px_rgba(0,0,0,0.3)]">
+        <Services />
+        <Statistics />
+        <TimelineSection />
+        <Ecossistema />
+        <NewsSection />
+        <Footer />
+      </main>
     </div>
   );
 }

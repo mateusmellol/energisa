@@ -54,7 +54,7 @@ export const colors = {
   neutral: {
     0: "#FDFDFC",
     50: "#F8F8F7",
-    100: "#F6F8ED",
+    100: "#FFFFFF",
     150: "#E6E7E4",
     200: "#DADAD6",
     300: "#BFC0BB",
@@ -77,7 +77,7 @@ export const gradients = {
     "radial-gradient(ellipse at 55% 40%, rgba(11, 207, 129, 0.15), rgba(116, 196, 101, 0.08) 40%, transparent 70%)",
   /** Neutral glass — used on stock ticker and glass elements */
   neutralGlass:
-    "linear-gradient(109deg, rgba(246, 248, 237, 0.4) 5%, rgba(218, 218, 214, 0.4) 98%)",
+    "linear-gradient(109deg, rgba(255, 255, 255, 0.4) 5%, rgba(218, 218, 214, 0.4) 98%)",
 } as const;
 
 /** Animation presets for Framer Motion */

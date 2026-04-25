@@ -51,7 +51,7 @@ const badgeDeltaVariants = cva(
         deltaType: "increase",
         variant: "solid",
         className:
-          "bg-white/10 text-[#f6f8ed] border border-white/10 backdrop-blur-md",
+          "bg-white/10 text-[#FFFFFF] border border-white/10 backdrop-blur-md",
       },
       {
         deltaType: "decrease",

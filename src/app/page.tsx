@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { Services } from "@/components/Services";
+import { ParallaxHeroServices } from "@/components/ParallaxHeroServices";
 import { Ecosystem } from "@/components/Ecosystem";
 import { Timeline } from "@/components/Timeline";
 import { NewsGrid } from "@/components/NewsGrid";
@@ -57,12 +58,11 @@ export default function Home() {
     <>
       <Header />
       <main>
-        <Hero />
-        <Services />
-        <Ecosystem />
+        <ParallaxHeroServices hero={<Hero />} services={<Services />} />
         {timelineData.map((data) => (
           <Timeline key={data.id} {...data} />
         ))}
+        <Ecosystem />
         <NewsGrid />
       </main>
     </>
