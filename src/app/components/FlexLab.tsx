@@ -50,7 +50,8 @@ export function FlexLab() {
   return (
     <section
       id="ecossistema"
-      className="w-full bg-[#F6F8ED] py-20 px-8 md:px-20"
+      className="w-full bg-[#FFFFFF] py-20 px-8 md:px-20 relative z-10 shadow-[0_-40px_80px_rgba(0,0,0,0.3)]"
+      style={{ minHeight: "100svh", scrollSnapAlign: "start", marginTop: "-100svh" }}
     >
       <div className="max-w-[1440px] mx-auto w-full flex flex-col gap-14">
 
@@ -156,7 +157,7 @@ export function FlexLab() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.45, ease: EASE }}
+                      transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
                       style={{ overflow: "hidden" }}
                     >
                       <div
@@ -194,10 +195,11 @@ export function FlexLab() {
                           </div>
 
                           <button
+                            className="active:scale-[0.97] transition-transform duration-200"
                             style={{
                               fontFamily: "Sora, sans-serif",
                               fontSize: 15,
-                              color: "#F6F8ED",
+                              color: "#FFFFFF",
                               background: "#121312",
                               border: "none",
                               padding: "13px 30px",
