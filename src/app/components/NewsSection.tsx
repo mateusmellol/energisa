@@ -1,3 +1,5 @@
+import { motion, useReducedMotion } from "motion/react";
+
 const FEATURED = {
   category: "Inovação",
   date: "Abr 2025",
@@ -46,9 +48,9 @@ function SmallCard({ category, date, title }: { category: string; date: string; 
             inset: 0,
             background: "linear-gradient(135deg, rgba(11,207,129,0.2) 0%, transparent 60%)",
             opacity: 0,
-            transition: "opacity 250ms ease",
+            transition: "opacity 250ms ease, transform 300ms cubic-bezier(0.16,1,0.3,1)",
           }}
-          className="group-hover:opacity-100"
+          className="group-hover:opacity-100 group-hover:scale-[1.08]"
         />
       </div>
 
@@ -98,9 +100,9 @@ function SmallCard({ category, date, title }: { category: string; date: string; 
             marginTop: 4,
             transition: "color 200ms ease",
           }}
-          className="group-hover:text-[#121312]"
+          className="group-hover:text-[#121312] flex items-center gap-1 w-fit"
         >
-          Ler artigo →
+          Ler artigo <span className="transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1">→</span>
         </span>
       </div>
     </div>
@@ -108,9 +110,12 @@ function SmallCard({ category, date, title }: { category: string; date: string; 
 }
 
 export function NewsSection() {
+  const shouldReduceMotion = useReducedMotion();
+  const yOffset = shouldReduceMotion ? 0 : 10;
+
   return (
-    <section style={{ background: "#fdfdfc" }} className="py-20 px-8 md:px-20">
-      <div className="max-w-[1440px] mx-auto">
+    <section style={{ background: "#fdfdfc", scrollSnapAlign: "start" }} className="py-20">
+      <div className="max-w-[1440px] mx-auto px-8 md:px-20">
         {/* Section header */}
         <div className="flex items-end justify-between mb-12">
           <h2
@@ -234,12 +239,12 @@ export function NewsSection() {
                 borderBottom: "1px solid #121312",
                 paddingBottom: 2,
                 width: "fit-content",
-                transition: "border-color 200ms ease, color 200ms ease",
+                transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
               }}
-              className="hover:text-[#0BCF81] hover:border-[#0BCF81]"
+              className="group hover:text-[#0BCF81] hover:border-[#0BCF81] active:scale-[0.97]"
             >
               Ler artigo
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1">
                 <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </a>
@@ -247,11 +252,31 @@ export function NewsSection() {
         </div>
 
         {/* Secondary row — 3 horizontal cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-3 gap-6"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.1 }
+            }
+          }}
+        >
           {ARTICLES.map((a, i) => (
-            <SmallCard key={i} {...a} />
+            <motion.div 
+              key={i} 
+              variants={{
+                hidden: { opacity: 0, y: yOffset },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }
+              }}
+            >
+              <SmallCard {...a} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
