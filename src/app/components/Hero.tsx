@@ -83,10 +83,11 @@ export function Hero() {
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col flex-1 px-8 md:px-20 pt-32 pb-32">
-        {/* Content stack on the left */}
-        <div className="flex flex-col items-start gap-8 mt-auto pt-16 w-full max-w-[1440px] mx-auto">
+        {/* Content stack — Grid for desktop, stacked for mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-20 items-end mt-auto w-full max-w-[1440px] mx-auto pt-16">
 
-          <div className="flex flex-col items-start max-w-[800px]">
+          {/* Left Column: Stock + Title */}
+          <div className="flex flex-col items-start">
             {/* StockWidget entrance */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -104,7 +105,7 @@ export function Hero() {
               style={{
                 fontFamily: "Sora, sans-serif",
                 fontWeight: 500,
-                fontSize: "clamp(48px, 6.5vw, 84px)",
+                fontSize: "clamp(48px, 6vw, 84px)",
                 letterSpacing: "-0.03em",
                 color: "#f6f8ed",
                 lineHeight: 1.05,
@@ -115,7 +116,8 @@ export function Hero() {
             </motion.h1>
           </div>
 
-          <div className="flex flex-col items-start gap-8 max-w-[540px]">
+          {/* Right Column: Subtitle + Buttons */}
+          <div className="flex flex-col items-start gap-8 max-w-[540px] pb-4">
             {/* Subtitle entrance */}
             <motion.p
               initial={{ opacity: 0 }}
@@ -161,6 +163,7 @@ export function Hero() {
               </button>
             </motion.div>
           </div>
+
         </div>
       </div>
     </section>
