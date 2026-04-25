@@ -82,9 +82,14 @@ export function Hero() {
       </motion.div>
 
       {/* Main content */}
-      <div className="relative z-10 flex flex-col flex-1 px-8 md:px-20 pt-32 pb-32">
+      <div className="relative z-10 flex flex-col flex-1 pt-32 pb-32">
         {/* Content stack — Grid for desktop, stacked for mobile */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-20 items-end mt-auto w-full max-w-[1440px] mx-auto pt-16">
+        {/* 
+          Container alignment:
+          We use the same w-full max-w-[1440px] mx-auto px-8 md:px-20 as the Header 
+          to ensure pixel-perfect vertical alignment.
+        */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-12 lg:gap-20 items-end mt-auto w-full max-w-[1440px] mx-auto px-8 md:px-20 pt-16">
 
           {/* Left Column: Stock + Title */}
           <div className="flex flex-col items-start">
@@ -109,6 +114,7 @@ export function Hero() {
                 letterSpacing: "-0.03em",
                 color: "#f6f8ed",
                 lineHeight: 1.05,
+                marginLeft: "-0.04em", // Optical adjustment to align the "A" with logo
               }}
             >
               A Energisa <br />
@@ -117,52 +123,54 @@ export function Hero() {
           </div>
 
           {/* Right Column: Subtitle + Buttons */}
-          <div className="flex flex-col items-start gap-8 max-w-[540px] pb-4">
-            {/* Subtitle entrance */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.0, delay: 1.1, ease: EASE }}
-              style={{
-                fontFamily: "Sora, sans-serif",
-                fontSize: "clamp(15px, 1.2vw, 18px)",
-                color: "rgba(246, 248, 237, 0.85)",
-                lineHeight: 1.6,
-                fontWeight: 300,
-              }}
-            >
-              De Norte a Sul. Quando uma luz <br className="hidden md:block" />
-              acende, a Energisa está por trás.
-            </motion.p>
-
-            {/* Buttons entrance */}
-            <motion.div
-              className="flex flex-wrap items-center gap-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.9, delay: 1.3, ease: EASE }}
-            >
-              <button
-                onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
-                className="relative px-8 py-4 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer"
+          <div className="flex flex-col items-start lg:items-end gap-8 pb-4">
+            <div className="flex flex-col items-start gap-8 max-w-[540px]">
+              {/* Subtitle entrance */}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1.0, delay: 1.1, ease: EASE }}
                 style={{
-                  backgroundColor: "#D4EC28",
-                  boxShadow: "0 10px 30px -10px rgba(0,0,0,0.2)"
+                  fontFamily: "Sora, sans-serif",
+                  fontSize: "clamp(15px, 1.2vw, 18px)",
+                  color: "rgba(246, 248, 237, 0.85)",
+                  lineHeight: 1.6,
+                  fontWeight: 300,
                 }}
               >
-                <span className="relative font-medium text-[16px] text-[#20201f]" style={{ fontFamily: "Sora, sans-serif" }}>
-                  Começar agora
-                </span>
-              </button>
+                De Norte a Sul. Quando uma luz <br className="hidden md:block" />
+                acende, a Energisa está por trás.
+              </motion.p>
 
-              <button
-                onClick={() => document.getElementById('ecossistema')?.scrollIntoView({ behavior: 'smooth' })}
-                className="px-8 py-4 rounded-[4px] border border-white/20 text-[#f6f8ed] font-medium text-[16px] transition-all hover:bg-white/5 active:scale-[0.97] cursor-pointer"
-                style={{ fontFamily: "Sora, sans-serif" }}
+              {/* Buttons entrance */}
+              <motion.div
+                className="flex flex-wrap items-center gap-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.9, delay: 1.3, ease: EASE }}
               >
-                Ecossistema
-              </button>
-            </motion.div>
+                <button
+                  onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="relative px-8 py-4 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer"
+                  style={{
+                    backgroundColor: "#D4EC28",
+                    boxShadow: "0 10px 30px -10px rgba(0,0,0,0.2)"
+                  }}
+                >
+                  <span className="relative font-medium text-[16px] text-[#20201f]" style={{ fontFamily: "Sora, sans-serif" }}>
+                    Começar agora
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => document.getElementById('ecossistema')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="px-8 py-4 rounded-[4px] border border-white/20 text-[#f6f8ed] font-medium text-[16px] transition-all hover:bg-white/5 active:scale-[0.97] cursor-pointer"
+                  style={{ fontFamily: "Sora, sans-serif" }}
+                >
+                  Ecossistema
+                </button>
+              </motion.div>
+            </div>
           </div>
 
         </div>
