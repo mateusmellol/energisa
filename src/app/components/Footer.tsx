@@ -92,7 +92,7 @@ const SOCIAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="bg-[#0e0f0e] border-t border-white/[0.06]">
+    <footer className="bg-[#0e0f0e] border-t border-white/[0.06]" style={{ scrollSnapAlign: "start" }}>
       {/* Main grid */}
       <div className="max-w-[1440px] mx-auto px-8 md:px-20 pt-16 pb-10">
         <div className="grid grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr_1fr_1fr_auto] gap-x-8 gap-y-12">

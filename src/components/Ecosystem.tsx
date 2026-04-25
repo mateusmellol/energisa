@@ -164,12 +164,12 @@ function EcosystemAccordion() {
                   transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
                   className="overflow-hidden"
                 >
-                  <div className="px-6 pt-6 pb-10 grid grid-cols-12 gap-6">
+                  <div className="px-6 pt-6 pb-10 flex flex-row gap-6">
                     {/* Image placeholder */}
-                    <div className="col-span-7 h-64 bg-neutral-150 rounded-xl" />
+                    <div className="flex-[7] h-64 bg-neutral-150 rounded-xl" />
 
                     {/* Info */}
-                    <div className="col-span-5 flex flex-col justify-between gap-8">
+                    <div className="flex-[5] flex flex-col justify-between gap-8">
                       <div className="flex flex-col gap-4">
                         <p className="text-base leading-relaxed text-neutral-600">
                           {item.detail}
@@ -208,73 +208,43 @@ function EcosystemAccordion() {
 
 export function Ecosystem() {
   return (
-    <section className="relative w-full" id="ecossistema">
-      {/* FlexLab Accordion */}
-      <div className="py-14 bg-white">
-        <div className="page-container">
-          <motion.div
-            {...motionPresets.fadeInUp}
-            className="mb-12"
-          >
-            <p className="text-xs font-medium tracking-widest text-neutral-400 uppercase mb-3">
-              Ecossistema
-            </p>
-            <h2 className="text-[clamp(2rem,3.5vw,3rem)] font-light leading-tight text-neutral-950">
-              Soluções que vão além da energia
-            </h2>
-          </motion.div>
-
-          <EcosystemAccordion />
-        </div>
+    <section className="relative w-full bg-white" id="ecossistema" style={{ minHeight: "100svh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+      <div className="max-w-[1440px] w-full mx-auto px-8 md:px-20 flex flex-col gap-10">
+        <motion.div {...motionPresets.fadeInUp}>
+          <p className="text-xs font-medium tracking-widest text-neutral-400 uppercase mb-3">Ecossistema</p>
+          <h2 className="text-[clamp(2rem,3.5vw,3rem)] font-light leading-tight text-neutral-950">Soluções que vão além da energia</h2>
+        </motion.div>
+        <EcosystemAccordion />
       </div>
 
-      {/* Statistics — Figma node 183:3115 */}
-      <div className="py-14 bg-white">
-        <div className="page-container">
-          {/* Stats header — Figma node 186:3148 */}
+      <div className="max-w-[1440px] w-full mx-auto px-8 md:px-20 flex flex-col gap-10">
+        <motion.div {...motionPresets.fadeInUp} className="flex items-start justify-between gap-8">
+          <div className="flex-1">
+            <h2 className="text-[52px] font-regular leading-[1.15] text-neutral-950 mb-2">A Energisa acompanha você</h2>
+            <p className="text-base text-neutral-500">Lorem ipsum dolor sit amet, consectetur adipiscing.</p>
+          </div>
+          <p className="text-xs text-neutral-400">Dados de 2025</p>
+        </motion.div>
+
+        {stats.map((stat, i) => (
           <motion.div
-            {...motionPresets.fadeInUp}
-            className="grid grid-cols-12 gap-4 items-start mb-20"
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.15 }}
+            className="flex items-center border-t border-neutral-150 py-4"
+            style={{ maxWidth: `${60 + i * 20}%` }}
           >
-            <div className="col-span-6">
-              <h2 className="text-[52px] font-regular leading-[1.15] text-neutral-950 mb-2">
-                A Energisa acompanha você
-              </h2>
-              <p className="text-base text-neutral-500">
-                Lorem ipsum dolor sit amet, consectetur adipiscing.
-              </p>
+            <div className="flex-1">
+              <p className="text-[28px] font-regular text-neutral-950 mb-1">{stat.detail}</p>
+              <p className="text-base text-neutral-500">{stat.label}</p>
             </div>
-            <p className="col-start-8 col-span-5 text-xs text-neutral-400">
-              Dados de 2025
+            <p className="text-[80px] font-light text-neutral-950 leading-none tabular-nums">
+              {stat.prefix || ""}<AnimatedNumber value={stat.value} suffix={stat.suffix} />
             </p>
           </motion.div>
-
-          {/* Stat rows — Figma node 186:3146 */}
-          <div className="flex flex-col">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-                className="flex items-center border-t border-neutral-150 py-4"
-                style={{ maxWidth: `${60 + i * 20}%` }}
-              >
-                <div className="flex-1 p-4">
-                  <p className="text-[28px] font-regular text-neutral-950 mb-1">
-                    {stat.detail}
-                  </p>
-                  <p className="text-base text-neutral-500">{stat.label}</p>
-                </div>
-                <p className="text-[80px] font-light text-neutral-950 leading-none tabular-nums">
-                  {stat.prefix || ""}
-                  <AnimatedNumber value={stat.value} suffix={stat.suffix} />
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
     </section>
   );

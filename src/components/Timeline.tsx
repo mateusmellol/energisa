@@ -37,13 +37,13 @@ export function Timeline({
 }: TimelineProps) {
   return (
     <section className="relative w-full min-h-[926px] bg-neutral-0 overflow-hidden">
-      <div className="page-container relative z-10 py-16">
-        {/* Content layout: text left, globe right */}
-        <div className="grid grid-cols-12 gap-4 items-start">
-          {/* Left column — text content */}
+      <div className="page-container relative z-10 flex flex-col justify-between min-h-screen py-16">
+        {/* Content layout */}
+        <div className="flex flex-col gap-12">
+          {/* Text content */}
           <motion.div
             {...motionPresets.fadeInUp}
-            className="col-span-5 flex flex-col gap-7"
+            className="flex flex-col gap-7 max-w-[540px]"
           >
             {/* Tabs — Antes | Agora | Futuro */}
             <div className="flex gap-4">
@@ -72,30 +72,28 @@ export function Timeline({
             </div>
           </motion.div>
 
-          {/* Right column — Globe placeholder */}
+          {/* Globe placeholder */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-            className="col-start-6 col-span-7 w-full aspect-square max-h-[717px] rounded-full bg-neutral-950 flex items-center justify-center"
+            className="w-full aspect-square max-h-[717px] rounded-full bg-neutral-950 flex items-center justify-center"
           >
-            {/* Globe interativo será implementado aqui */}
             <div className="text-neutral-600 text-sm">
               Globe 3D
             </div>
           </motion.div>
         </div>
 
-        {/* Year + Location badges — bottom left */}
+        {/* Year + Location badges */}
         <motion.div
           {...motionPresets.fadeInUp}
           transition={{ delay: 0.3 }}
-          className="flex gap-10 mt-8"
+          className="flex gap-10"
         >
           {/* Year badge */}
           <div className="relative w-[203px] h-[137px] flex items-center justify-center overflow-hidden">
-            {/* Glass grid background */}
             <div className="absolute inset-0 grid grid-cols-8 grid-rows-5">
               {Array.from({ length: 40 }).map((_, i) => (
                 <div
