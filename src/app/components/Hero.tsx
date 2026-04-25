@@ -1,8 +1,6 @@
 "use client";
 
-import imgHero from "../../../src/assets/hero-main-redesign.webp";
-import imgButton from "figma:asset/ef92594731423388a0c490d6f715c05317eb5700.png";
-import svgPaths from "../../imports/Site/svg-swy5fdu2p6";
+import imgHero from "../../assets/hero-main.webp";
 import { BadgeDelta } from "./ui/badge-delta";
 import { motion } from "motion/react";
 
@@ -11,7 +9,7 @@ const EASE = [0.4, 0, 0.2, 1] as const;
 /* ─── Stock Widget (Pill Format) ────────────────────────────────────── */
 function StockWidget() {
   return (
-    <div className="group cursor-pointer backdrop-blur-md bg-black/20 hover:bg-black/40 border border-white/10 rounded-full flex items-center px-5 py-2.5 w-fit mb-6 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
+    <div className="group cursor-pointer backdrop-blur-md bg-black/20 hover:bg-black/40 border border-white/10 rounded-full flex items-center px-5 py-2.5 w-fit transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
       {/* Base Content */}
       <div className="flex items-center gap-4 shrink-0">
         <span style={{ fontFamily: "Sora, sans-serif", fontSize: "14px", color: "#f6f8ed", fontWeight: 400 }}>
@@ -56,7 +54,7 @@ function StockWidget() {
 export function Hero() {
   return (
     <section className="relative overflow-hidden flex flex-col" style={{ minHeight: "100svh" }}>
-      {/* Background photo — fade in, no scale */}
+      {/* Background photo */}
       <motion.div
         aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
@@ -67,11 +65,11 @@ export function Hero() {
         <img
           alt=""
           src={imgHero}
-          className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
+          className="absolute inset-0 w-full h-full object-cover object-center"
         />
-        {/* Subtle dark overlay to ensure text legibility */}
+        {/* Subtle dark overlay */}
         <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.25)" }} />
-        {/* Bottom gradient for better text visibility */}
+        {/* Bottom gradient */}
         <div
           className="absolute inset-x-0 bottom-0 pointer-events-none"
           style={{
@@ -81,19 +79,12 @@ export function Hero() {
         />
       </motion.div>
 
-      {/* Main content */}
+      {/* Main content — two-column layout */}
       <div className="relative z-10 flex flex-col flex-1 pt-32 pb-32">
-        {/* Content stack — Grid for desktop, stacked for mobile */}
-        {/* 
-          Container alignment:
-          We use the same w-full max-w-[1440px] mx-auto px-8 md:px-20 as the Header 
-          to ensure pixel-perfect vertical alignment.
-        */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-12 lg:gap-20 items-end mt-auto w-full max-w-[1440px] mx-auto px-8 md:px-20 pt-16">
+        <div className="flex flex-row items-end justify-between gap-8 mt-auto w-full max-w-[1440px] mx-auto px-8 md:px-20">
 
-          {/* Left Column: Stock + Title */}
-          <div className="flex flex-col items-start">
-            {/* StockWidget entrance */}
+          {/* LEFT: StockWidget + Headline */}
+          <div className="flex flex-col items-start gap-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -102,7 +93,6 @@ export function Hero() {
               <StockWidget />
             </motion.div>
 
-            {/* Title entrance */}
             <motion.h1
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -110,11 +100,10 @@ export function Hero() {
               style={{
                 fontFamily: "Sora, sans-serif",
                 fontWeight: 500,
-                fontSize: "clamp(48px, 6vw, 84px)",
+                fontSize: "clamp(48px, 6.5vw, 84px)",
                 letterSpacing: "-0.03em",
                 color: "#f6f8ed",
                 lineHeight: 1.05,
-                marginLeft: "-0.04em", // Optical adjustment to align the "A" with logo
               }}
             >
               A Energisa <br />
@@ -122,10 +111,10 @@ export function Hero() {
             </motion.h1>
           </div>
 
-          {/* Right Column: Subtitle + Buttons */}
-          <div className="flex flex-col items-start lg:items-end gap-8 pb-4">
-            <div className="flex flex-col items-start gap-8 max-w-[540px]">
-              {/* Subtitle entrance */}
+          {/* RIGHT: Body text + Buttons — grouped at the bottom */}
+          <div className="flex flex-col items-start max-w-[380px] shrink-0 self-stretch">
+            {/* spacer pushes the group down */}
+            <div className="mt-auto flex flex-col items-start gap-6 w-full">
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -138,33 +127,31 @@ export function Hero() {
                   fontWeight: 300,
                 }}
               >
-                De Norte a Sul. Quando uma luz <br className="hidden md:block" />
-                acende, a Energisa está por trás.
+                De Norte a Sul. Quando uma luz <br />acende, a Energisa está por trás.
               </motion.p>
 
-              {/* Buttons entrance */}
               <motion.div
-                className="flex flex-wrap items-center justify-start lg:justify-end gap-4 w-full"
+                className="flex flex-wrap items-center gap-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.9, delay: 1.3, ease: EASE }}
               >
                 <button
                   onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="relative px-8 py-4 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer flex items-center justify-center"
+                  className="relative px-8 py-4 overflow-hidden rounded-[4px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.97] hover:opacity-90 cursor-pointer"
                   style={{
                     backgroundColor: "#D4EC28",
                     boxShadow: "0 10px 30px -10px rgba(0,0,0,0.2)"
                   }}
                 >
                   <span className="relative font-medium text-[16px] text-[#20201f]" style={{ fontFamily: "Sora, sans-serif" }}>
-                    Começar agora
+                    Serviços
                   </span>
                 </button>
 
                 <button
                   onClick={() => document.getElementById('ecossistema')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="px-8 py-4 rounded-[4px] border border-white/20 text-[#f6f8ed] font-medium text-[16px] transition-all hover:bg-white/5 active:scale-[0.97] cursor-pointer flex items-center justify-center"
+                  className="px-8 py-4 rounded-[4px] border border-white/20 text-[#f6f8ed] font-medium text-[16px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-white/5 active:scale-[0.97] cursor-pointer"
                   style={{ fontFamily: "Sora, sans-serif" }}
                 >
                   Ecossistema
