@@ -151,7 +151,7 @@ export function Hero() {
               >
                 <button
                   onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="relative h-[56px] px-8 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer flex items-center justify-center"
+                  className="relative px-8 py-4 overflow-hidden rounded-[4px] transition-all active:scale-[0.97] hover:opacity-90 cursor-pointer flex items-center justify-center"
                   style={{
                     backgroundColor: "#D4EC28",
                     boxShadow: "0 10px 30px -10px rgba(0,0,0,0.2)"
@@ -164,7 +164,7 @@ export function Hero() {
 
                 <button
                   onClick={() => document.getElementById('ecossistema')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="h-[56px] px-8 rounded-[4px] border border-white/20 text-[#f6f8ed] font-medium text-[16px] transition-all hover:bg-white/5 active:scale-[0.97] cursor-pointer flex items-center justify-center"
+                  className="px-8 py-4 rounded-[4px] border border-white/20 text-[#f6f8ed] font-medium text-[16px] transition-all hover:bg-white/5 active:scale-[0.97] cursor-pointer flex items-center justify-center"
                   style={{ fontFamily: "Sora, sans-serif" }}
                 >
                   Ecossistema
