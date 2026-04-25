@@ -1,6 +1,6 @@
 "use client";
 
-import imgHero from "figma:asset/bb442800d2b3f93e66c7c76b9873036398a0172a.png";
+import imgHero from "../../../src/assets/hero-main-redesign.webp";
 import imgButton from "figma:asset/ef92594731423388a0c490d6f715c05317eb5700.png";
 import svgPaths from "../../imports/Site/svg-swy5fdu2p6";
 import { BadgeDelta } from "./ui/badge-delta";
@@ -131,7 +131,8 @@ export function Hero() {
                 fontWeight: 300,
               }}
             >
-              De Norte a Sul. Quando uma luz acende, a Energisa está por trás.
+              De Norte a Sul. Quando uma luz <br className="hidden md:block" />
+              acende, a Energisa está por trás.
             </motion.p>
 
             {/* Buttons entrance */}
