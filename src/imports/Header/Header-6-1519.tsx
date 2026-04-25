@@ -5,7 +5,7 @@ function Link() {
   return (
     <div className="h-[24px] relative shrink-0 w-[75.359px]" data-name="Link">
       <div className="bg-clip-padding border-0 border-[transparent] border-solid relative size-full">
-        <p className="absolute font-['Sora:Regular',sans-serif] font-normal leading-[24px] left-0 text-[#f6f8ed] text-[16px] top-[-1px] whitespace-nowrap">Soluções</p>
+        <p className="absolute font-['Sora:Regular',sans-serif] font-normal leading-[24px] left-0 text-[#FFFFFF] text-[16px] top-[-1px] whitespace-nowrap">Soluções</p>
       </div>
     </div>
   );
@@ -15,7 +15,7 @@ function Link1() {
   return (
     <div className="flex-[1_0_0] h-[24px] min-w-px relative" data-name="Link">
       <div className="bg-clip-padding border-0 border-[transparent] border-solid relative size-full">
-        <p className="absolute font-['Sora:Regular',sans-serif] font-normal leading-[24px] left-0 text-[#f6f8ed] text-[16px] top-[-1px] whitespace-nowrap">Ecossistema</p>
+        <p className="absolute font-['Sora:Regular',sans-serif] font-normal leading-[24px] left-0 text-[#FFFFFF] text-[16px] top-[-1px] whitespace-nowrap">Ecossistema</p>
       </div>
     </div>
   );
@@ -25,7 +25,7 @@ function Link2() {
   return (
     <div className="h-[24px] relative shrink-0 w-[68px]" data-name="Link">
       <div className="bg-clip-padding border-0 border-[transparent] border-solid relative size-full">
-        <p className="absolute font-['Sora:Regular',sans-serif] font-normal leading-[24px] left-0 text-[#f6f8ed] text-[16px] top-[-1px] whitespace-nowrap">Impacto</p>
+        <p className="absolute font-['Sora:Regular',sans-serif] font-normal leading-[24px] left-0 text-[#FFFFFF] text-[16px] top-[-1px] whitespace-nowrap">Impacto</p>
       </div>
     </div>
   );
