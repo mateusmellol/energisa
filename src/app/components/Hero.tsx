@@ -67,7 +67,7 @@ export function Hero() {
         <img
           alt=""
           src={imgHero}
-          className="absolute inset-0 w-full h-full object-cover object-top"
+          className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
         />
         {/* Subtle dark overlay to ensure text legibility */}
         <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.25)" }} />
