@@ -60,7 +60,7 @@ export function Header() {
 
         {/* Mobile Hamburger */}
         <button
-          className="md:hidden p-2 text-neutral-950 focus:outline-none"
+          className="md:hidden flex items-center justify-center w-11 h-11 text-neutral-950 focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
         >
@@ -83,7 +83,7 @@ export function Header() {
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="text-lg font-medium text-neutral-900"
+                  className="flex items-center min-h-[44px] text-lg font-medium text-neutral-900"
                 >
                   {link.name}
                 </a>
