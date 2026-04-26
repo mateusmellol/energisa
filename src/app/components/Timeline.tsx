@@ -96,7 +96,6 @@ function TimelineDesktop() {
       style={{ height: shouldReduceMotion ? "100svh" : "200svh", marginTop: "-15svh", position: "relative", zIndex: 1, background: "#121312" }}
     >
       <motion.section
-        id="timeline"
         className="relative overflow-hidden"
         style={{
           position: "sticky",
@@ -220,7 +219,6 @@ function TimelineMobile() {
 
   return (
     <section
-      id="timeline"
       className="relative overflow-hidden bg-[#121312]"
       style={{ minHeight: "100svh" }}
     >
@@ -316,7 +314,7 @@ function TimelineMobile() {
 ───────────────────────────────────────────────────────────── */
 export function TimelineSection() {
   return (
-    <>
+    <div id="timeline">
       {/* Mobile only */}
       <div className="block md:hidden">
         <TimelineMobile />
@@ -325,6 +323,6 @@ export function TimelineSection() {
       <div className="hidden md:block">
         <TimelineDesktop />
       </div>
-    </>
+    </div>
   );
 }
