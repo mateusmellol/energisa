@@ -36,7 +36,7 @@ export function Timeline({
   location,
 }: TimelineProps) {
   return (
-    <section className="relative w-full min-h-[926px] bg-neutral-0 overflow-hidden">
+    <section className="relative w-full md:min-h-[926px] bg-neutral-0 overflow-hidden">
       <div className="page-container relative z-10 flex flex-col justify-between min-h-screen py-16">
         {/* Content layout */}
         <div className="flex flex-col gap-12">
@@ -50,7 +50,7 @@ export function Timeline({
               {tabs.map((tab, i) => (
                 <div
                   key={tab}
-                  className={`px-2 py-2 text-lg font-regular ${
+                  className={`px-2 py-3 min-h-[44px] text-lg font-regular ${
                     i === activeTab
                       ? "bg-neutral-400 text-neutral-950"
                       : "text-neutral-950"
@@ -78,7 +78,7 @@ export function Timeline({
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-            className="w-full aspect-square max-h-[717px] rounded-full bg-neutral-950 flex items-center justify-center"
+            className="w-full aspect-square max-h-[300px] md:max-h-[717px] rounded-full bg-neutral-950 flex items-center justify-center"
           >
             <div className="text-neutral-600 text-sm">
               Globe 3D
