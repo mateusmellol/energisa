@@ -143,10 +143,10 @@ Em 412px: `412 - 240 = 172px` de conteúdo. Inutilizável.
 - Botões: `flex-col sm:flex-row` + `w-full sm:w-auto`
 
 ### Status
-- [ ] Refatorar grid para flex-col no mobile
-- [ ] Ajustar tipografia do headline
-- [ ] Reposicionar/ocultar stock ticker e profile cards
-- [ ] Botões em coluna no mobile
+- [x] Refatorar grid para flex-col no mobile
+- [x] Ajustar tipografia do headline
+- [x] Reposicionar/ocultar stock ticker e profile cards
+- [x] Botões em coluna no mobile
 
 ---
 
@@ -174,9 +174,9 @@ Cards: `col-span-1` em todos os breakpoints (remover `col-span-3`).
 Altura dos cards em mobile: `h-[140px]` pode funcionar, ou `aspect-[4/3]` para ser fluido.
 
 ### Status
-- [ ] Refatorar grid de cards para 2 colunas no mobile
-- [ ] Ajustar altura dos cards
-- [ ] Verificar touch targets do toggle (mínimo 44px)
+- [x] Refatorar grid de cards para 2 colunas no mobile
+- [x] Ajustar altura dos cards
+- [x] Verificar touch targets do toggle (mínimo 44px)
 
 ---
 
@@ -199,9 +199,9 @@ Altura dos cards em mobile: `h-[140px]` pode funcionar, ou `aspect-[4/3]` para s
 - **Layout geral:** Manter flex-col (já é), apenas ajustar tamanhos e `min-h`
 
 ### Status
-- [ ] Corrigir badges (largura/tipografia)
-- [ ] Conter globo em mobile
-- [ ] Ajustar tipografia de título
+- [x] Corrigir badges (largura/tipografia)
+- [x] Conter globo em mobile
+- [x] Ajustar tipografia de título
 
 ---
 
@@ -235,10 +235,10 @@ Altura dos cards em mobile: `h-[140px]` pode funcionar, ou `aspect-[4/3]` para s
 - Remover o `max-width` progressivo no mobile (ou ajustar para 100% em todos)
 
 ### Status
-- [ ] Accordion: linha de trigger responsiva (index, título, "Saiba mais")
-- [ ] Accordion: conteúdo expandido flex-col no mobile
-- [ ] Stats: headline e número responsivos
-- [ ] Stats: remover/ajustar max-width progressivo no mobile
+- [x] Accordion: linha de trigger responsiva (index, título, "Saiba mais")
+- [x] Accordion: conteúdo expandido flex-col no mobile
+- [x] Stats: headline e número responsivos
+- [x] Stats: remover/ajustar max-width progressivo no mobile
 
 ---
 
@@ -266,10 +266,10 @@ Altura dos cards em mobile: `h-[140px]` pode funcionar, ou `aspect-[4/3]` para s
 > Recomendo carrossel horizontal (mais compacto, padrão nativo mobile para notícias).
 
 ### Status
-- [ ] Decidir padrão: scroll vertical vs carrossel horizontal
-- [ ] Ajustar altura das imagens
-- [ ] Reduzir padding vertical
-- [ ] Adicionar título de seção
+- [x] Decidir padrão: scroll vertical vs carrossel horizontal
+- [x] Ajustar altura das imagens
+- [x] Reduzir padding vertical
+- [x] Adicionar título de seção
 
 ---
 
@@ -281,9 +281,9 @@ Altura dos cards em mobile: `h-[140px]` pode funcionar, ou `aspect-[4/3]` para s
 > Avaliar se o parallax deve ser desabilitado no mobile (`prefers-reduced-motion` ou breakpoint).
 
 ### Status
-- [ ] Ler o componente
-- [ ] Avaliar se parallax deve ser desabilitado em mobile
-- [ ] Verificar se adiciona algum overflow ou posicionamento problemático
+- [x] Ler o componente
+- [x] Avaliar se parallax deve ser desabilitado em mobile
+- [x] Verificar se adiciona algum overflow ou posicionamento problemático
 
 ---
 
