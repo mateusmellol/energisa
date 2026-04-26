@@ -5,7 +5,6 @@ import { Services } from "./components/Services";
 import { Ecossistema } from "./components/Ecossistema";
 import { Statistics } from "./components/Statistics";
 import { TimelineSection } from "./components/Timeline";
-import { NewsSection } from "./components/NewsSection";
 import { Footer } from "./components/Footer";
 
 import { motion, useScroll, useTransform } from "motion/react";
@@ -37,7 +36,6 @@ export default function App() {
         <Statistics />
         <TimelineSection />
         <Ecossistema />
-        <NewsSection />
         <Footer />
       </main>
     </div>

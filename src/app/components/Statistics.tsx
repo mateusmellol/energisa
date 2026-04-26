@@ -1,5 +1,7 @@
 import { useRef, useState, useEffect } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
+import { cn } from "@/lib/utils";
+import { GridPattern } from "@/registry/magicui/grid-pattern";
 
 import { NumberTicker } from "./ui/number-ticker";
 
@@ -8,22 +10,22 @@ import { NumberTicker } from "./ui/number-ticker";
 const STATS = [
   {
     value: 25,
-    suffix: "mi",
-    label: "pessoas atendidas",
+    suffix: "",
+    label: "milhões de pessoas",
     text: "Mais de 25 milhões de brasileiros têm acesso à energia elétrica todos os dias graças à operação da Energisa — de grandes centros urbanos a comunidades isoladas.",
     barHeight: "35%",
   },
   {
     value: 939,
     suffix: "",
-    label: "municípios atendidos",
+    label: "municípios",
     text: "A Energisa está presente em 939 municípios, levando infraestrutura elétrica confiável para regiões que vão muito além das capitais.",
     barHeight: "48%",
   },
   {
     value: 97,
     suffix: "%",
-    label: "do território nacional",
+    label: "cobertura",
     text: "97% do território brasileiro coberto pela rede de distribuição da Energisa — a maior cobertura dentre as distribuidoras privadas do país.",
     barHeight: "62%",
   },
@@ -80,12 +82,7 @@ export function Statistics() {
     };
   }, [played]);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"]
-  });
 
-  const yParallax = useTransform(scrollYProgress, [0, 1], ["25%", "-25%"]);
 
   return (
     <section
@@ -94,12 +91,33 @@ export function Statistics() {
       className="relative z-0"
       style={{
         height: "100svh",
-        scrollMarginTop: "80px",
+        scrollMarginTop: "160px",
         scrollSnapAlign: "start",
-        overflow: "hidden",
       }}
     >
-      <motion.div style={{ y: shouldReduceMotion ? 0 : yParallax }} className="h-full w-full">
+      {/* Background Grid Pattern — Top Left */}
+      <GridPattern
+        width={40}
+        height={40}
+        x={-1}
+        y={-1}
+        className={cn(
+          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]",
+          "[mask-image:radial-gradient(1000px_circle_at_top_left,white,transparent)]"
+        )}
+      />
+      {/* Background Grid Pattern — Bottom Right */}
+      <GridPattern
+        width={40}
+        height={40}
+        x={-1}
+        y={-1}
+        className={cn(
+          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]",
+          "[mask-image:radial-gradient(1000px_circle_at_bottom_right,white,transparent)]"
+        )}
+      />
+      <div className="h-full w-full">
         {/* Max-width wrapper acting as the main grid */}
         <div
           className="relative z-10"
@@ -115,7 +133,8 @@ export function Statistics() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
+              gridTemplateColumns: "max-content 1fr 1fr",
+              columnGap: 54,
               alignItems: "end",
               padding: "0 80px 24px",
             }}
@@ -137,10 +156,7 @@ export function Statistics() {
               da Energisa
             </h3>
 
-            {/* Empty middle column */}
-            <div />
-
-            {/* Description — bottom-aligned to the title */}
+            {/* Description — now in the second column */}
             <p
               style={{
                 fontFamily: "Sora, sans-serif",
@@ -151,9 +167,11 @@ export function Statistics() {
               }}
             >
               A Energisa distribui energia em 97% do território
-              brasileiro, conectando famílias e impulsionando
-              comunidades de Norte a Sul do país.
+              brasileiro, conectando famílias
             </p>
+
+            {/* Empty third column */}
+            <div />
           </div>
 
           {/* ── Bars row ── */}
@@ -182,7 +200,7 @@ export function Statistics() {
                 }}
               >
                 {/* Number — sits on top of the bar, outside */}
-                <motion.span
+                <motion.div
                   variants={{
                     hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
                     visible: {
@@ -192,20 +210,40 @@ export function Statistics() {
                     }
                   }}
                   style={{
-                    fontFamily: "Sora, sans-serif",
-                    fontWeight: 300,
-                    fontSize: "clamp(52px, 5.5vw, 96px)",
-                    color: "#121312",
-                    lineHeight: 0.9,
-                    letterSpacing: "-0.045em",
-                    display: "block",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "baseline",
+                    gap: 12,
                     paddingLeft: 32,
                     marginBottom: 12,
                   }}
                 >
-                  <NumberTicker value={stat.value} duration={2000 + idx * 400} />
-                  {stat.suffix}
-                </motion.span>
+                  <span
+                    style={{
+                      fontFamily: "Sora, sans-serif",
+                      fontWeight: 300,
+                      fontSize: "clamp(52px, 5.5vw, 96px)",
+                      color: "#121312",
+                      lineHeight: 0.9,
+                      letterSpacing: "-0.045em",
+                      display: "block",
+                    }}
+                  >
+                    <NumberTicker value={stat.value} duration={2000 + idx * 400} />
+                    {stat.suffix}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "Sora, sans-serif",
+                      fontWeight: 400,
+                      fontSize: "clamp(18px, 1.5vw, 24px)",
+                      color: "#121312",
+                      display: "block",
+                    }}
+                  >
+                    {stat.label}
+                  </span>
+                </motion.div>
 
                 {/* Bar */}
                 <motion.div
@@ -226,27 +264,13 @@ export function Statistics() {
                     overflow: "hidden",
                   }}
                 >
-                  <motion.p
-                    variants={{
-                      hidden: { opacity: 0 },
-                      visible: { opacity: 1, transition: { duration: 0.8, delay: 0.8 + idx * 0.3 } }
-                    }}
-                    style={{
-                      fontFamily: "Sora, sans-serif",
-                      fontSize: "clamp(11px, 0.8vw, 13px)",
-                      color: "rgba(18, 19, 18, 0.6)",
-                      lineHeight: 1.6,
-                      margin: 0,
-                    }}
-                  >
-                    {stat.text}
-                  </motion.p>
+
                 </motion.div>
               </div>
             ))}
           </motion.div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

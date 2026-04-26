@@ -3,6 +3,8 @@ import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, use
 import { VoxelGlobe } from "./VoxelGlobe";
 import { Zap, Leaf, Globe, Cpu, Flame, Sparkles } from "lucide-react";
 import { ScrollProgress } from "@/registry/magicui/scroll-progress";
+import { cn } from "@/lib/utils";
+import { GridPattern } from "@/registry/magicui/grid-pattern";
 
 const TABS = [
   {
@@ -94,13 +96,10 @@ export function TimelineSection() {
   const yOffset = shouldReduceMotion ? 0 : 16;
   const yExitOffset = shouldReduceMotion ? 0 : -10;
   const fallbackBgOpacity = useTransform(scrollYProgress, [0.15, 0.16], [0, 1]);
-  
+
   // Reveal animation: Single dark panel that "opens" from top to bottom
   // Accelerated to finish early and avoid white space at the bottom
-  const maskScale = useTransform(scrollYProgress, [0.02, 0.15], [0, 1]);
-  // clip-path mask to reveal content from top to bottom in sync with the panel
-  const revealClip = useTransform(scrollYProgress, [0.02, 0.15], ["inset(0 0 100% 0)", "inset(0 0 0% 0)"]);
-  const contentOpacity = useTransform(scrollYProgress, [0.02, 0.08], [0, 1]);
+
 
   return (
     // Scroll track — 300svh gives ~100svh of scroll dwell per tab
@@ -115,7 +114,7 @@ export function TimelineSection() {
           position: "sticky",
           top: 0,
           height: "100svh",
-          background: "transparent", // Background will be provided by the opening panels
+          background: "#121312",
           opacity: 1,
         }}
       >
@@ -129,20 +128,30 @@ export function TimelineSection() {
           />
         )}
 
-        {/* Gradient overlay — blends typography bg into globe, no hard edge */}
-        <div
-          className="hidden md:block absolute top-0 bottom-0 pointer-events-none z-[2]"
-          style={{
-            left: "28%",
-            width: "160px",
-            background: "linear-gradient(to right, #121312 0%, transparent 100%)",
-          }}
+
+        {/* Background Grid Pattern — now on top of the gradient */}
+        <GridPattern
+          width={40}
+          height={40}
+          x={-1}
+          y={-1}
+          className={cn(
+            "absolute inset-0 h-full w-full pointer-events-none stroke-white/[0.05] z-[2]",
+            "[mask-image:radial-gradient(1000px_circle_at_top_left,white,transparent)]"
+          )}
         />
 
         {/* Globe — positioned to the right */}
         <motion.div
           className="hidden md:block absolute top-0 bottom-0 right-0 pointer-events-auto"
-          style={{ width: "65%", height: "100%", touchAction: "none", opacity: contentOpacity, clipPath: revealClip, zIndex: 1 }}
+          style={{
+            width: "65%",
+            height: "100%",
+            touchAction: "none",
+            zIndex: 1,
+            maskImage: "linear-gradient(to right, transparent 0%, black 150px)",
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 150px)"
+          }}
         >
           <VoxelGlobe
             className="w-full h-full"
@@ -154,33 +163,11 @@ export function TimelineSection() {
 
 
 
-        {/* REVEAL MASK — single panel that grows from top to bottom to form the background */}
-        {!shouldReduceMotion && (
-          <div className="absolute inset-0 z-[-1] pointer-events-none">
-            <motion.div
-              style={{
-                width: "100%",
-                height: "100%",
-                backgroundColor: "#121312",
-                scaleY: maskScale,
-                transformOrigin: "top", // Revealed from top to bottom
-              }}
-            />
-          </div>
-        )}
 
-        {/* Fallback background for reduced motion or after transition */}
-        {shouldReduceMotion && <div className="absolute inset-0 z-[-2] bg-[#121312]" />}
-        {!shouldReduceMotion && (
-          <motion.div
-            className="absolute inset-0 z-[-2] bg-[#121312]"
-            style={{ opacity: fallbackBgOpacity }}
-          />
-        )}
 
         <motion.div
           className="max-w-[1440px] mx-auto relative px-8 md:px-20 flex flex-col justify-center pointer-events-none h-full"
-          style={{ zIndex: 3, opacity: contentOpacity, clipPath: revealClip }}
+          style={{ zIndex: 3 }}
         >
           {/* Main content */}
           <div className="relative z-10 flex flex-col gap-10 pointer-events-none" style={{ maxWidth: 480 }}>

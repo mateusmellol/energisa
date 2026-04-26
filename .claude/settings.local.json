@@ -8,7 +8,16 @@
       "Bash(npx next:*)",
       "Bash(npx tsc:*)",
       "Bash(npm run:*)",
-      "Bash(curl -s http://localhost:5173)"
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(ls node_modules/.bin/tsc)",
+      "Bash(ls node_modules/.bin/vite)",
+      "Bash(node_modules/.bin/vite build:*)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(node_modules/.bin/next build:*)",
+      "mcp__ide__getDiagnostics",
+      "mcp__plugin_figma_figma__get_screenshot",
+      "Bash(curl -L \"https://www.figma.com/api/mcp/asset/b204ad80-7c4c-4cac-acce-76cdb7b1521e\" -o \"S:/Projetos/Antigravity/Energisa/public/assets/energisa-wordmark.png\")"
     ]
   }
 }

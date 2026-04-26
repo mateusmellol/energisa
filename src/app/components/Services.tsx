@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import svgPaths from "../../imports/Site/svg-swy5fdu2p6";
+import { cn } from "@/lib/utils";
+import { GridPattern } from "@/registry/magicui/grid-pattern";
 
 function ServiceCard({ card }: { card: { icon: React.ReactNode; label: string; description: string } }) {
   return (
@@ -167,6 +169,17 @@ export function Services() {
 
   return (
     <section id="solucoes" className="relative overflow-hidden" style={{ paddingTop: "17.5vh", paddingBottom: "12.5vh" }}>
+      {/* Background Grid Pattern */}
+      <GridPattern
+        width={40}
+        height={40}
+        x={-1}
+        y={-1}
+        className={cn(
+          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]",
+          "[mask-image:radial-gradient(1000px_circle_at_bottom_left,white,transparent)]"
+        )}
+      />
       <div className="max-w-[1440px] w-full mx-auto px-8 md:px-20 flex flex-col gap-10 relative z-10">
         {/* Header */}
         <div className="flex flex-col gap-4">
