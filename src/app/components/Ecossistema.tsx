@@ -89,12 +89,12 @@ const CARDS = [
       { icon: Cpu, label: "Controle" },
       { icon: Zap, label: "Smart Grid" },
     ],
-    panelBg: "#d4ec28",
-    panelText: "#121312",
-    panelSubtext: "rgba(18, 19, 18, 0.64)",
-    buttonBg: "#121312",
-    buttonText: "#FFFFFF",
-    invertLogo: false,
+    panelBg: "#121312",
+    panelText: "#FFFFFF",
+    panelSubtext: "rgba(255, 255, 255, 0.7)",
+    buttonBg: "#d4ec28",
+    buttonText: "#121312",
+    invertLogo: true,
   },
   {
     id: "esgas",
@@ -117,7 +117,7 @@ const CARDS = [
     panelBg: "#121312",
     panelText: "#FFFFFF",
     panelSubtext: "rgba(255, 255, 255, 0.7)",
-    buttonBg: "#FFFFFF",
+    buttonBg: "#d4ec28",
     buttonText: "#121312",
     invertLogo: true,
   },
@@ -133,12 +133,12 @@ const CARDS = [
       { icon: Leaf, label: "Energia Limpa" },
       { icon: Sparkles, label: "Inovação" },
     ],
-    panelBg: "#F8F8F7", // Neutral 050 (Off-white)
-    panelText: "#121312",
-    panelSubtext: "rgba(18, 19, 18, 0.64)",
+    panelBg: "#121312",
+    panelText: "#FFFFFF",
+    panelSubtext: "rgba(255, 255, 255, 0.7)",
     buttonBg: "#d4ec28",
     buttonText: "#121312",
-    invertLogo: false,
+    invertLogo: true,
   },
 ];
 
@@ -209,6 +209,7 @@ export function Ecossistema() {
                 backgroundColor: card.panelBg,
               }}
             >
+              {/* Top: Logo & Description */}
               <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
                 <div style={{ filter: card.invertLogo ? "invert(1) brightness(2)" : "none" }}>
                   {card.renderLogo()}
@@ -216,44 +217,42 @@ export function Ecossistema() {
                 <p style={{ ...cardDescStyle, color: card.panelSubtext }}>{card.description}</p>
               </div>
 
-              <div className="flex flex-col gap-12">
-                {/* Features — 2x2 grid */}
-                <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-                  {card.features.map(({ icon: Icon, label }) => (
-                    <div key={label} className="flex items-center gap-3">
-                      <Icon size={20} style={{ color: card.panelText }} strokeWidth={1.5} />
-                      <span
-                        style={{
-                          fontFamily: "Sora, sans-serif",
-                          fontSize: "15px",
-                          color: card.panelText,
-                          fontWeight: 500,
-                        }}
-                      >
-                        {label}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+              {/* Middle: Features — 2x2 grid, now independent to float towards center */}
+              <div className="grid grid-cols-2 gap-x-8 gap-y-6 py-8">
+                {card.features.map(({ icon: Icon, label }) => (
+                  <div key={label} className="flex items-center gap-3">
+                    <Icon size={20} style={{ color: card.panelText }} strokeWidth={1.5} />
+                    <span
+                      style={{
+                        fontFamily: "Sora, sans-serif",
+                        fontSize: "15px",
+                        color: card.panelText,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
 
-                {/* CTA Button */}
-                <button
-                  className="flex items-center justify-center gap-2 px-8 py-4 rounded-[4px] w-fit group cursor-pointer active:scale-95 transition-all hover:opacity-90 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)]"
-                  style={{
-                    backgroundColor: card.buttonBg,
-                    color: card.buttonText,
-                  }}
-                >
-                  <span style={{
-                    fontFamily: "Sora, sans-serif",
-                    fontSize: "15px",
-                    fontWeight: 600,
+              {/* Bottom: CTA Button */}
+              <button
+                className="flex items-center justify-center gap-2 px-8 py-4 rounded-[4px] w-fit group cursor-pointer active:scale-95 transition-all hover:opacity-90 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)]"
+                style={{
+                  backgroundColor: card.buttonBg,
+                  color: card.buttonText,
+                }}
+              >
+                <span style={{
+                  fontFamily: "Sora, sans-serif",
+                  fontSize: "15px",
+                  fontWeight: 600,
                   }}>
                     Saiba mais
                   </span>
                   <ArrowUpRight size={18} style={{ color: card.buttonText }} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </button>
-              </div>
             </div>
           </motion.div>
         ))}

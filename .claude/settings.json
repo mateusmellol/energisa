@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.dbirman.com)",
+      "WebFetch(domain:www.rachel-schmitz.com)",
+      "WebFetch(domain:www.vaxliu.com)",
+      "WebFetch(domain:www.kabhishek.com)"
+    ]
+  }
+}

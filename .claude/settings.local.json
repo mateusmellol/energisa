@@ -17,7 +17,16 @@
       "Bash(node_modules/.bin/next build:*)",
       "mcp__ide__getDiagnostics",
       "mcp__plugin_figma_figma__get_screenshot",
-      "Bash(curl -L \"https://www.figma.com/api/mcp/asset/b204ad80-7c4c-4cac-acce-76cdb7b1521e\" -o \"S:/Projetos/Antigravity/Energisa/public/assets/energisa-wordmark.png\")"
+      "Bash(curl -L \"https://www.figma.com/api/mcp/asset/b204ad80-7c4c-4cac-acce-76cdb7b1521e\" -o \"S:/Projetos/Antigravity/Energisa/public/assets/energisa-wordmark.png\")",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebSearch",
+      "WebFetch(domain:docs.browsermcp.io)",
+      "WebFetch(domain:www.bestfolios.com)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:bestfolios.medium.com)",
+      "WebFetch(domain:bestfolios.com)",
+      "WebFetch(domain:designerup.co)",
+      "Bash(npx skillfish:*)"
     ]
   }
 }
