@@ -187,7 +187,7 @@ export function Ecossistema() {
             key={card.id}
             initial={{ y: 60, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: false, margin: "-50px" }}
+            viewport={{ once: true, margin: "-50px" }}
             transition={{
               duration: 0.8,
               delay: idx * 0.1,

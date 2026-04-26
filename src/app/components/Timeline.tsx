@@ -102,10 +102,10 @@ export function TimelineSection() {
 
 
   return (
-    // Scroll track — 300svh gives ~100svh of scroll dwell per tab
+    // Scroll track — 200svh gives comfortable dwell without trapping the user
     <div
       ref={containerRef}
-      style={{ height: shouldReduceMotion ? "100svh" : "250svh", marginTop: "-15svh", position: "relative", zIndex: 1 }}
+      style={{ height: shouldReduceMotion ? "100svh" : "200svh", marginTop: "-15svh", position: "relative", zIndex: 1, background: "#121312" }}
     >
       <motion.section
         id="timeline"
@@ -141,16 +141,12 @@ export function TimelineSection() {
           )}
         />
 
-        {/* Globe — positioned to the right */}
+        {/* Globe — mobile: top 55% full-width; desktop: right 65% full-height */}
         <motion.div
-          className="hidden md:block absolute top-0 bottom-0 right-0 pointer-events-auto"
+          className="absolute top-0 right-0 pointer-events-auto w-full h-[55%] md:bottom-0 md:w-[65%] md:h-full"
           style={{
-            width: "65%",
-            height: "100%",
             touchAction: "none",
             zIndex: 1,
-            maskImage: "linear-gradient(to right, transparent 0%, black 150px)",
-            WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 150px)"
           }}
         >
           <VoxelGlobe
@@ -159,6 +155,16 @@ export function TimelineSection() {
             targetTheta={TABS[active].globe.theta}
             highlightRegion={TABS[active].globe.highlight}
           />
+          {/* Mobile: fade bottom so text below is legible */}
+          <div
+            className="absolute inset-0 md:hidden pointer-events-none"
+            style={{ background: "linear-gradient(to bottom, transparent 40%, #121312 90%)" }}
+          />
+          {/* Desktop: fade left edge */}
+          <div
+            className="absolute inset-0 hidden md:block pointer-events-none"
+            style={{ background: "linear-gradient(to right, #121312 0%, transparent 150px)" }}
+          />
         </motion.div>
 
 
@@ -166,7 +172,7 @@ export function TimelineSection() {
 
 
         <motion.div
-          className="max-w-[1440px] mx-auto relative px-5 md:px-20 flex flex-col justify-center pointer-events-none h-full"
+          className="max-w-[1440px] mx-auto relative px-5 md:px-20 flex flex-col justify-end md:justify-center pointer-events-none h-full pb-14 md:pb-0"
           style={{ zIndex: 3 }}
         >
           {/* Main content */}
