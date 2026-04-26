@@ -137,7 +137,7 @@ export function TimelineSection() {
           y={-1}
           className={cn(
             "absolute inset-0 h-full w-full pointer-events-none stroke-white/[0.05] z-[2]",
-            "[mask-image:radial-gradient(1000px_circle_at_top_left,white,transparent)]"
+            "[mask-image:radial-gradient(1000px_circle_at_bottom_right,white,transparent)]"
           )}
         />
 
