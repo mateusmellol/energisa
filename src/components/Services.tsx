@@ -79,7 +79,7 @@ export function Services() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="grid grid-cols-12 gap-4"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
           >
             {services.map((service, i) => (
               <motion.div
@@ -87,7 +87,7 @@ export function Services() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08 }}
-                className="group relative col-span-3 h-[180px] rounded-xl border border-neutral-150 bg-neutral-0 p-4 flex flex-col justify-between cursor-pointer hover:border-neutral-300 hover:shadow-sm transition-all"
+                className="group relative h-[140px] md:h-[180px] rounded-xl border border-neutral-150 bg-neutral-0 p-4 flex flex-col justify-between cursor-pointer hover:border-neutral-300 hover:shadow-sm transition-all"
               >
                 <div className="w-6 h-6 flex items-center justify-center text-lg">
                   {service.icon}
