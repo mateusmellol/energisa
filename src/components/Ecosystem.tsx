@@ -122,20 +122,20 @@ function EcosystemAccordion() {
               }`}
             >
               <div
-                className={`relative flex items-center gap-6 py-6 px-6 transition-all duration-300 ${
+                className={`relative flex flex-col md:flex-row items-center gap-4 md:gap-6 py-6 px-6 transition-all duration-300 ${
                   isOpen
                     ? "border border-neutral-200 rounded-2xl"
                     : "border-t border-neutral-150"
                 }`}
               >
                 {/* Index */}
-                <span className="text-xs font-medium tracking-widest text-neutral-400 uppercase whitespace-nowrap">
+                <span className="text-[10px] md:text-xs font-medium tracking-widest text-neutral-400 uppercase whitespace-nowrap">
                   ECOSSISTEMA / {item.index}
                 </span>
 
                 {/* Title */}
                 <span
-                  className={`flex-1 text-center text-[clamp(2rem,5vw,4rem)] font-light leading-tight tracking-tight transition-colors duration-300 ${
+                  className={`flex-1 text-center text-[28px] md:text-[clamp(2rem,5vw,4rem)] font-light leading-tight tracking-tight transition-colors duration-300 ${
                     isOpen ? "text-neutral-950" : "text-neutral-700"
                   }`}
                 >
@@ -144,7 +144,7 @@ function EcosystemAccordion() {
 
                 {/* Saiba mais */}
                 <span
-                  className={`text-xs font-medium tracking-widest uppercase whitespace-nowrap transition-colors duration-300 ${
+                  className={`text-[10px] md:text-xs font-medium tracking-widest uppercase whitespace-nowrap transition-colors duration-300 ${
                     isOpen ? "text-neutral-950" : "text-neutral-400"
                   }`}
                 >
@@ -164,12 +164,12 @@ function EcosystemAccordion() {
                   transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
                   className="overflow-hidden"
                 >
-                  <div className="px-6 pt-6 pb-10 flex flex-row gap-6">
+                  <div className="px-6 pt-6 pb-10 flex flex-col md:flex-row gap-8 md:gap-6">
                     {/* Image placeholder */}
-                    <div className="flex-[7] h-64 bg-neutral-150 rounded-xl" />
+                    <div className="w-full md:flex-[7] h-48 md:h-64 bg-neutral-150 rounded-xl" />
 
                     {/* Info */}
-                    <div className="flex-[5] flex flex-col justify-between gap-8">
+                    <div className="w-full md:flex-[5] flex flex-col justify-between gap-8">
                       <div className="flex flex-col gap-4">
                         <p className="text-base leading-relaxed text-neutral-600">
                           {item.detail}
@@ -217,11 +217,11 @@ export function Ecosystem() {
         <EcosystemAccordion />
       </div>
 
-      <div className="max-w-[1440px] w-full mx-auto px-8 md:px-20 flex flex-col gap-10">
-        <motion.div {...motionPresets.fadeInUp} className="flex items-start justify-between gap-8">
+      <div className="max-w-[1440px] w-full mx-auto px-8 md:px-20 flex flex-col gap-10 mt-20 md:mt-0">
+        <motion.div {...motionPresets.fadeInUp} className="flex flex-col md:flex-row items-start justify-between gap-4 md:gap-8">
           <div className="flex-1">
-            <h2 className="text-[52px] font-regular leading-[1.15] text-neutral-950 mb-2">A Energisa acompanha você</h2>
-            <p className="text-base text-neutral-500">Lorem ipsum dolor sit amet, consectetur adipiscing.</p>
+            <h2 className="text-[32px] md:text-[52px] font-regular leading-[1.15] text-neutral-950 mb-2">A Energisa acompanha você</h2>
+            <p className="text-base text-neutral-500">Compromisso real com a eficiência energética.</p>
           </div>
           <p className="text-xs text-neutral-400">Dados de 2025</p>
         </motion.div>
@@ -233,14 +233,14 @@ export function Ecosystem() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.15 }}
-            className="flex items-center border-t border-neutral-150 py-4"
-            style={{ maxWidth: `${60 + i * 20}%` }}
+            className="flex flex-col md:flex-row md:items-center border-t border-neutral-150 py-8 md:py-4 gap-4 md:gap-0"
+            style={{ maxWidth: "100%" }}
           >
             <div className="flex-1">
-              <p className="text-[28px] font-regular text-neutral-950 mb-1">{stat.detail}</p>
-              <p className="text-base text-neutral-500">{stat.label}</p>
+              <p className="text-[24px] md:text-[28px] font-regular text-neutral-950 mb-1 leading-tight">{stat.detail}</p>
+              <p className="text-sm md:text-base text-neutral-500">{stat.label}</p>
             </div>
-            <p className="text-[80px] font-light text-neutral-950 leading-none tabular-nums">
+            <p className="text-[56px] md:text-[80px] font-light text-neutral-950 leading-none tabular-nums">
               {stat.prefix || ""}<AnimatedNumber value={stat.value} suffix={stat.suffix} />
             </p>
           </motion.div>
