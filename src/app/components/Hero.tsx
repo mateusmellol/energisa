@@ -81,7 +81,7 @@ export function Hero() {
 
       {/* Main content — two-column layout */}
       <div className="relative z-10 flex flex-col flex-1 pt-32 pb-32">
-        <div className="flex flex-row items-end justify-between gap-8 mt-auto w-full max-w-[1440px] mx-auto px-8 md:px-20">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 md:gap-8 mt-auto w-full max-w-[1440px] mx-auto px-5 md:px-20">
 
           {/* LEFT: StockWidget + Headline */}
           <div className="flex flex-col items-start gap-6">
@@ -103,20 +103,20 @@ export function Hero() {
                 style={{
                   fontFamily: "Sora, sans-serif",
                   fontWeight: 500,
-                  fontSize: "clamp(48px, 6.5vw, 84px)",
+                  fontSize: "clamp(36px, 6.5vw, 84px)",
                   letterSpacing: "-0.03em",
                   color: "#f6f8ed",
                   lineHeight: 1.05,
                 }}
               >
-                A Energisa <br />
+                A Energisa <br className="hidden md:block" />
                 move o Brasil
               </motion.h1>
             </div>
           </div>
 
           {/* RIGHT: Body text + Buttons — grouped at the bottom */}
-          <div className="flex flex-col items-start max-w-[380px] shrink-0 self-stretch">
+          <div className="flex flex-col items-start w-full md:max-w-[380px] shrink-0 self-stretch">
             {/* spacer pushes the group down */}
             <div className="mt-auto flex flex-col items-start gap-6 w-full">
               <div style={{ overflow: "hidden" }}>
@@ -137,8 +137,8 @@ export function Hero() {
               </div>
 
               <div style={{ overflow: "hidden" }}>
-              <motion.div
-                className="flex flex-wrap items-center gap-4"
+                <motion.div
+                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full"
                 initial={{ y: "105%", opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.68, delay: 0.98, ease: MASK_EASE }}

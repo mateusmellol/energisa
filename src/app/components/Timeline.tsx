@@ -166,7 +166,7 @@ export function TimelineSection() {
 
 
         <motion.div
-          className="max-w-[1440px] mx-auto relative px-8 md:px-20 flex flex-col justify-center pointer-events-none h-full"
+          className="max-w-[1440px] mx-auto relative px-5 md:px-20 flex flex-col justify-center pointer-events-none h-full"
           style={{ zIndex: 3 }}
         >
           {/* Main content */}
@@ -180,7 +180,7 @@ export function TimelineSection() {
                 className="flex flex-col gap-6"
               >
                 {/* Icons row */}
-                <div className="flex items-center gap-6">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                   {current.icons.map(({ icon: Icon, label }) => (
                     <div key={label} className="flex items-center gap-2">
                       <Icon
@@ -229,13 +229,13 @@ export function TimelineSection() {
                 </p>
 
                 {/* Metrics */}
-                <div className="flex items-center gap-12 mt-4">
+                <div className="grid grid-cols-3 gap-4 mt-4">
                   {current.metrics.map((m, idx) => (
-                    <div key={idx} className="flex items-center gap-12">
+                    <div key={idx} className="flex items-center justify-between">
                       <div className="flex flex-col gap-1">
                         <span style={{
                           fontFamily: "Sora, sans-serif",
-                          fontSize: "32px",
+                          fontSize: "clamp(24px, 5vw, 32px)",
                           color: "#FFFFFF",
                           fontWeight: 400
                         }}>
@@ -243,7 +243,7 @@ export function TimelineSection() {
                         </span>
                         <span style={{
                           fontFamily: "Sora, sans-serif",
-                          fontSize: "12px",
+                          fontSize: "10px",
                           color: "rgba(246, 248, 237, 0.4)",
                           letterSpacing: "0.04em",
                           textTransform: "lowercase"
@@ -252,7 +252,7 @@ export function TimelineSection() {
                         </span>
                       </div>
                       {idx < current.metrics.length - 1 && (
-                        <div style={{ width: 1, height: 40, background: "rgba(246, 248, 237, 0.1)" }} />
+                        <div className="hidden md:block" style={{ width: 1, height: 40, background: "rgba(246, 248, 237, 0.1)" }} />
                       )}
                     </div>
                   ))}

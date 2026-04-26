@@ -90,7 +90,7 @@ export function Statistics() {
       id="impacto"
       className="relative z-0"
       style={{
-        height: "100svh",
+        minHeight: "100svh",
         scrollMarginTop: "160px",
         scrollSnapAlign: "start",
       }}
@@ -120,24 +120,15 @@ export function Statistics() {
       <div className="h-full w-full">
         {/* Max-width wrapper acting as the main grid */}
         <div
-          className="relative z-10"
+          className="relative z-10 flex flex-col h-full"
           style={{
             maxWidth: 1440,
             margin: "0 auto",
-            height: "100%",
-            display: "grid",
-            gridTemplateRows: "auto 1fr",
           }}
         >
           {/* ── Header row ── */}
           <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "max-content 1fr 1fr",
-              columnGap: 54,
-              alignItems: "end",
-              padding: "0 80px 24px",
-            }}
+            className="flex flex-col md:grid md:grid-cols-[max-content_1fr_1fr] gap-6 md:gap-[54px] items-start md:items-end px-5 md:px-[80px] pt-24 pb-8 md:pb-12"
           >
             {/* Title */}
             <h3
@@ -179,14 +170,7 @@ export function Statistics() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.25 }}
-            style={{
-              height: "100%",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              padding: "0 80px",
-              gap: "9px",
-              transform: "translateY(-15%)",
-            }}
+            className="flex flex-col md:grid md:grid-cols-3 flex-1 px-5 md:px-[80px] gap-8 md:gap-[9px] md:-translate-y-[10%]"
           >
             {STATS.map((stat, idx) => (
               <div
@@ -209,15 +193,8 @@ export function Statistics() {
                       transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: idx * 0.2 }
                     }
                   }}
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "baseline",
-                    gap: 12,
-                    paddingLeft: 32,
-                    marginBottom: 12,
-                  }}
                 >
+                  <div className="flex flex-row items-baseline gap-3 md:gap-4 md:pl-8 mb-3">
                   <span
                     style={{
                       fontFamily: "Sora, sans-serif",
@@ -243,29 +220,21 @@ export function Statistics() {
                   >
                     {stat.label}
                   </span>
+                  </div>
                 </motion.div>
 
                 {/* Bar */}
                 <motion.div
                   variants={{
-                    hidden: { height: shouldReduceMotion ? stat.barHeight : "0%", opacity: 0 },
+                    hidden: { height: "0%", opacity: 0 },
                     visible: {
                       height: stat.barHeight,
                       opacity: 1,
                       transition: { duration: 1.6, ease: [0.77, 0, 0.175, 1], delay: idx * 0.3 }
                     }
                   }}
-                  style={{
-                    background: "#D4EC28",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "flex-end",
-                    padding: "0 32px 28px",
-                    overflow: "hidden",
-                  }}
-                >
-
-                </motion.div>
+                  className="bg-[#D4EC28] w-full min-h-[40px]"
+                />
               </div>
             ))}
           </motion.div>

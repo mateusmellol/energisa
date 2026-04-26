@@ -160,10 +160,10 @@ export function Ecossistema() {
 
       {/* Heading — top left */}
       <div
+        className="px-5 md:px-[80px] pt-24 md:pt-[144px] pb-12 md:pb-[64px]"
         style={{
           maxWidth: 1440,
           margin: "0 auto",
-          padding: "144px 80px 64px",
         }}
       >
         <div style={{ maxWidth: 520 }}>
@@ -176,13 +176,10 @@ export function Ecossistema() {
 
       {/* Stacked cards — constrained to grid */}
       <div
+        className="px-5 md:px-[80px] pb-24 flex flex-col gap-6"
         style={{
           maxWidth: 1440,
           margin: "0 auto",
-          padding: "0 80px 96px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 24,
         }}
       >
         {CARDS.map((card, idx) => (
@@ -196,33 +193,20 @@ export function Ecossistema() {
               delay: idx * 0.1,
               ease: [0.21, 1, 0.36, 1]
             }}
-            style={{
-              display: "flex",
-              height: 480,
-              width: "100%",
-              overflow: "hidden",
-            }}
+            className="flex flex-col md:flex-row min-h-[640px] md:h-[480px] w-full overflow-hidden"
           >
             {/* Left column — photo */}
             <div
-              style={{
-                flex: "0 0 60%",
-                position: "relative",
-                overflow: "hidden",
-              }}
+              className="h-[280px] md:h-full md:flex-[0_0_60%] relative overflow-hidden"
             >
               {card.renderBg()}
             </div>
 
             {/* Right column — content panel */}
             <div
+              className="flex-1 md:flex-[0_0_40%] flex flex-col justify-between p-8 md:p-[64px]"
               style={{
-                flex: "0 0 40%",
                 backgroundColor: card.panelBg,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                padding: "64px",
               }}
             >
               <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
