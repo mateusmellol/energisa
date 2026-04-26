@@ -41,7 +41,7 @@ export function Services() {
           {...motionPresets.fadeInUp}
           className="flex flex-col gap-5 mb-10"
         >
-          <h2 className="text-[39px] font-regular leading-tight text-neutral-950">
+          <h2 className="text-[28px] md:text-[39px] font-regular leading-tight text-neutral-950">
             Serviços
           </h2>
 
@@ -52,7 +52,7 @@ export function Services() {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`text-base font-medium pb-2 border-b-2 transition-colors capitalize ${
+                  className={`text-base font-medium py-3 border-b-2 transition-colors capitalize min-h-[44px] ${
                     activeTab === tab
                       ? "text-neutral-950 border-neutral-950"
                       : "text-neutral-400 border-transparent hover:text-neutral-600"
