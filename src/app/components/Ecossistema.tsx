@@ -1,149 +1,223 @@
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
-import { TextReveal } from "@/registry/magicui/text-reveal";
+"use client";
 
-// ── Layout constants ─────────────────────────────────────────────────────────
-const CARD_W = 500;
-const CARD_H = 400;
-const CARD_GAP = 12;
-const CARDS_COUNT = 4;
+import { type CSSProperties } from "react";
 
-// Total list height
-const LIST_H = CARDS_COUNT * CARD_H + (CARDS_COUNT - 1) * CARD_GAP;
+// ── Asset URLs ─────────────────────────────────────────────────────────────────
+// Backgrounds (from Figma, hover state)
+const FLEXLAB_BG = "https://www.figma.com/api/mcp/asset/b5dd4e22-eb5c-41cb-8eb5-8b22f7153dcd";
+const ESGAS_BG = "https://www.figma.com/api/mcp/asset/3ac5b52d-4bdf-426c-a6c9-21a05eabfa89";
+// (re)energisa — 3 composited layers
+const REENERGISA_BG_1 = "https://www.figma.com/api/mcp/asset/b3e5ed59-d655-4245-a03a-4be6448416ff";
+const REENERGISA_BG_2 = "https://www.figma.com/api/mcp/asset/34e25aec-76d8-45b6-98b2-06650878ac2c";
+const REENERGISA_BG_3 = "https://www.figma.com/api/mcp/asset/c83fbb18-f7e9-49c3-a90b-98b429e895a6";
 
-// Visible window: 1 card + small peek of next (~56px)
-const PEEK = 56;
-const MAX_Y = LIST_H - CARD_H - PEEK; // px the list must travel
+// Logos
+const FLEXLAB_LOGO_A = "https://www.figma.com/api/mcp/asset/ef472955-cd1b-41c0-a6d1-9c9f9db4879a"; // right part
+const FLEXLAB_LOGO_B = "https://www.figma.com/api/mcp/asset/6c66f47b-62c9-42b5-bcd5-ee84852e45ec"; // left part
+const ESGAS_LOGO = "https://www.figma.com/api/mcp/asset/2b41dc55-dcf7-4da7-8275-3c1ca0728db0";
+const REENERGISA_LOGO = "https://www.figma.com/api/mcp/asset/66123b68-8b5a-4479-bce9-dead2baac88b";
 
-// ── Scroll phases ────────────────────────────────────────────────────────────
-// [0 → TEXT_END]   : text reveal animates
-// [CARDS_START → 1]: cards scroll up
-const TEXT_END = 0.38;
-const CARDS_START = 0.40; // small overlap so transition feels seamless
+// ── Constants ─────────────────────────────────────────────────────────────────
+const ACCENT = "#d4ec28";
+const CARD_H = 600;
+const PANEL_H = 200;
 
-// ── Card data ────────────────────────────────────────────────────────────────
+const HEADING = "Ecossistema\nEnergisa";
+const SUBTITLE = "Um ecossistema completo de inovação,\ntecnologia e serviços que redefine\ncomo a energia chega a cada brasileiro.";
+
+// ── Text styles ───────────────────────────────────────────────────────────────
+const headingStyle: CSSProperties = {
+  fontFamily: "Sora, sans-serif",
+  fontWeight: 400,
+  fontSize: "31pt",
+  lineHeight: 1.2,
+  letterSpacing: "-0.02em",
+  color: "#121312",
+  whiteSpace: "pre-line",
+};
+
+const subtitleStyle: CSSProperties = {
+  fontFamily: "Sora, sans-serif",
+  fontSize: "clamp(15px, 1.2vw, 18px)",
+  color: "rgba(18, 19, 18, 0.48)",
+  lineHeight: 1.65,
+  whiteSpace: "pre-line",
+};
+
+// ── FlexLab wordmark (two overlapping image assets) ───────────────────────────
+function FlexLabLogo() {
+  return (
+    <div style={{ position: "relative", width: 136, height: 31, flexShrink: 0 }}>
+      <img alt="" src={FLEXLAB_LOGO_B} style={{ position: "absolute", left: 0, top: 0.85, width: 68.478, height: 29.148, display: "block" }} />
+      <img alt="" src={FLEXLAB_LOGO_A} style={{ position: "absolute", left: 71.14, top: 0, width: 64.184, height: 29.904, display: "block" }} />
+    </div>
+  );
+}
+
+// ── Background renderers ──────────────────────────────────────────────────────
+function ReeEnergisaBg() {
+  return (
+    <>
+      <div style={{ position: "absolute", inset: 0, backgroundColor: "#d9d9d9" }} />
+      <img alt="" src={REENERGISA_BG_1} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      <img alt="" src={REENERGISA_BG_2} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
+        <img
+          alt=""
+          src={REENERGISA_BG_3}
+          style={{
+            position: "absolute",
+            width: "278.01%",
+            height: "118.82%",
+            left: "-166.67%",
+            top: "-18.82%",
+            maxWidth: "none",
+          }}
+        />
+      </div>
+    </>
+  );
+}
+
+// ── Card definitions ──────────────────────────────────────────────────────────
 const CARDS = [
-  { id: "001", color: "#E8E9E2" },
-  { id: "002", color: "#D4D5CE" },
-  { id: "003", color: "#C0C1BA" },
-  { id: "004", color: "#ACADA7" },
+  {
+    id: "flexlab",
+    bgImage: FLEXLAB_BG,
+    hasOverlay: true,
+    renderLogo: () => <FlexLabLogo />,
+    description: "Soluções flexíveis de energia para empresas que buscam eficiência e controle inteligente do consumo.",
+  },
+  {
+    id: "esgas",
+    bgImage: ESGAS_BG,
+    hasOverlay: false,
+    renderLogo: () => (
+      <img alt="ESgás" src={ESGAS_LOGO} style={{ width: 103, height: 44.567, display: "block", flexShrink: 0, objectFit: "contain" }} />
+    ),
+    description: "Distribuição de gás natural com segurança, eficiência e presença em todo o território atendido.",
+  },
+  {
+    id: "reenergisa",
+    bgImage: null,
+    hasOverlay: false,
+    renderLogo: () => (
+      <img alt="(re)energisa" src={REENERGISA_LOGO} style={{ width: 166, height: 34, display: "block", flexShrink: 0, objectFit: "contain" }} />
+    ),
+    description: "Modernização da rede elétrica para uma distribuição de energia mais confiável e sustentável.",
+  },
 ];
 
+// ── Component ─────────────────────────────────────────────────────────────────
 export function Ecossistema() {
-  const outerRef = useRef<HTMLDivElement>(null);
-
-  // Single scroll driver for the entire section
-  const { scrollYProgress } = useScroll({
-    target: outerRef,
-    offset: ["start start", "end end"],
-  });
-
-  // ── Cards Y translation ───────────────────────────────────────────────────
-  // Cards only start moving after text is done.
-  // useTransform with cubic easing: [CARDS_START, 1] → [0, -MAX_Y]
-  // We use a velocity-responsive linear map (no spring) for direct 1:1 feel,
-  // which is what the user asked for ("suave mas não do jeito que está").
-  // Emil principle: scroll-linked parallax should be direct, not springed.
-  const cardY = useTransform(
-    scrollYProgress,
-    [CARDS_START, 1],
-    [0, -MAX_Y],
-    { clamp: true }
-  );
-
   return (
-    <div
-      id="ecossistema"
-      ref={outerRef}
-      className="relative z-10 shadow-[0_-40px_80px_rgba(0,0,0,0.3)]"
-      // Dwell = MAX_Y px of extra scroll height beyond the 100svh sticky section
-      // We reserve extra room for text phase too (TEXT_END fraction)
-      style={{
-        height: `calc(100svh + ${Math.round(MAX_Y / (1 - CARDS_START))}px)`,
-        marginTop: "-100svh",
-      }}
-    >
-      <section
-        className="sticky top-0 overflow-hidden bg-[#FFFFFF]"
-        style={{ height: "100svh" }}
-      >
+    <div id="ecossistema" className="relative z-[50] bg-white">
+      <style>{`
+        .eco-card-visuals {
+          transition: transform 300ms cubic-bezier(0.22,1,0.36,1), box-shadow 300ms cubic-bezier(0.22,1,0.36,1);
+        }
+        .eco-card-hitbox:hover ~ .eco-card-visuals {
+          transform: translateY(-5px);
+          box-shadow: 0 12px 28px 0 rgba(0,0,0,0.12);
+        }
+        .eco-panel {
+          transform: translateY(100%);
+          transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .eco-card-hitbox:hover ~ .eco-card-visuals .eco-panel {
+          transform: translateY(0);
+        }
+      `}</style>
+
+      <div className="max-w-[1440px] mx-auto w-full px-8 md:px-20 py-24">
+
+        {/* Header: 3-col grid — heading | subtitle | empty */}
         <div
-          className="max-w-[1440px] mx-auto w-full h-full px-8 md:px-20 grid grid-cols-1 md:grid-cols-2 gap-16"
-          style={{ paddingTop: "80px" }}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            alignItems: "end",
+            marginBottom: 48,
+          }}
         >
-
-          {/* ── LEFT: Text ──────────────────────────────────────────────── */}
-          <div className="flex flex-col justify-center gap-8 h-full">
-            {/* Headline — animates in [0 → TEXT_END * 0.6] of overall progress */}
-            <TextReveal
-              className="max-w-[400px]"
-              externalProgress={scrollYProgress}
-              scrollRange={[0, TEXT_END * 0.55]}
-            >
-              {"Ecossistema\nEnergisa"}
-            </TextReveal>
-
-            {/* Body — animates in [TEXT_END * 0.5 → TEXT_END] */}
-            <TextReveal
-              externalProgress={scrollYProgress}
-              scrollRange={[TEXT_END * 0.45, TEXT_END]}
-              style={{
-                fontFamily: "Sora, sans-serif",
-                fontSize: "clamp(15px, 1.2vw, 18px)",
-                color: "#71726B",
-                lineHeight: 1.65,
-                maxWidth: 460,
-              }}
-            >
-              Um ecossistema completo de inovação, tecnologia e serviços que redefine como a energia chega a cada brasileiro.
-            </TextReveal>
-          </div>
-
-          {/* ── RIGHT: Card column ──────────────────────────────────────── */}
-          {/*
-            This container defines the "viewport" for the cards.
-            Height is exactly 1 card + the peek area.
-            It is centered vertically to align with the text.
-          */}
-          <div className="flex items-center justify-center h-full">
-            <div
-              className="relative overflow-hidden rounded-xl"
-              style={{
-                width: CARD_W,
-                height: CARD_H + PEEK,
-                // Background color or border could be added here for debugging the box
-              }}
-            >
-              <motion.div
-                style={{
-                  y: cardY,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: CARD_GAP,
-                  willChange: "transform",
-                }}
-              >
-                {CARDS.map((card) => (
-                  <a
-                    key={card.id}
-                    href="#"
-                    onClick={(e) => e.preventDefault()}
-                    className="block flex-shrink-0 rounded-xl cursor-pointer active:scale-[0.985]"
-                    style={{
-                      width: CARD_W,
-                      height: CARD_H,
-                      background: card.color,
-                      textDecoration: "none",
-                      transition: "transform 160ms cubic-bezier(0.23, 1, 0.32, 1)",
-                    }}
-                  />
-                ))}
-              </motion.div>
-            </div>
-          </div>
-
+          <h4 data-label="ecosystem-heading" style={headingStyle}>Ecossistema Energisa</h4>
+          <p style={subtitleStyle}>{SUBTITLE}</p>
+          <div />
         </div>
-      </section>
+
+        {/* Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {CARDS.map((card) => (
+            <div
+              key={card.id}
+              className="relative"
+              style={{ height: CARD_H, pointerEvents: "none" }}
+            >
+              {/* Static hitbox — stays still so hover doesn't flicker when card lifts */}
+              <div className="eco-card-hitbox absolute inset-0 z-20 pointer-events-auto cursor-pointer" />
+
+              {/* Visuals — lift + shadow on hover */}
+              <div className="eco-card-visuals relative overflow-hidden w-full h-full z-10">
+                {/* Background */}
+                {card.bgImage ? (
+                  <>
+                    <img
+                      alt=""
+                      src={card.bgImage}
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                    {card.hasOverlay && (
+                      <div style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.2)" }} />
+                    )}
+                  </>
+                ) : (
+                  <ReeEnergisaBg />
+                )}
+
+                {/* Yellow panel — slides up on hitbox hover */}
+                <div
+                  className="eco-panel"
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: PANEL_H,
+                    backgroundColor: ACCENT,
+                    padding: "33px 24px 24px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 32,
+                  }}
+                >
+                  {card.renderLogo()}
+                  <p
+                    style={{
+                      fontFamily: "Sora, sans-serif",
+                      fontSize: "13px",
+                      lineHeight: 1.5,
+                      letterSpacing: "-0.247px",
+                      color: "#121312",
+                      margin: 0,
+                      maxWidth: 351,
+                    }}
+                  >
+                    {card.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </div>
     </div>
   );
 }

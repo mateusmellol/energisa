@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import svgPaths from "../../imports/Header/svg-exccz6k13i";
-import imgButton from "figma:asset/ef92594731423388a0c490d6f715c05317eb5700.png";
 import { motion } from "motion/react";
 
 function Logo() {
@@ -95,9 +94,19 @@ function Logo() {
 }
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const id = href.replace('#', '');
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <a
       href={href}
+      onClick={handleClick}
       className="group relative font-sans font-medium leading-[24px] text-[16px] whitespace-nowrap active:scale-[0.97] transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]"
       style={{ fontFamily: 'var(--font-sora)' }}
     >
@@ -165,14 +174,14 @@ export function Header() {
         <Logo />
 
         <nav className="flex items-center gap-8">
-          <NavLink href="#solucoes">Soluções</NavLink>
           <NavLink href="#impacto">Impacto</NavLink>
+          <NavLink href="#timeline">Sobre</NavLink>
           <NavLink href="#ecossistema">Ecossistema</NavLink>
         </nav>
 
         <button
           onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
-          className={`px-8 py-4 rounded-[4px] border font-medium text-[16px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.97] hover:bg-white/5 cursor-pointer ${(isScrolled || isInEcossistema) && !isInTimeline
+          className={`px-8 py-4 rounded-[4px] border font-medium text-[16px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.97] hover:bg-white/5 cursor-pointer ${isInEcossistema || (isScrolled && !isInTimeline)
             ? "border-black/20 text-[#20201f] hover:bg-black/5"
             : "border-white/20 text-[#FFFFFF] hover:bg-white/5"
             }`}

@@ -1,32 +1,17 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import svgPaths from "../../imports/Site/svg-swy5fdu2p6";
-import { TextAnimate } from "@/registry/magicui/text-animate";
-import { GridPattern } from "@/registry/magicui/grid-pattern";
-import { cn } from "@/lib/utils";
 
 function ServiceCard({ card }: { card: { icon: React.ReactNode; label: string; description: string } }) {
   return (
     <div
-      className="service-card relative bg-[#FFFFFF] rounded flex flex-col justify-between p-4 h-44 w-full cursor-pointer overflow-hidden"
-      style={{ border: "1px solid #8b8d85" }}
+      className="relative"
+      style={{ height: "176px", pointerEvents: "none" }}
     >
       <style>{`
-        .service-card {
+        .service-card-visuals {
           transition: transform 300ms cubic-bezier(0.22,1,0.36,1), box-shadow 300ms cubic-bezier(0.22,1,0.36,1);
-        }
-        @media (hover: hover) and (pointer: fine) {
-          .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 28px 0 rgba(0,0,0,0.12);
-          }
-          .service-card:hover .service-desc-wrapper {
-            grid-template-rows: 1fr;
-          }
-          .service-card:hover .service-desc-text {
-            opacity: 1;
-            transition-delay: 50ms;
-          }
+          border: 1px solid #8b8d85;
         }
         .service-desc-wrapper {
           display: grid;
@@ -37,36 +22,55 @@ function ServiceCard({ card }: { card: { icon: React.ReactNode; label: string; d
           opacity: 0;
           transition: opacity 200ms ease;
         }
+        /* Hitbox logic */
+        .service-card-hitbox:hover ~ .service-card-visuals {
+          transform: translateY(-5px);
+          box-shadow: 0 12px 28px 0 rgba(0,0,0,0.12);
+        }
+        .service-card-hitbox:hover ~ .service-card-visuals .service-desc-wrapper {
+          grid-template-rows: 1fr;
+        }
+        .service-card-hitbox:hover ~ .service-card-visuals .service-desc-text {
+          opacity: 1;
+          transition-delay: 50ms;
+        }
       `}</style>
-      <div className="relative z-10">{card.icon}</div>
 
-      <div className="relative z-10 flex flex-col gap-1">
-        <p
-          style={{
-            fontFamily: "Sora, sans-serif",
-            fontSize: "clamp(16px, 1.5vw, 20px)",
-            color: "#000",
-            lineHeight: 1.4,
-          }}
-        >
-          {card.label}
-        </p>
+      {/* Static Hitbox: Inset by 1px to ignore stroke, remains still to prevent flicker. */}
+      <div className="service-card-hitbox absolute inset-[1px] z-20 pointer-events-auto cursor-pointer" />
 
-        <div className="service-desc-wrapper">
-          <div className="overflow-hidden flex flex-col justify-end">
-            <p
-              className="service-desc-text"
-              style={{
-                fontFamily: "Sora, sans-serif",
-                fontSize: "13px",
-                color: "#71726B",
-                lineHeight: 1.5,
-                paddingTop: 4,
-                whiteSpace: "pre-line",
-              }}
-            >
-              {card.description}
-            </p>
+      {/* Visual Content: Includes the border, moves as a single unit. */}
+      <div className="service-card-visuals relative bg-[#FFFFFF] rounded flex flex-col justify-between p-4 h-full w-full z-10">
+        <div className="relative z-10">{card.icon}</div>
+
+        <div className="relative z-10 flex flex-col gap-1">
+          <p
+            style={{
+              fontFamily: "Sora, sans-serif",
+              fontSize: "clamp(16px, 1.5vw, 20px)",
+              color: "#000",
+              lineHeight: 1.4,
+            }}
+          >
+            {card.label}
+          </p>
+
+          <div className="service-desc-wrapper">
+            <div className="overflow-hidden flex flex-col justify-end">
+              <p
+                className="service-desc-text"
+                style={{
+                  fontFamily: "Sora, sans-serif",
+                  fontSize: "13px",
+                  color: "#71726B",
+                  lineHeight: 1.5,
+                  paddingTop: 4,
+                  whiteSpace: "pre-line",
+                }}
+              >
+                {card.description}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -162,7 +166,7 @@ export function Services() {
   const cards = tab === "Casa" ? CARDS_CASA : CARDS_EMPRESA;
 
   return (
-    <section id="solucoes" className="relative overflow-hidden" style={{ paddingTop: "17.5vh", paddingBottom: "25vh" }}>
+    <section id="solucoes" className="relative overflow-hidden" style={{ paddingTop: "17.5vh", paddingBottom: "12.5vh" }}>
       <div className="max-w-[1440px] w-full mx-auto px-8 md:px-20 flex flex-col gap-10 relative z-10">
         {/* Header */}
         <div className="flex flex-col gap-4">
@@ -188,7 +192,8 @@ export function Services() {
                       fontFamily: "Sora, sans-serif",
                       fontSize: "25px",
                       color: tab === t ? "#121312" : "#8b8d85",
-                      transition: "color 0.2s ease, transform 0.1s ease",
+                      fontWeight: tab === t ? 600 : 400,
+                      transition: "color 0.2s ease, transform 0.1s ease, font-weight 0.2s ease",
                     }}
                   >
                     {t}
@@ -223,7 +228,7 @@ export function Services() {
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full"
           >
-            {cards.map((card, i) => (
+            {cards.map((card) => (
               <ServiceCard key={card.label} card={card} />
             ))}
           </motion.div>

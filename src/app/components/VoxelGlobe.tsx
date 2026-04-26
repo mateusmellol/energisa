@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { motion as m, useSpring, useMotionValue } from "motion/react";
 import { Canvas, useFrame } from '@react-three/fiber';
-import { CameraControls, QuadraticBezierLine } from '@react-three/drei';
+import { CameraControls } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { KernelSize } from 'postprocessing';
 
@@ -25,7 +25,56 @@ function buildTileMatrices(image: HTMLImageElement): TileData[] {
   offscreen.height = image.height;
   const ctx = offscreen.getContext('2d')!;
   ctx.drawImage(image, 0, 0);
-  const { data } = ctx.getImageData(0, 0, offscreen.width, offscreen.height);
+  let { data } = ctx.getImageData(0, 0, offscreen.width, offscreen.height);
+
+  const w = offscreen.width;
+  const h = offscreen.height;
+  const fixedData = new Uint8ClampedArray(data);
+  
+  // Aggressive blur pass to remove all vertical division lines
+  for (let pass = 0; pass < 3; pass++) {
+    const tempData = new Uint8ClampedArray(fixedData);
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const idx = (y * w + x) * 4;
+        let r = 0, g = 0, b = 0, count = 0;
+        
+        // Average with neighbors
+        for (let dx = -2; dx <= 2; dx++) {
+          for (let dy = -1; dy <= 1; dy++) {
+            const nx = (x + dx + w) % w;
+            const ny = Math.max(0, Math.min(h - 1, y + dy));
+            const nidx = (ny * w + nx) * 4;
+            r += tempData[nidx];
+            g += tempData[nidx + 1];
+            b += tempData[nidx + 2];
+            count++;
+          }
+        }
+        fixedData[idx] = Math.round(r / count);
+        fixedData[idx + 1] = Math.round(g / count);
+        fixedData[idx + 2] = Math.round(b / count);
+      }
+    }
+  }
+  
+  // Additional horizontal seam fix for Russia region (lon 180)
+  for (let y = 0; y < h; y++) {
+    const idxLeft = (y * w + w - 1) * 4;
+    const idxRight = (y * w) * 4;
+    const blendR = (fixedData[idxLeft] + fixedData[idxRight]) / 2;
+    const blendG = (fixedData[idxLeft + 1] + fixedData[idxRight + 1]) / 2;
+    const blendB = (fixedData[idxLeft + 2] + fixedData[idxRight + 2]) / 2;
+    fixedData[idxLeft] = Math.round(blendR);
+    fixedData[idxLeft + 1] = Math.round(blendG);
+    fixedData[idxLeft + 2] = Math.round(blendB);
+    fixedData[idxRight] = Math.round(blendR);
+    fixedData[idxRight + 1] = Math.round(blendG);
+    fixedData[idxRight + 2] = Math.round(blendB);
+  }
+  
+  ctx.putImageData(new ImageData(fixedData, w, h), 0, 0);
+  const finalData = ctx.getImageData(0, 0, w, h);
 
   const dummy = new THREE.Object3D();
   const tiles: TileData[] = [];
@@ -42,11 +91,11 @@ function buildTileMatrices(image: HTMLImageElement): TileData[] {
       const lon = -Math.PI + (col + 0.5) * lonStep;
       const u = (col + 0.5) / LON_STEPS;
 
-      const px = Math.min(Math.floor(u * offscreen.width), offscreen.width - 1);
-      const py = Math.min(Math.floor(v * offscreen.height), offscreen.height - 1);
-      const idx = (py * offscreen.width + px) * 4;
+      const px = Math.min(Math.floor(u * w), w - 1);
+      const py = Math.min(Math.floor(v * h), h - 1);
+      const idx = (py * w + px) * 4;
 
-      const brightness = (data[idx] + data[idx + 1] + data[idx + 2]) / 3;
+      const brightness = (finalData.data[idx] + finalData.data[idx + 1] + finalData.data[idx + 2]) / 3;
       if (brightness > 100) continue;
 
       const x = GLOBE_RADIUS * Math.cos(lat) * Math.sin(lon);
@@ -96,13 +145,12 @@ function isInRegion(lat: number, lon: number, region: string): boolean {
 
 // No elevation — highlighted tiles stay at their original position, only color changes
 
-function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef, resetKey }: {
+function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef }: {
   tiles: TileData[];
   targetPhi: number;
   targetTheta: number;
   highlightRegion?: string;
   groupRef: React.RefObject<THREE.Group | null>;
-  resetKey?: string;
 }) {
   const glassMeshRef = useRef<THREE.InstancedMesh>(null);
   const solidMeshRef = useRef<THREE.InstancedMesh>(null);
@@ -261,8 +309,8 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef, r
 
   useFrame((_, delta) => {
     floatTimeRef.current += delta;
-    const floatX = Math.sin(floatTimeRef.current * 0.4) * 0.015;
-    const floatY = Math.cos(floatTimeRef.current * 0.3) * 0.02;
+    const floatX = Math.sin(floatTimeRef.current * 0.4) * 0.0165;
+    const floatY = Math.cos(floatTimeRef.current * 0.3) * 0.022;
 
     if (groupRef.current) {
       groupRef.current.rotation.x = thetaSpring.get() + floatX;
@@ -362,75 +410,6 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef, r
         />
       </instancedMesh>
 
-      {/* Energy Connections Arcs */}
-      <EnergyArcs
-        key={resetKey}
-        tiles={tileInfo}
-        highlightRegion={highlightRegion}
-        resetKey={resetKey}
-      />
-    </group>
-  );
-}
-
-function EnergyArcs({ tiles, highlightRegion, resetKey }: { tiles: TileData[], highlightRegion?: string, resetKey: string }) {
-  const arcCount = 30;
-  const arcs = useMemo(() => {
-    if (!highlightRegion) return [];
-    const regionTiles = tiles.filter(t => t.region === highlightRegion);
-    if (regionTiles.length < 2) return [];
-
-    const result = [];
-    for (let i = 0; i < arcCount; i++) {
-      const start = regionTiles[Math.floor(Math.random() * regionTiles.length)].pos;
-      const end = regionTiles[Math.floor(Math.random() * regionTiles.length)].pos;
-
-      const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-      const dist = start.distanceTo(end);
-      mid.normalize().multiplyScalar(GLOBE_RADIUS + 0.15 + dist * 0.6);
-
-      result.push({ start, end, mid });
-    }
-    return result;
-  }, [tiles, highlightRegion, resetKey]);
-
-  const groupRef = useRef<THREE.Group>(null);
-
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime();
-    if (groupRef.current) {
-      groupRef.current.children.forEach((child: any) => {
-        if (child.material) {
-          child.material.dashOffset = -time * 2.5;
-          child.material.opacity = 0.7 + Math.sin(time * 15 + Math.random()) * 0.3;
-        }
-      });
-    }
-  });
-
-  if (arcs.length === 0) return null;
-
-  return (
-    <group ref={groupRef}>
-      {arcs.map((arc, i) => (
-        <QuadraticBezierLine
-          key={`${resetKey}-${i}`}
-          start={arc.start}
-          end={arc.end}
-          mid={arc.mid}
-          color="#D4EC28"
-          lineWidth={10}
-          dashed
-          dashScale={3}
-          dashSize={0.7}
-          dashGap={0.3}
-          transparent
-          opacity={0.9}
-          depthTest={false}
-          depthWrite={false}
-          renderOrder={100}
-        />
-      ))}
     </group>
   );
 }
@@ -557,6 +536,11 @@ export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegi
           <pointLight position={[0, 10, 0]} intensity={0.8} />
           <pointLight position={[0, -10, 0]} intensity={0.5} />
 
+          {/*Asia/Russia Coverage - Back side lighting */}
+          <pointLight position={[0, 0, -8]} intensity={1.5} color="#ffffff" />
+          <directionalLight position={[-3, 2, -6]} intensity={1.2} color="#f0f0f0" />
+          <directionalLight position={[0, -2, -7]} intensity={0.9} color="#ffffff" />
+
           {tiles.length > 0 && (
             <GlobeMesh
               groupRef={groupRef}
@@ -564,7 +548,6 @@ export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegi
               targetPhi={targetPhi}
               targetTheta={targetTheta}
               highlightRegion={highlightRegion}
-              resetKey={highlightRegion ?? 'default'}
             />
           )}
           <CameraControls

@@ -1,9 +1,7 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 
 import { NumberTicker } from "./ui/number-ticker";
-import { GridPattern } from "@/registry/magicui/grid-pattern";
-import { cn } from "@/lib/utils";
 
 // ---- Data ----
 
@@ -31,18 +29,63 @@ const STATS = [
   },
 ];
 
+// ---- Scroll prevention helpers ----
+const BLOCKED_KEYS = ["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "End", "Home"];
+function blockScroll(e: Event) { e.preventDefault(); }
+function blockKeys(e: KeyboardEvent) { if (BLOCKED_KEYS.includes(e.key)) e.preventDefault(); }
+
+function lockScroll() {
+  document.addEventListener("wheel", blockScroll, { passive: false });
+  document.addEventListener("touchmove", blockScroll, { passive: false });
+  document.addEventListener("keydown", blockKeys);
+}
+function unlockScroll() {
+  document.removeEventListener("wheel", blockScroll);
+  document.removeEventListener("touchmove", blockScroll);
+  document.removeEventListener("keydown", blockKeys);
+}
+
 // ---- Section ----
 
 export function Statistics() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
+  const [played, setPlayed] = useState(false);
+
+  // Lock scroll for a brief moment to ensure animations are seen
+  useEffect(() => {
+    if (played) return;
+    const el = sectionRef.current;
+    if (!el) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || played) return;
+
+        // Lock immediately when entering viewport
+        setPlayed(true);
+        lockScroll();
+
+        // Unlock after the bars finish growing (approx 2.5s)
+        const timer = setTimeout(unlockScroll, 2500);
+        return () => clearTimeout(timer);
+      },
+      { threshold: 0.6 } // Wait until most of the section is visible
+    );
+
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      unlockScroll();
+    };
+  }, [played]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"]
   });
 
-  const yParallax = useTransform(scrollYProgress, [0, 1], ["0%", "-50%"]);
+  const yParallax = useTransform(scrollYProgress, [0, 1], ["25%", "-25%"]);
 
   return (
     <section
@@ -50,8 +93,8 @@ export function Statistics() {
       id="impacto"
       className="relative z-0"
       style={{
-        height: "80svh",
-        paddingTop: "10vh",
+        height: "100svh",
+        scrollMarginTop: "80px",
         scrollSnapAlign: "start",
         overflow: "hidden",
       }}
@@ -74,7 +117,7 @@ export function Statistics() {
               display: "grid",
               gridTemplateColumns: "1fr 1fr 1fr",
               alignItems: "end",
-              padding: "48px 80px 32px",
+              padding: "0 80px 24px",
             }}
           >
             {/* Title */}
@@ -117,13 +160,14 @@ export function Statistics() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
+            viewport={{ once: true, amount: 0.25 }}
             style={{
               height: "100%",
               display: "grid",
               gridTemplateColumns: "1fr 1fr 1fr",
               padding: "0 80px",
               gap: "9px",
+              transform: "translateY(-15%)",
             }}
           >
             {STATS.map((stat, idx) => (
@@ -134,7 +178,7 @@ export function Statistics() {
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "flex-end",
-                  paddingBottom: "8%",
+                  paddingBottom: "calc(8% + 10svh)",
                 }}
               >
                 {/* Number — sits on top of the bar, outside */}

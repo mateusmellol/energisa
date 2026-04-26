@@ -8,8 +8,6 @@ import { TimelineSection } from "./components/Timeline";
 import { NewsSection } from "./components/NewsSection";
 import { Footer } from "./components/Footer";
 
-import { GridPattern } from "../registry/magicui/grid-pattern";
-import { cn } from "../lib/utils";
 import { motion, useScroll, useTransform } from "motion/react";
 
 export default function App() {

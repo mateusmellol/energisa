@@ -12,33 +12,65 @@ const ARTICLES = [
     category: "Institucional",
     date: "Abr 2025",
     title: "Livro revisita os 120 anos da nossa trajetória",
+    desc: "Uma publicação que celebra mais de um século de história, inovação e compromisso com o desenvolvimento do Brasil.",
   },
   {
     category: "Promoção",
     date: "Abr 2025",
     title: "Show de Prêmios: pague com Pix e concorra a mais de 500 prêmios",
+    desc: "Clientes que pagam a fatura via Pix participam automaticamente de sorteios com centenas de prêmios todo mês.",
   },
   {
     category: "Serviços",
     date: "Abr 2025",
     title: "Economize até 30% na fatura com o (re)energisa em MS e MT",
+    desc: "Programa de eficiência energética oferece descontos expressivos para clientes do Mato Grosso e Mato Grosso do Sul.",
   },
 ];
 
-function SmallCard({ category, date, title }: { category: string; date: string; title: string }) {
+function CategoryBadge({ label }: { label: string }) {
   return (
-    <div
-      className="flex flex-row gap-4 group cursor-pointer"
-      style={{ borderTop: "1px solid #e8e8e5", paddingTop: 20, paddingBottom: 4 }}
+    <span
+      style={{
+        fontFamily: "Sora, sans-serif",
+        fontSize: "10px",
+        fontWeight: 600,
+        letterSpacing: "0.1em",
+        textTransform: "uppercase" as const,
+        color: "#0BCF81",
+      }}
     >
-      {/* Image placeholder */}
+      {label}
+    </span>
+  );
+}
+
+function ArticleCard({
+  category,
+  date,
+  title,
+  desc,
+  featured = false,
+}: {
+  category: string;
+  date: string;
+  title: string;
+  desc?: string;
+  featured?: boolean;
+}) {
+  return (
+    <a
+      href="#"
+      className="group flex flex-col gap-4 no-underline"
+      style={{ textDecoration: "none" }}
+    >
+      {/* Media */}
       <div
+        className="w-full rounded-xl border overflow-hidden"
         style={{
-          width: 88,
-          height: 72,
-          background: "#e8e8e5",
-          flexShrink: 0,
-          overflow: "hidden",
+          background: "#121312",
+          aspectRatio: featured ? "16/9" : "16/10",
+          border: "1px solid #e8e8e5",
           position: "relative",
         }}
       >
@@ -46,29 +78,19 @@ function SmallCard({ category, date, title }: { category: string; date: string; 
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(135deg, rgba(11,207,129,0.2) 0%, transparent 60%)",
-            opacity: 0,
-            transition: "opacity 250ms ease, transform 300ms cubic-bezier(0.16,1,0.3,1)",
+            background:
+              "radial-gradient(ellipse at 30% 50%, rgba(11,207,129,0.18) 0%, transparent 65%), radial-gradient(ellipse at 80% 20%, rgba(78,179,131,0.10) 0%, transparent 50%)",
+            transition: "opacity 300ms cubic-bezier(0.16,1,0.3,1)",
           }}
-          className="group-hover:opacity-100 group-hover:scale-[1.08]"
+          className="group-hover:opacity-80"
         />
       </div>
 
-      {/* Text */}
-      <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+      {/* Content */}
+      <div className="flex flex-col gap-2">
+        {/* Meta row */}
         <div className="flex items-center gap-2">
-          <span
-            style={{
-              fontFamily: "Sora, sans-serif",
-              fontSize: "10px",
-              fontWeight: 600,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: "#0BCF81",
-            }}
-          >
-            {category}
-          </span>
+          <CategoryBadge label={category} />
           <span
             style={{
               fontFamily: "Sora, sans-serif",
@@ -79,43 +101,71 @@ function SmallCard({ category, date, title }: { category: string; date: string; 
             {date}
           </span>
         </div>
-        <p
+
+        {/* Title */}
+        <h3
           style={{
             fontFamily: "Sora, sans-serif",
-            fontSize: "13px",
-            fontWeight: 500,
+            fontSize: featured ? "clamp(18px, 1.6vw, 22px)" : "15px",
+            fontWeight: 600,
             color: "#121312",
-            lineHeight: 1.45,
+            lineHeight: 1.35,
+            margin: 0,
             transition: "color 200ms ease",
           }}
           className="group-hover:text-[#0BCF81]"
         >
           {title}
-        </p>
+        </h3>
+
+        {/* Description */}
+        {desc && (
+          <p
+            style={{
+              fontFamily: "Sora, sans-serif",
+              fontSize: "14px",
+              color: "#71726b",
+              lineHeight: 1.65,
+              margin: 0,
+            }}
+          >
+            {desc}
+          </p>
+        )}
+
+        {/* CTA */}
         <span
           style={{
             fontFamily: "Sora, sans-serif",
-            fontSize: "12px",
+            fontSize: "13px",
+            fontWeight: 500,
             color: "#aaa9a2",
-            marginTop: 4,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            marginTop: 2,
             transition: "color 200ms ease",
           }}
-          className="group-hover:text-[#121312] flex items-center gap-1 w-fit"
+          className="group-hover:text-[#121312]"
         >
-          Ler artigo <span className="transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1">→</span>
+          Ler artigo{" "}
+          <span className="transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1 inline-block">
+            →
+          </span>
         </span>
       </div>
-    </div>
+    </a>
   );
 }
 
 export function NewsSection() {
   const shouldReduceMotion = useReducedMotion();
-  const yOffset = shouldReduceMotion ? 0 : 10;
+  const yOffset = shouldReduceMotion ? 0 : 12;
 
   return (
     <section style={{ background: "#fdfdfc", scrollSnapAlign: "start" }} className="py-20">
       <div className="max-w-[1440px] mx-auto px-8 md:px-20">
+
         {/* Section header */}
         <div className="flex items-end justify-between mb-12">
           <h2
@@ -137,145 +187,139 @@ export function NewsSection() {
               color: "#8b8d85",
               textDecoration: "none",
               letterSpacing: "0.02em",
+              transition: "color 200ms ease",
             }}
+            className="hover:text-[#121312]"
           >
             Ver todas →
           </a>
         </div>
 
-        {/* Featured row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 mb-6">
-          {/* Left: large image */}
-          <div
-            style={{
-              background: "#121312",
-              aspectRatio: "16/10",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "radial-gradient(ellipse at 30% 50%, rgba(11,207,129,0.18) 0%, transparent 65%), radial-gradient(ellipse at 80% 20%, rgba(78,179,131,0.10) 0%, transparent 50%)",
-              }}
-            />
-          </div>
-
-          {/* Right: featured content */}
-          <div
-            style={{
-              background: "#f3f3f0",
-              padding: "40px 36px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
-            <div className="flex flex-col gap-5">
-              <div className="flex items-center gap-3">
-                <span
-                  style={{
-                    fontFamily: "Sora, sans-serif",
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    color: "#0BCF81",
-                  }}
-                >
-                  {FEATURED.category}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "Sora, sans-serif",
-                    fontSize: "12px",
-                    color: "#aaa9a2",
-                  }}
-                >
-                  {FEATURED.date}
-                </span>
-              </div>
-
-              <h3
-                style={{
-                  fontFamily: "Sora, sans-serif",
-                  fontSize: "clamp(20px, 2.2vw, 28px)",
-                  fontWeight: 600,
-                  color: "#121312",
-                  lineHeight: 1.3,
-                }}
-              >
-                {FEATURED.title}
-              </h3>
-
-              <p
-                style={{
-                  fontFamily: "Sora, sans-serif",
-                  fontSize: "clamp(14px, 1.1vw, 16px)",
-                  color: "#71726b",
-                  lineHeight: 1.65,
-                }}
-              >
-                {FEATURED.desc}
-              </p>
-            </div>
-
-            <a
-              href="#"
-              style={{
-                fontFamily: "Sora, sans-serif",
-                fontSize: "14px",
-                fontWeight: 500,
-                color: "#121312",
-                textDecoration: "none",
-                letterSpacing: "0.02em",
-                marginTop: 32,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                borderBottom: "1px solid #121312",
-                paddingBottom: 2,
-                width: "fit-content",
-                transition: "all 200ms cubic-bezier(0.16, 1, 0.3, 1)",
-              }}
-              className="group hover:text-[#0BCF81] hover:border-[#0BCF81] active:scale-[0.97]"
-            >
-              Ler artigo
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </a>
-          </div>
-        </div>
-
-        {/* Secondary row — 3 horizontal cards */}
-        <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-3 gap-6"
+        {/* Grid: 1 featured + 3 cards */}
+        <motion.div
+          className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1fr] gap-8"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: true, margin: "-60px" }}
           variants={{
             hidden: { opacity: 0 },
             visible: {
               opacity: 1,
-              transition: { staggerChildren: 0.1 }
-            }
+              transition: { staggerChildren: 0.08 },
+            },
           }}
         >
-          {ARTICLES.map((a, i) => (
-            <motion.div 
-              key={i} 
-              variants={{
-                hidden: { opacity: 0, y: yOffset },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }
-              }}
-            >
-              <SmallCard {...a} />
-            </motion.div>
-          ))}
+          {/* Featured — spans 2 cols on lg */}
+          <motion.div
+            className="lg:col-span-2"
+            variants={{
+              hidden: { opacity: 0, y: yOffset },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
+              },
+            }}
+          >
+            <ArticleCard {...FEATURED} featured />
+          </motion.div>
+
+          {/* Secondary stack — 3 cards stacked vertically */}
+          <div className="flex flex-col gap-8">
+            {ARTICLES.map((a, i) => (
+              <motion.div
+                key={i}
+                variants={{
+                  hidden: { opacity: 0, y: yOffset },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 0.4,
+                      ease: [0.16, 1, 0.3, 1],
+                      delay: (i + 1) * 0.08,
+                    },
+                  },
+                }}
+              >
+                <a
+                  href="#"
+                  className="group flex flex-row gap-4 no-underline"
+                  style={{ textDecoration: "none" }}
+                >
+                  {/* Thumbnail */}
+                  <div
+                    className="rounded-xl border flex-shrink-0 overflow-hidden"
+                    style={{
+                      width: 96,
+                      height: 72,
+                      background: "#121312",
+                      border: "1px solid #e8e8e5",
+                      position: "relative",
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background:
+                          "radial-gradient(ellipse at 30% 60%, rgba(11,207,129,0.22) 0%, transparent 70%)",
+                        transition: "opacity 250ms ease",
+                      }}
+                      className="group-hover:opacity-70"
+                    />
+                  </div>
+
+                  {/* Text */}
+                  <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <CategoryBadge label={a.category} />
+                      <span
+                        style={{
+                          fontFamily: "Sora, sans-serif",
+                          fontSize: "11px",
+                          color: "#aaa9a2",
+                        }}
+                      >
+                        {a.date}
+                      </span>
+                    </div>
+                    <p
+                      style={{
+                        fontFamily: "Sora, sans-serif",
+                        fontSize: "13px",
+                        fontWeight: 500,
+                        color: "#121312",
+                        lineHeight: 1.45,
+                        margin: 0,
+                        transition: "color 200ms ease",
+                      }}
+                      className="group-hover:text-[#0BCF81]"
+                    >
+                      {a.title}
+                    </p>
+                    <span
+                      style={{
+                        fontFamily: "Sora, sans-serif",
+                        fontSize: "12px",
+                        color: "#aaa9a2",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 3,
+                        transition: "color 200ms ease",
+                      }}
+                      className="group-hover:text-[#121312]"
+                    >
+                      Ler artigo{" "}
+                      <span className="transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1 inline-block">
+                        →
+                      </span>
+                    </span>
+                  </div>
+                </a>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>

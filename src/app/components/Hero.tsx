@@ -4,7 +4,7 @@ import imgHero from "../../assets/hero-main.webp";
 import { BadgeDelta } from "./ui/badge-delta";
 import { motion } from "motion/react";
 
-const EASE = [0.4, 0, 0.2, 1] as const;
+const MASK_EASE = [0.16, 1, 0.3, 1] as const;
 
 /* ─── Stock Widget (Pill Format) ────────────────────────────────────── */
 function StockWidget() {
@@ -85,56 +85,63 @@ export function Hero() {
 
           {/* LEFT: StockWidget + Headline */}
           <div className="flex flex-col items-start gap-6">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.9, delay: 0.7, ease: EASE }}
-            >
-              <StockWidget />
-            </motion.div>
+            <div style={{ overflow: "hidden" }}>
+              <motion.div
+                initial={{ y: "105%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.68, delay: 0.53, ease: MASK_EASE }}
+              >
+                <StockWidget />
+              </motion.div>
+            </div>
 
-            <motion.h1
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.0, delay: 0.85, ease: EASE }}
-              style={{
-                fontFamily: "Sora, sans-serif",
-                fontWeight: 500,
-                fontSize: "clamp(48px, 6.5vw, 84px)",
-                letterSpacing: "-0.03em",
-                color: "#f6f8ed",
-                lineHeight: 1.05,
-              }}
-            >
-              A Energisa <br />
-              move o Brasil
-            </motion.h1>
+            <div style={{ overflow: "hidden" }}>
+              <motion.h1
+                initial={{ y: "105%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.75, delay: 0.64, ease: MASK_EASE }}
+                style={{
+                  fontFamily: "Sora, sans-serif",
+                  fontWeight: 500,
+                  fontSize: "clamp(48px, 6.5vw, 84px)",
+                  letterSpacing: "-0.03em",
+                  color: "#f6f8ed",
+                  lineHeight: 1.05,
+                }}
+              >
+                A Energisa <br />
+                move o Brasil
+              </motion.h1>
+            </div>
           </div>
 
           {/* RIGHT: Body text + Buttons — grouped at the bottom */}
           <div className="flex flex-col items-start max-w-[380px] shrink-0 self-stretch">
             {/* spacer pushes the group down */}
             <div className="mt-auto flex flex-col items-start gap-6 w-full">
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1.0, delay: 1.1, ease: EASE }}
-                style={{
-                  fontFamily: "Sora, sans-serif",
-                  fontSize: "clamp(15px, 1.2vw, 18px)",
-                  color: "rgba(246, 248, 237, 0.85)",
-                  lineHeight: 1.6,
-                  fontWeight: 300,
-                }}
-              >
-                De Norte a Sul. Quando uma luz <br />acende, a Energisa está por trás.
-              </motion.p>
+              <div style={{ overflow: "hidden" }}>
+                <motion.p
+                  initial={{ y: "105%", opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.75, delay: 0.83, ease: MASK_EASE }}
+                  style={{
+                    fontFamily: "Sora, sans-serif",
+                    fontSize: "clamp(15px, 1.2vw, 18px)",
+                    color: "rgba(246, 248, 237, 0.85)",
+                    lineHeight: 1.6,
+                    fontWeight: 300,
+                  }}
+                >
+                  De Norte a Sul. Quando uma luz <br />acende, a Energisa está por trás.
+                </motion.p>
+              </div>
 
+              <div style={{ overflow: "hidden" }}>
               <motion.div
                 className="flex flex-wrap items-center gap-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.9, delay: 1.3, ease: EASE }}
+                initial={{ y: "105%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.68, delay: 0.98, ease: MASK_EASE }}
               >
                 <button
                   onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
@@ -157,6 +164,7 @@ export function Hero() {
                   Ecossistema
                 </button>
               </motion.div>
+              </div>
             </div>
           </div>
 

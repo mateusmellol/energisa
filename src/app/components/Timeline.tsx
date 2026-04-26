@@ -63,18 +63,19 @@ export function TimelineSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
-  // Track scroll progress through the 300svh container
+  // Track scroll progress through the 400svh container
+  // Offset "start end" means it starts as soon as the section enters the bottom of the viewport
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"],
+    offset: ["start end", "end start"],
   });
 
   // Drive tab transitions from scroll position
   useEffect(() => {
     if (shouldReduceMotion) return;
     return scrollYProgress.on("change", (latest) => {
-      if (latest < 0.25) setActive(0);
-      else if (latest < 0.50) setActive(1);
+      if (latest < 0.39) setActive(0);
+      else if (latest < 0.52) setActive(1);
       else setActive(2);
     });
   }, [scrollYProgress, shouldReduceMotion]);
@@ -82,19 +83,30 @@ export function TimelineSection() {
   // Subtle fade-in as section enters
 
 
-  // Progress bar: fade in at start, fade out when FlexLab starts sliding over (~75%)
-  const barOpacityRaw = useTransform(scrollYProgress, [0, 0.04, 0.75, 0.85], [0, 1, 1, 0]);
+  // Progress bar: fade in when reveal ends, reach 100% at 75% scroll, then fade out before Ecossistema slides in
+  const barOpacityRaw = useTransform(scrollYProgress, [0.25, 0.32, 0.59, 0.65], [0, 1, 1, 0]);
   const barOpacity = useSpring(barOpacityRaw, { stiffness: 120, damping: 24 });
+
+  // Bar reaches 100% at scrollYProgress 0.61 (= 75% of sticky phase), then stays frozen
+  const barProgress = useTransform(scrollYProgress, [0.28, 0.61], [0, 1]);
 
   const current = TABS[active];
   const yOffset = shouldReduceMotion ? 0 : 16;
   const yExitOffset = shouldReduceMotion ? 0 : -10;
+  const fallbackBgOpacity = useTransform(scrollYProgress, [0.15, 0.16], [0, 1]);
+  
+  // Reveal animation: Single dark panel that "opens" from top to bottom
+  // Accelerated to finish early and avoid white space at the bottom
+  const maskScale = useTransform(scrollYProgress, [0.02, 0.15], [0, 1]);
+  // clip-path mask to reveal content from top to bottom in sync with the panel
+  const revealClip = useTransform(scrollYProgress, [0.02, 0.15], ["inset(0 0 100% 0)", "inset(0 0 0% 0)"]);
+  const contentOpacity = useTransform(scrollYProgress, [0.02, 0.08], [0, 1]);
 
   return (
     // Scroll track — 300svh gives ~100svh of scroll dwell per tab
     <div
       ref={containerRef}
-      style={{ height: shouldReduceMotion ? "100svh" : "400svh" }}
+      style={{ height: shouldReduceMotion ? "100svh" : "250svh", marginTop: "-15svh", position: "relative", zIndex: 1 }}
     >
       <motion.section
         id="timeline"
@@ -103,24 +115,34 @@ export function TimelineSection() {
           position: "sticky",
           top: 0,
           height: "100svh",
-          background: "#121312",
+          background: "transparent", // Background will be provided by the opening panels
           opacity: 1,
         }}
       >
         {/* Energisa yellow progress bar — below the fixed header */}
         {!shouldReduceMotion && (
           <ScrollProgress
-            motionValue={scrollYProgress}
+            motionValue={barProgress}
             opacityValue={barOpacity}
             className="top-[80px] h-[1.5px]"
             color="#D4EC28"
           />
         )}
 
-        {/* Globe — positioned to the right */}
+        {/* Gradient overlay — blends typography bg into globe, no hard edge */}
         <div
+          className="hidden md:block absolute top-0 bottom-0 pointer-events-none z-[2]"
+          style={{
+            left: "28%",
+            width: "160px",
+            background: "linear-gradient(to right, #121312 0%, transparent 100%)",
+          }}
+        />
+
+        {/* Globe — positioned to the right */}
+        <motion.div
           className="hidden md:block absolute top-0 bottom-0 right-0 pointer-events-auto"
-          style={{ width: "65%", height: "100%", touchAction: "none" }}
+          style={{ width: "65%", height: "100%", touchAction: "none", opacity: contentOpacity, clipPath: revealClip, zIndex: 1 }}
         >
           <VoxelGlobe
             className="w-full h-full"
@@ -128,21 +150,37 @@ export function TimelineSection() {
             targetTheta={TABS[active].globe.theta}
             highlightRegion={TABS[active].globe.highlight}
           />
-        </div>
+        </motion.div>
 
-        {/* Soft gradient veil — blends the text background into the globe */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            zIndex: 1,
-            background: "linear-gradient(to right, #121312 0%, #121312 22%, rgba(18,19,18,0.82) 42%, rgba(18,19,18,0.3) 60%, rgba(18,19,18,0) 75%)",
-          }}
-        />
 
-        <div
+
+        {/* REVEAL MASK — single panel that grows from top to bottom to form the background */}
+        {!shouldReduceMotion && (
+          <div className="absolute inset-0 z-[-1] pointer-events-none">
+            <motion.div
+              style={{
+                width: "100%",
+                height: "100%",
+                backgroundColor: "#121312",
+                scaleY: maskScale,
+                transformOrigin: "top", // Revealed from top to bottom
+              }}
+            />
+          </div>
+        )}
+
+        {/* Fallback background for reduced motion or after transition */}
+        {shouldReduceMotion && <div className="absolute inset-0 z-[-2] bg-[#121312]" />}
+        {!shouldReduceMotion && (
+          <motion.div
+            className="absolute inset-0 z-[-2] bg-[#121312]"
+            style={{ opacity: fallbackBgOpacity }}
+          />
+        )}
+
+        <motion.div
           className="max-w-[1440px] mx-auto relative px-8 md:px-20 flex flex-col justify-center pointer-events-none h-full"
-          style={{ zIndex: 2 }}
+          style={{ zIndex: 3, opacity: contentOpacity, clipPath: revealClip }}
         >
           {/* Main content */}
           <div className="relative z-10 flex flex-col gap-10 pointer-events-none" style={{ maxWidth: 480 }}>
@@ -205,7 +243,7 @@ export function TimelineSection() {
 
                 {/* Metrics */}
                 <div className="flex items-center gap-12 mt-4">
-                  {(current as any).metrics.map((m: any, idx: number) => (
+                  {current.metrics.map((m, idx) => (
                     <div key={idx} className="flex items-center gap-12">
                       <div className="flex flex-col gap-1">
                         <span style={{
@@ -226,7 +264,7 @@ export function TimelineSection() {
                           {m.label}
                         </span>
                       </div>
-                      {idx < (current as any).metrics.length - 1 && (
+                      {idx < current.metrics.length - 1 && (
                         <div style={{ width: 1, height: 40, background: "rgba(246, 248, 237, 0.1)" }} />
                       )}
                     </div>
@@ -235,7 +273,7 @@ export function TimelineSection() {
               </motion.div>
             </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
       </motion.section>
     </div>
   );
