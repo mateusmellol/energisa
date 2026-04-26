@@ -44,10 +44,11 @@ const articles = [
 
 export function NewsGrid() {
   return (
-    <section className="relative w-full py-36 bg-white overflow-hidden">
+    <section className="relative w-full py-16 md:py-36 bg-white overflow-hidden">
       <div className="page-container">
+        <h2 className="text-[28px] md:text-[39px] font-regular text-neutral-950 mb-10">Notícias</h2>
         {/* Cards row — Figma node 186:3340 */}
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-row overflow-x-auto md:flex-wrap gap-4 pb-4 md:pb-0 scrollbar-hide snap-x snap-mandatory">
           {articles.map((article, i) => (
             <motion.article
               key={article.id}
@@ -55,10 +56,10 @@ export function NewsGrid() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="flex-1 min-w-[280px] max-w-[340px] flex flex-col cursor-pointer group"
+              className="flex-shrink-0 md:flex-1 min-w-[280px] max-w-[340px] flex flex-col cursor-pointer group snap-center"
             >
               {/* Image — Figma node 186:3311 */}
-              <div className="w-full h-[400px] bg-neutral-950 rounded-t-lg" />
+              <div className="w-full h-[240px] md:h-[400px] bg-neutral-950 rounded-t-lg" />
 
               {/* Content — Figma node 186:3310 */}
               <div className="bg-neutral-50 p-6 flex flex-col gap-7 rounded-b-lg">
