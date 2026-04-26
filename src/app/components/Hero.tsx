@@ -60,7 +60,7 @@ export function Hero() {
         className="absolute inset-0 pointer-events-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1.8, ease: "easeInOut" }}
+        transition={{ duration: 1, ease: "easeOut" }}
       >
         <img
           alt=""
@@ -85,63 +85,56 @@ export function Hero() {
 
           {/* LEFT: StockWidget + Headline */}
           <div className="flex flex-col items-start gap-6">
-            <div style={{ overflow: "hidden" }}>
-              <motion.div
-                initial={{ y: "105%", opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.68, delay: 0.53, ease: MASK_EASE }}
-              >
-                <StockWidget />
-              </motion.div>
-            </div>
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2, ease: MASK_EASE }}
+            >
+              <StockWidget />
+            </motion.div>
 
-            <div style={{ overflow: "hidden" }}>
-              <motion.h1
-                initial={{ y: "105%", opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.75, delay: 0.64, ease: MASK_EASE }}
-                style={{
-                  fontFamily: "Sora, sans-serif",
-                  fontWeight: 500,
-                  fontSize: "clamp(36px, 6.5vw, 84px)",
-                  letterSpacing: "-0.03em",
-                  color: "#f6f8ed",
-                  lineHeight: 1.05,
-                }}
-              >
-                A Energisa <br className="hidden md:block" />
-                move o Brasil
-              </motion.h1>
-            </div>
+            <motion.h1
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: MASK_EASE }}
+              style={{
+                fontFamily: "Sora, sans-serif",
+                fontWeight: 500,
+                fontSize: "clamp(36px, 6.5vw, 84px)",
+                letterSpacing: "-0.03em",
+                color: "#f6f8ed",
+                lineHeight: 1.05,
+              }}
+            >
+              A Energisa <br className="hidden md:block" />
+              move o Brasil
+            </motion.h1>
           </div>
 
           {/* RIGHT: Body text + Buttons — grouped at the bottom */}
           <div className="flex flex-col items-start w-full md:max-w-[380px] shrink-0 self-stretch">
             {/* spacer pushes the group down */}
             <div className="mt-auto flex flex-col items-start gap-6 w-full">
-              <div style={{ overflow: "hidden" }}>
-                <motion.p
-                  initial={{ y: "105%", opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.75, delay: 0.83, ease: MASK_EASE }}
-                  style={{
-                    fontFamily: "Sora, sans-serif",
-                    fontSize: "clamp(15px, 1.2vw, 18px)",
-                    color: "rgba(246, 248, 237, 0.85)",
-                    lineHeight: 1.6,
-                    fontWeight: 300,
-                  }}
-                >
-                  De Norte a Sul. Quando uma luz <br />acende, a Energisa está por trás.
-                </motion.p>
-              </div>
-
-              <div style={{ overflow: "hidden" }}>
-                <motion.div
-                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full"
-                initial={{ y: "105%", opacity: 0 }}
+              <motion.p
+                initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.68, delay: 0.98, ease: MASK_EASE }}
+                transition={{ duration: 0.6, delay: 0.4, ease: MASK_EASE }}
+                style={{
+                  fontFamily: "Sora, sans-serif",
+                  fontSize: "clamp(15px, 1.2vw, 18px)",
+                  color: "rgba(246, 248, 237, 0.85)",
+                  lineHeight: 1.6,
+                  fontWeight: 300,
+                }}
+              >
+                De Norte a Sul. Quando uma luz <br />acende, a Energisa está por trás.
+              </motion.p>
+
+              <motion.div
+                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.5, ease: MASK_EASE }}
               >
                 <button
                   onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}

@@ -182,9 +182,6 @@ export function Header() {
     <>
       <motion.header
         className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-20 transition-all duration-300 ease-out ${headerClasses}`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.9, delay: 0.5, ease: [0.4, 0, 0.2, 1] }}
       >
         <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto px-5 md:px-20">
           <Logo />

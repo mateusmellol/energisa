@@ -42,7 +42,7 @@ function ServiceCard({ card }: { card: { icon: React.ReactNode; label: string; d
       <div className="service-card-hitbox absolute inset-[1px] z-20 pointer-events-auto cursor-pointer" />
 
       {/* Visual Content: Includes the border, moves as a single unit. */}
-      <div className="service-card-visuals relative bg-[#FFFFFF] rounded flex flex-col justify-between p-4 h-full w-full z-10">
+      <div className="service-card-visuals relative bg-[#FFFFFF] rounded-[4px] flex flex-col justify-between p-4 h-full w-full z-10">
         <div className="relative z-10">{card.icon}</div>
 
         <div className="relative z-10 flex flex-col gap-1">

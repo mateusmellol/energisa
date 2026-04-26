@@ -89,12 +89,12 @@ const CARDS = [
       { icon: Cpu, label: "Controle" },
       { icon: Zap, label: "Smart Grid" },
     ],
-    panelBg: "#121312",
-    panelText: "#FFFFFF",
-    panelSubtext: "rgba(255, 255, 255, 0.7)",
+    panelBg: "#FFFFFF",
+    panelText: "#121312",
+    panelSubtext: "rgba(18, 19, 18, 0.7)",
     buttonBg: "#d4ec28",
     buttonText: "#121312",
-    invertLogo: true,
+    invertLogo: false,
   },
   {
     id: "esgas",
@@ -114,12 +114,12 @@ const CARDS = [
       { icon: Globe, label: "Presença" },
       { icon: Zap, label: "Eficiência" },
     ],
-    panelBg: "#121312",
-    panelText: "#FFFFFF",
-    panelSubtext: "rgba(255, 255, 255, 0.7)",
+    panelBg: "#FFFFFF",
+    panelText: "#121312",
+    panelSubtext: "rgba(18, 19, 18, 0.7)",
     buttonBg: "#d4ec28",
     buttonText: "#121312",
-    invertLogo: true,
+    invertLogo: false,
   },
   {
     id: "reenergisa",
@@ -127,18 +127,18 @@ const CARDS = [
     renderLogo: () => (
       <img alt="(re)energisa" src={REENERGISA_LOGO} style={{ width: 166, height: 34, display: "block", objectFit: "contain" }} />
     ),
-    description: "Modernização da rede elétrica para uma distribuição de energia mais confiável e sustentável.",
+    description: "Modernização da rede elétrica para uma distribution de energia mais confiável e sustentável.",
     features: [
       { icon: Settings, label: "Modernização" },
       { icon: Leaf, label: "Energia Limpa" },
       { icon: Sparkles, label: "Inovação" },
     ],
-    panelBg: "#121312",
-    panelText: "#FFFFFF",
-    panelSubtext: "rgba(255, 255, 255, 0.7)",
+    panelBg: "#FFFFFF",
+    panelText: "#121312",
+    panelSubtext: "rgba(18, 19, 18, 0.7)",
     buttonBg: "#d4ec28",
     buttonText: "#121312",
-    invertLogo: true,
+    invertLogo: false,
   },
 ];
 
@@ -185,13 +185,12 @@ export function Ecossistema() {
         {CARDS.map((card, idx) => (
           <motion.div
             key={card.id}
-            initial={{ y: 60, opacity: 0 }}
+            initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{
-              duration: 0.8,
-              delay: idx * 0.1,
-              ease: [0.21, 1, 0.36, 1]
+              duration: 0.6,
+              ease: [0.16, 1, 0.3, 1]
             }}
             className="flex flex-col md:flex-row min-h-[640px] md:h-[480px] w-full overflow-hidden"
           >
