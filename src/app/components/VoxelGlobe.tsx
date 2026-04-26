@@ -313,8 +313,8 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef }:
     const floatY = Math.cos(floatTimeRef.current * 0.3) * 0.022;
 
     if (groupRef.current) {
-      groupRef.current.rotation.x = floatX;
-      groupRef.current.rotation.y = floatY;
+      groupRef.current.rotation.x = thetaSpring.get() + floatX;
+      groupRef.current.rotation.y = phiSpring.get() + floatY;
     }
 
     const solidMesh = solidMeshRef.current;
@@ -487,14 +487,13 @@ export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegi
     };
   }, []);
 
-  // Smooth camera rotation on tab change
+  // Smooth camera reset
   useEffect(() => {
     if (controlsRef.current) {
-      // rotateTo( azimuthAngle, polarAngle, enableTransition )
-      // Map our phi/theta to camera angles
-      controlsRef.current.rotateTo(targetPhi, targetTheta, true);
+      // setLookAt(posX, posY, posZ, targetX, targetY, targetZ, enableTransition)
+      controlsRef.current.setLookAt(0, 0, 8, 0, 0, 0, true);
     }
-  }, [targetPhi, targetTheta]);
+  }, [highlightRegion]);
 
   return (
     <div
@@ -553,18 +552,18 @@ export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegi
           )}
           <CameraControls
             ref={controlsRef}
-            minDistance={4}
-            maxDistance={12}
+            minDistance={8}
+            maxDistance={8}
             dollyToCursor={false}
             mouseButtons={{
               left: 1, // ACTION.ROTATE
               middle: 0,
               right: 0,
-              wheel: 16, // ACTION.ZOOM
+              wheel: 0,
             }}
             touches={{
               one: 32, // ACTION.TOUCH_ROTATE
-              two: 512, // ACTION.TOUCH_ZOOM
+              two: 0,
               three: 0,
             }}
           />
