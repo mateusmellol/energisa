@@ -223,7 +223,7 @@ function TimelineMobile() {
       style={{ minHeight: "100svh" }}
     >
       {/* Globe — top half */}
-      <div className="relative w-full h-[45svh]">
+      <div className="relative w-full h-[45svh] pointer-events-none">
         <VoxelGlobe
           className="w-full h-full"
           targetPhi={TABS[active].globe.phi}
