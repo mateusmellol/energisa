@@ -222,88 +222,100 @@ function TimelineMobile() {
       className="relative overflow-hidden bg-[#121312]"
       style={{ minHeight: "100svh" }}
     >
-      {/* Globe — top half */}
-      <div className="relative w-full h-[45svh] pointer-events-none">
+      {/* Globe -- full section, behind everything, no touch/pointer interaction */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ touchAction: "none" }}
+      >
         <VoxelGlobe
           className="w-full h-full"
           targetPhi={TABS[active].globe.phi}
           targetTheta={TABS[active].globe.theta}
           highlightRegion={TABS[active].globe.highlight}
         />
-        {/* Fade bottom */}
+        {/* Bottom gradient so text is legible */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, transparent 40%, #121312 95%)" }}
+          style={{ background: "linear-gradient(to bottom, transparent 20%, #121312 65%)" }}
         />
       </div>
 
-      {/* Content — below globe */}
-      <div className="relative z-10 px-5 pb-12 flex flex-col gap-8 -mt-8">
-        {/* Tab switcher */}
-        <div className="flex items-center gap-2">
-          {TABS.map((tab, i) => (
-            <button
-              key={tab.id}
-              onClick={() => setActive(i)}
-              className="flex-1 min-h-[44px] rounded-[4px] text-sm font-medium transition-all duration-200"
-              style={{
-                fontFamily: "Sora, sans-serif",
-                backgroundColor: active === i ? "rgba(246, 248, 237, 0.12)" : "transparent",
-                color: active === i ? "#f6f8ed" : "rgba(246, 248, 237, 0.4)",
-                border: active === i ? "1px solid rgba(246, 248, 237, 0.2)" : "1px solid transparent",
-              }}
+      {/* Content -- pinned to bottom, like desktop */}
+      <div className="relative z-10 flex flex-col justify-end" style={{ minHeight: "100svh" }}>
+        <div className="px-5 pb-14 flex flex-col gap-8">
+
+          {/* Animated content */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
+              exit={{ opacity: 0, y: -8, transition: { duration: 0.15 } }}
+              className="flex flex-col gap-5"
             >
-              {tab.label}
-            </button>
-          ))}
+              {/* Icons */}
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                {current.icons.map(({ icon: Icon, label }) => (
+                  <div key={label} className="flex items-center gap-2">
+                    <Icon size={14} style={{ color: "rgba(246, 248, 237, 0.5)" }} strokeWidth={1.5} />
+                    <span style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", color: "rgba(246, 248, 237, 0.45)", letterSpacing: "0.04em" }}>
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Title */}
+              <h2 style={{ fontFamily: "Sora, sans-serif", fontWeight: 400, fontSize: "24px", color: "#FFFFFF", lineHeight: 1.25 }}>
+                {current.title}
+              </h2>
+
+              {/* Body */}
+              <p style={{ fontFamily: "Sora, sans-serif", fontSize: "14px", color: "rgba(246, 248, 237, 0.6)", lineHeight: 1.7 }}>
+                {current.body}
+              </p>
+
+              {/* Metrics -- horizontal row with separators, like desktop */}
+              <div className="flex items-center gap-8 mt-1">
+                {current.metrics.map((m, idx) => (
+                  <div key={idx} className="flex items-center gap-8">
+                    <div className="flex flex-col gap-1">
+                      <span style={{ fontFamily: "Sora, sans-serif", fontSize: "28px", color: "#FFFFFF", fontWeight: 400 }}>
+                        {m.value}
+                      </span>
+                      <span style={{ fontFamily: "Sora, sans-serif", fontSize: "10px", color: "rgba(246, 248, 237, 0.4)", letterSpacing: "0.04em", textTransform: "lowercase" }}>
+                        {m.label}
+                      </span>
+                    </div>
+                    {idx < current.metrics.length - 1 && (
+                      <div style={{ width: 1, height: 36, background: "rgba(246, 248, 237, 0.1)" }} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Tab switcher -- at the very bottom */}
+          <div className="flex items-center gap-2">
+            {TABS.map((tab, i) => (
+              <button
+                key={tab.id}
+                onClick={() => setActive(i)}
+                className="flex-1 min-h-[44px] rounded-[4px] text-sm font-medium transition-all duration-200"
+                style={{
+                  fontFamily: "Sora, sans-serif",
+                  backgroundColor: active === i ? "rgba(246, 248, 237, 0.12)" : "transparent",
+                  color: active === i ? "#f6f8ed" : "rgba(246, 248, 237, 0.4)",
+                  border: active === i ? "1px solid rgba(246, 248, 237, 0.2)" : "1px solid rgba(246, 248, 237, 0.08)",
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
         </div>
-
-        {/* Animated content */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={current.id}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
-            exit={{ opacity: 0, y: -8, transition: { duration: 0.15 } }}
-            className="flex flex-col gap-5"
-          >
-            {/* Icons */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              {current.icons.map(({ icon: Icon, label }) => (
-                <div key={label} className="flex items-center gap-2">
-                  <Icon size={14} style={{ color: "rgba(246, 248, 237, 0.5)" }} strokeWidth={1.5} />
-                  <span style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", color: "rgba(246, 248, 237, 0.45)", letterSpacing: "0.04em" }}>
-                    {label}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Title */}
-            <h2 style={{ fontFamily: "Sora, sans-serif", fontWeight: 400, fontSize: "24px", color: "#FFFFFF", lineHeight: 1.25 }}>
-              {current.title}
-            </h2>
-
-            {/* Body */}
-            <p style={{ fontFamily: "Sora, sans-serif", fontSize: "14px", color: "rgba(246, 248, 237, 0.6)", lineHeight: 1.7 }}>
-              {current.body}
-            </p>
-
-            {/* Metrics */}
-            <div className="grid grid-cols-3 gap-3 mt-2">
-              {current.metrics.map((m, idx) => (
-                <div key={idx} className="flex flex-col gap-1">
-                  <span style={{ fontFamily: "Sora, sans-serif", fontSize: "24px", color: "#FFFFFF", fontWeight: 400 }}>
-                    {m.value}
-                  </span>
-                  <span style={{ fontFamily: "Sora, sans-serif", fontSize: "10px", color: "rgba(246, 248, 237, 0.4)", letterSpacing: "0.04em", textTransform: "lowercase" }}>
-                    {m.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </AnimatePresence>
       </div>
     </section>
   );
