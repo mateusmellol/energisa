@@ -26,9 +26,9 @@ export function Hero() {
       />
 
       {/* Content container — Figma node 183:1954 */}
-      <div className="page-container relative z-10 flex flex-col justify-between min-h-screen pt-[106px] pb-16">
+      <div className="page-container relative z-10 flex flex-col justify-end md:justify-between gap-12 md:gap-0 min-h-screen pt-[106px] pb-16">
         {/* Top row: Stock + Profile — Figma node 183:1955 */}
-        <div className="flex flex-col md:grid md:grid-cols-12 gap-8 md:gap-4 items-start">
+        <div className="hidden md:grid md:grid-cols-12 gap-4 items-start">
           {/* Stock ticker — Figma node 183:1956 */}
           <motion.div
             {...motionPresets.fadeIn}
@@ -73,7 +73,7 @@ export function Hero() {
         </div>
 
         {/* Bottom row: Headline + Body + CTAs — Figma node 183:2091 */}
-        <div className="flex flex-col md:grid md:grid-cols-12 gap-8 md:gap-4 items-end">
+        <div className="flex flex-col md:grid md:grid-cols-12 gap-8 md:gap-4 items-start md:items-end">
           {/* Headline — Figma node 183:2092 */}
           <motion.div
             {...motionPresets.fadeInUp}
