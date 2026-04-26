@@ -511,7 +511,7 @@ export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegi
       {tiles !== null && (
         <Canvas
           camera={{ position: [0, 0, 8], fov: 45 }}
-          dpr={1}
+          dpr={[1, 2]}
           gl={{ antialias: false, powerPreference: 'high-performance', alpha: false }}
           onCreated={({ gl }) => gl.setClearColor('#121312', 1)}
         >

@@ -222,9 +222,9 @@ function TimelineMobile() {
       className="relative overflow-hidden bg-[#121312]"
       style={{ minHeight: "100svh" }}
     >
-      {/* Globe -- full section, behind everything, no touch/pointer interaction */}
+      {/* Globe -- shifted up on mobile to avoid being buried by text gradient */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute top-[-10svh] left-0 right-0 h-[75svh] pointer-events-none"
         style={{ touchAction: "none" }}
       >
         <VoxelGlobe
@@ -233,10 +233,10 @@ function TimelineMobile() {
           targetTheta={TABS[active].globe.theta}
           highlightRegion={TABS[active].globe.highlight}
         />
-        {/* Bottom gradient so text is legible */}
+        {/* Subtle fade to background color */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, transparent 20%, #121312 65%)" }}
+          style={{ background: "linear-gradient(to bottom, transparent 40%, #121312 95%)" }}
         />
       </div>
 
