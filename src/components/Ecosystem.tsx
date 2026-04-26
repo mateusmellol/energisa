@@ -129,7 +129,7 @@ function EcosystemAccordion() {
                 }`}
               >
                 {/* Index */}
-                <span className="text-[10px] md:text-xs font-medium tracking-widest text-neutral-400 uppercase whitespace-nowrap">
+                <span className="hidden md:inline text-xs font-medium tracking-widest text-neutral-400 uppercase whitespace-nowrap">
                   ECOSSISTEMA / {item.index}
                 </span>
 
