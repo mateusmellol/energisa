@@ -63,7 +63,7 @@ export function Timeline({
 
             {/* Title + Description */}
             <div className="flex flex-col gap-5 mt-8">
-              <h3 className="text-[39px] font-regular leading-tight text-neutral-950">
+              <h3 className="text-[28px] md:text-[39px] font-regular leading-tight text-neutral-950">
                 {title}
               </h3>
               <p className="text-base leading-relaxed text-neutral-600">
@@ -90,10 +90,10 @@ export function Timeline({
         <motion.div
           {...motionPresets.fadeInUp}
           transition={{ delay: 0.3 }}
-          className="flex gap-10"
+          className="flex flex-col sm:flex-row gap-6 md:gap-10 mt-12 md:mt-0"
         >
           {/* Year badge */}
-          <div className="relative w-[203px] h-[137px] flex items-center justify-center overflow-hidden">
+          <div className="relative w-full sm:w-[203px] h-[100px] md:h-[137px] flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 grid grid-cols-8 grid-rows-5">
               {Array.from({ length: 40 }).map((_, i) => (
                 <div
@@ -106,13 +106,13 @@ export function Timeline({
                 />
               ))}
             </div>
-            <span className="relative z-10 text-[49px] font-regular text-neutral-950">
+            <span className="relative z-10 text-[36px] md:text-[49px] font-regular text-neutral-950">
               {year}
             </span>
           </div>
 
           {/* Location badge */}
-          <div className="relative w-[203px] h-[137px] flex items-center justify-center overflow-hidden">
+          <div className="relative w-full sm:w-[203px] h-[100px] md:h-[137px] flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 grid grid-cols-8 grid-rows-5">
               {Array.from({ length: 40 }).map((_, i) => (
                 <div
@@ -125,7 +125,7 @@ export function Timeline({
                 />
               ))}
             </div>
-            <span className="relative z-10 text-[49px] font-regular text-neutral-950">
+            <span className="relative z-10 text-[36px] md:text-[49px] font-regular text-neutral-950">
               {location}
             </span>
           </div>
