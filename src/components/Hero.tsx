@@ -31,9 +31,11 @@ export function Hero() {
         <div className="hidden md:grid md:grid-cols-12 gap-4 items-start">
           {/* Stock ticker — Figma node 183:1956 */}
           <motion.div
-            {...motionPresets.fadeIn}
-            transition={{ delay: 0.3 }}
-            className="md:col-span-2 w-[120px] h-[120px] rounded backdrop-blur-[59px] bg-white/20 p-2 flex flex-col justify-between"
+            variants={motionPresets.fadeIn}
+            initial="initial"
+            animate="animate"
+            transition={{ ...motionPresets.fadeIn.transition, delay: 0.3 }}
+            className="md:col-span-2 w-[120px] h-[120px] rounded backdrop-blur-[40px] bg-white/20 p-2 flex flex-col justify-between border border-white/30"
           >
             <div className="opacity-50">
               <p className="text-[7px] font-medium text-neutral-950">ENGI 11</p>
@@ -54,8 +56,10 @@ export function Hero() {
 
           {/* Profile cards — Figma node 183:2078 */}
           <motion.div
-            {...motionPresets.fadeIn}
-            transition={{ delay: 0.5 }}
+            variants={motionPresets.fadeIn}
+            initial="initial"
+            animate="animate"
+            transition={{ ...motionPresets.fadeIn.transition, delay: 0.5 }}
             className="hidden md:flex md:col-start-9 md:col-span-4 flex-col gap-[18px]"
           >
             {[1, 2].map((i) => (
@@ -73,10 +77,15 @@ export function Hero() {
         </div>
 
         {/* Bottom row: Headline + Body + CTAs — Figma node 183:2091 */}
-        <div className="flex flex-col md:grid md:grid-cols-12 gap-8 md:gap-4 items-start md:items-end">
+        <motion.div 
+          variants={motionPresets.stagger}
+          initial="initial"
+          animate="animate"
+          className="flex flex-col md:grid md:grid-cols-12 gap-8 md:gap-4 items-start md:items-end"
+        >
           {/* Headline — Figma node 183:2092 */}
           <motion.div
-            {...motionPresets.fadeInUp}
+            variants={motionPresets.fadeInUp}
             className="md:col-span-5"
           >
             <h1 className="text-[36px] md:text-[52px] font-regular leading-[1.2] tracking-tight text-neutral-950">
@@ -86,8 +95,7 @@ export function Hero() {
 
           {/* Body + Buttons — Figma node 183:2095 */}
           <motion.div
-            {...motionPresets.fadeInUp}
-            transition={{ delay: 0.2 }}
+            variants={motionPresets.fadeInUp}
             className="md:col-start-8 md:col-span-5 flex flex-col gap-8 md:gap-12"
           >
             <p className="text-base leading-relaxed text-neutral-600">
@@ -96,11 +104,11 @@ export function Hero() {
               empresas ao futuro da energia.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="w-full sm:w-auto px-8 py-5 border border-neutral-300 rounded-full text-sm font-medium text-neutral-950 hover:bg-neutral-50 transition-colors">
+              <button className="w-full sm:w-auto px-8 py-5 border border-neutral-300 rounded-full text-sm font-medium text-neutral-950 hover:bg-neutral-50 active:scale-[0.97] transition-all duration-200">
                 Explorar
               </button>
               <button
-                className="w-full sm:w-auto px-8 py-5 rounded-full text-sm font-medium text-neutral-950 transition-colors"
+                className="w-full sm:w-auto px-8 py-5 rounded-full text-sm font-medium text-neutral-950 active:scale-[0.97] transition-all duration-200"
                 style={{ backgroundColor: "#D4EC28" }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#c2d920")}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#D4EC28")}
@@ -109,7 +117,7 @@ export function Hero() {
               </button>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

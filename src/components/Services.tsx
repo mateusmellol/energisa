@@ -52,10 +52,10 @@ export function Services() {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`text-base font-medium py-3 border-b-2 transition-colors capitalize min-h-[44px] ${
+                  className={`text-base font-medium py-3 border-b-2 transition-all capitalize min-h-[44px] active:scale-95 active:opacity-80 ${
                     activeTab === tab
                       ? "text-neutral-950 border-neutral-950"
-                      : "text-neutral-400 border-transparent hover:text-neutral-600"
+                      : "text-neutral-400 border-transparent md:hover:text-neutral-600"
                   }`}
                 >
                   {tab}
@@ -64,7 +64,7 @@ export function Services() {
             </div>
             <a
               href="#"
-              className="text-base font-medium text-neutral-500 hover:text-neutral-950 transition-colors"
+              className="text-base font-medium text-neutral-500 md:hover:text-neutral-950 transition-all active:scale-95 active:opacity-70"
             >
               Mais →
             </a>
@@ -87,7 +87,8 @@ export function Services() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08 }}
-                className="group relative h-[140px] md:h-[180px] rounded-xl border border-neutral-150 bg-neutral-0 p-4 flex flex-col justify-between cursor-pointer hover:border-neutral-300 hover:shadow-sm transition-all"
+                whileTap={{ scale: 0.98, backgroundColor: "#F8F8F7" }}
+                className="group relative h-[140px] md:h-[180px] rounded-xl border border-neutral-150 bg-neutral-0 p-4 flex flex-col justify-between cursor-pointer md:hover:border-neutral-300 md:hover:shadow-sm transition-all active:bg-neutral-50"
               >
                 <div className="w-6 h-6 flex items-center justify-center text-lg">
                   {service.icon}

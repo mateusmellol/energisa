@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, useSpring } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, useSpring, animate } from "motion/react";
 import { VoxelGlobe } from "./VoxelGlobe";
-import { Zap, Leaf, Globe, Cpu, Flame, Sparkles } from "lucide-react";
 import { ScrollProgress } from "@/registry/magicui/scroll-progress";
 import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
@@ -12,11 +11,6 @@ const TABS = [
     label: "Antes",
     title: "Começamos assim",
     body: "Em 1905, nascia em Cataguases, Minas Gerais, uma pequena empresa de energia que viria a transformar o cenário energético brasileiro.",
-    icons: [
-      { icon: Flame, label: "Pioneirismo" },
-      { icon: Globe, label: "Expansão" },
-      { icon: Zap, label: "Distribuição" },
-    ],
     metrics: [
       { value: "1905", label: "fundação" },
       { value: "MG", label: "origem" },
@@ -29,11 +23,6 @@ const TABS = [
     label: "Agora",
     title: "Estamos prontos para inovar",
     body: "Com investimentos massivos em tecnologia e inovação, a Energisa se posiciona na vanguarda da transição energética brasileira.",
-    icons: [
-      { icon: Cpu, label: "Smart Grid" },
-      { icon: Leaf, label: "Energia Limpa" },
-      { icon: Zap, label: "Eficiência" },
-    ],
     metrics: [
       { value: "11", label: "distribuidoras" },
       { value: "20M+", label: "clientes" },
@@ -45,12 +34,7 @@ const TABS = [
     id: "futuro",
     label: "Futuro",
     title: "Acolhemos o novo",
-    body: "A meta é clara: 100% de energia renovável até 2030. Com o ecossistema Energisa, estamos redefinindo como o Brasil se conecta com o futuro.",
-    icons: [
-      { icon: Sparkles, label: "Inovação" },
-      { icon: Leaf, label: "Sustentabilidade" },
-      { icon: Globe, label: "Alcance Global" },
-    ],
+    body: "A meta é clara: 100% de energia renovável até 2030. Com o ecossistema Energisa, estamos redefinindo como o Brasil se conecta",
     metrics: [
       { value: "100%", label: "renovável" },
       { value: "2030", label: "meta" },
@@ -62,7 +46,7 @@ const TABS = [
 
 /* ─────────────────────────────────────────────────────────────
    DESKTOP — scroll-driven sticky experience (original behaviour)
-───────────────────────────────────────────────────────────── */
+ ───────────────────────────────────────────────────────────── */
 function TimelineDesktop() {
   const [active, setActive] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -73,9 +57,13 @@ function TimelineDesktop() {
     offset: ["start end", "end start"],
   });
 
+  const isManualScrolling = useRef(false);
+  const animationRef = useRef<any>(null);
+
   useEffect(() => {
     if (shouldReduceMotion) return;
     return scrollYProgress.on("change", (latest) => {
+      if (isManualScrolling.current) return;
       if (latest < 0.39) setActive(0);
       else if (latest < 0.52) setActive(1);
       else setActive(2);
@@ -85,6 +73,40 @@ function TimelineDesktop() {
   const barOpacityRaw = useTransform(scrollYProgress, [0.25, 0.32, 0.59, 0.65], [0, 1, 1, 0]);
   const barOpacity = useSpring(barOpacityRaw, { stiffness: 120, damping: 24 });
   const barProgress = useTransform(scrollYProgress, [0.28, 0.61], [0, 1]);
+
+  const scrollToTab = (index: number) => {
+    if (animationRef.current) animationRef.current.stop();
+    isManualScrolling.current = true;
+    setActive(index);
+
+    if (shouldReduceMotion || !containerRef.current) {
+      isManualScrolling.current = false;
+      return;
+    }
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const elementTop = rect.top + scrollTop;
+    const elementHeight = rect.height;
+    const windowHeight = window.innerHeight;
+
+    // Progress values that correspond to each tab's center in the scroll range
+    const targets = [0.335, 0.455, 0.565];
+    const targetProgress = targets[index];
+
+    const targetScroll = targetProgress * (elementHeight + windowHeight) + elementTop - windowHeight;
+
+    // Custom smooth scroll animation using framer-motion's animate
+    animationRef.current = animate(window.scrollY, targetScroll, {
+      duration: 1.0,
+      ease: [0.22, 1, 0.36, 1], // Balanced smooth scroll
+      onUpdate: (latest) => window.scrollTo(0, latest),
+      onComplete: () => {
+        isManualScrolling.current = false;
+        animationRef.current = null;
+      },
+    });
+  };
 
   const current = TABS[active];
   const yOffset = shouldReduceMotion ? 0 : 16;
@@ -148,11 +170,41 @@ function TimelineDesktop() {
         </motion.div>
 
         {/* Content — vertically centered */}
-        <motion.div
-          className="max-w-[1440px] mx-auto relative px-20 flex flex-col justify-center pointer-events-none h-full"
-          style={{ zIndex: 3 }}
-        >
-          <div className="relative z-10 flex flex-col gap-10 pointer-events-none" style={{ maxWidth: 480 }}>
+        <div className="max-w-[1440px] mx-auto relative px-20 flex flex-col justify-center pointer-events-none h-full" style={{ zIndex: 3 }}>
+          <div className="relative z-10 flex flex-col gap-12 pointer-events-none" style={{ maxWidth: 480 }}>
+            {/* Toggles (outside AnimatePresence for persistence) */}
+            <div className="flex items-center gap-2 pointer-events-auto">
+              {TABS.map((tab, i) => (
+                <button
+                  key={tab.id}
+                  onClick={() => scrollToTab(i)}
+                  className="relative px-6 min-h-[44px] rounded-[4px] text-xs font-medium transition-colors duration-200 overflow-hidden"
+                  style={{
+                    fontFamily: "Sora, sans-serif",
+                    border: "1px solid rgba(246, 248, 237, 0.08)",
+                  }}
+                >
+                  {/* Active pill background */}
+                  {active === i && (
+                    <motion.div
+                      layoutId="active-pill-desktop"
+                      className="absolute inset-0 bg-white/5 rounded-[4px] z-0"
+                      style={{ boxShadow: "inset 0 0 0 1px rgba(212, 236, 40, 0.4)" }}
+                      transition={{ type: "spring", stiffness: 300, damping: 35 }}
+                    />
+                  )}
+                  <motion.span
+                    initial={false}
+                    animate={{ color: active === i ? "#D4EC28" : "rgba(246, 248, 237, 0.4)" }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="relative z-10"
+                  >
+                    {tab.label}
+                  </motion.span>
+                </button>
+              ))}
+            </div>
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={current.id}
@@ -161,18 +213,6 @@ function TimelineDesktop() {
                 exit={{ opacity: 0, y: yExitOffset, transition: { duration: 0.15, ease: [0.55, 0, 1, 0.45] } }}
                 className="flex flex-col gap-6"
               >
-                {/* Icons row */}
-                <div className="flex items-center gap-6">
-                  {current.icons.map(({ icon: Icon, label }) => (
-                    <div key={label} className="flex items-center gap-2">
-                      <Icon size={16} style={{ color: "rgba(246, 248, 237, 0.5)" }} strokeWidth={1.5} />
-                      <span style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", color: "rgba(246, 248, 237, 0.45)", letterSpacing: "0.04em" }}>
-                        {label}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
                 {/* Title */}
                 <h2 style={{ fontFamily: "Sora, sans-serif", fontWeight: 400, fontSize: "clamp(24px, 2.6vw, 32px)", color: "#FFFFFF", lineHeight: 1.2 }}>
                   {current.title}
@@ -204,15 +244,12 @@ function TimelineDesktop() {
               </motion.div>
             </AnimatePresence>
           </div>
-        </motion.div>
+        </div>
       </motion.section>
     </div>
   );
 }
 
-/* ─────────────────────────────────────────────────────────────
-   MOBILE — manual tab switching, globe on top, content below
-───────────────────────────────────────────────────────────── */
 function TimelineMobile() {
   const [active, setActive] = useState(0);
   const current = TABS[active];
@@ -222,9 +259,9 @@ function TimelineMobile() {
       className="relative overflow-hidden bg-[#121312]"
       style={{ minHeight: "100svh" }}
     >
-      {/* Globe -- shifted up on mobile to avoid being buried by text gradient */}
+      {/* Globe -- shifted up on mobile */}
       <div
-        className="absolute top-[-10svh] left-0 right-0 h-[75svh] pointer-events-none"
+        className="absolute top-[-5svh] left-0 right-0 h-[65svh] pointer-events-none"
         style={{ touchAction: "none" }}
       >
         <VoxelGlobe
@@ -233,38 +270,55 @@ function TimelineMobile() {
           targetTheta={TABS[active].globe.theta}
           highlightRegion={TABS[active].globe.highlight}
         />
-        {/* Subtle fade to background color */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, transparent 40%, #121312 95%)" }}
         />
       </div>
 
-      {/* Content -- pinned to bottom, like desktop */}
+      {/* Content -- pinned to bottom */}
       <div className="relative z-10 flex flex-col justify-end" style={{ minHeight: "100svh" }}>
-        <div className="px-5 pb-14 flex flex-col gap-8">
+        <div className="px-5 pb-14 flex flex-col gap-10">
+
+          {/* Toggles (Always visible) */}
+          <div className="flex items-center gap-2">
+            {TABS.map((tab, i) => (
+              <button
+                key={tab.id}
+                onClick={() => setActive(i)}
+                className="relative flex-1 min-h-[44px] rounded-[4px] text-xs font-medium transition-colors duration-200"
+                style={{
+                  fontFamily: "Sora, sans-serif",
+                  color: active === i ? "#D4EC28" : "rgba(246, 248, 237, 0.4)",
+                  border: "1px solid rgba(246, 248, 237, 0.08)",
+                }}
+              >
+                <AnimatePresence>
+                  {active === i && (
+                    <motion.div
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      animate={{ scaleX: 1, opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                      className="absolute inset-0 bg-white/5 rounded-[4px] z-0"
+                      style={{ boxShadow: "inset 0 0 0 1px rgba(212, 236, 40, 0.4)" }}
+                    />
+                  )}
+                </AnimatePresence>
+                <span className="relative z-10">{tab.label}</span>
+              </button>
+            ))}
+          </div>
 
           {/* Animated content */}
           <AnimatePresence mode="wait">
             <motion.div
               key={current.id}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
-              exit={{ opacity: 0, y: -8, transition: { duration: 0.15 } }}
-              className="flex flex-col gap-5"
+              exit={{ opacity: 0, y: -10, transition: { duration: 0.15, ease: [0.55, 0, 1, 0.45] } }}
+              className="flex flex-col gap-6"
             >
-              {/* Icons */}
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                {current.icons.map(({ icon: Icon, label }) => (
-                  <div key={label} className="flex items-center gap-2">
-                    <Icon size={14} style={{ color: "rgba(246, 248, 237, 0.5)" }} strokeWidth={1.5} />
-                    <span style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", color: "rgba(246, 248, 237, 0.45)", letterSpacing: "0.04em" }}>
-                      {label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
               {/* Title */}
               <h2 style={{ fontFamily: "Sora, sans-serif", fontWeight: 400, fontSize: "24px", color: "#FFFFFF", lineHeight: 1.25 }}>
                 {current.title}
@@ -275,7 +329,7 @@ function TimelineMobile() {
                 {current.body}
               </p>
 
-              {/* Metrics -- horizontal row with separators, like desktop */}
+              {/* Metrics */}
               <div className="flex items-center gap-8 mt-1">
                 {current.metrics.map((m, idx) => (
                   <div key={idx} className="flex items-center gap-8">
@@ -295,25 +349,6 @@ function TimelineMobile() {
               </div>
             </motion.div>
           </AnimatePresence>
-
-          {/* Tab switcher -- at the very bottom */}
-          <div className="flex items-center gap-2">
-            {TABS.map((tab, i) => (
-              <button
-                key={tab.id}
-                onClick={() => setActive(i)}
-                className="flex-1 min-h-[44px] rounded-[4px] text-sm font-medium transition-all duration-200"
-                style={{
-                  fontFamily: "Sora, sans-serif",
-                  backgroundColor: active === i ? "rgba(246, 248, 237, 0.12)" : "transparent",
-                  color: active === i ? "#f6f8ed" : "rgba(246, 248, 237, 0.4)",
-                  border: active === i ? "1px solid rgba(246, 248, 237, 0.2)" : "1px solid rgba(246, 248, 237, 0.08)",
-                }}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
 
         </div>
       </div>
