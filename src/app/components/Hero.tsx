@@ -157,10 +157,8 @@ export function Hero() {
                   Ecossistema
                 </button>
               </motion.div>
-              </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>
