@@ -26,7 +26,9 @@
       "WebFetch(domain:bestfolios.medium.com)",
       "WebFetch(domain:bestfolios.com)",
       "WebFetch(domain:designerup.co)",
-      "Bash(npx skillfish:*)"
+      "Bash(npx skillfish:*)",
+      "mcp__browser-mcp__browser_navigate",
+      "WebFetch(domain:mateusmellol.github.io)"
     ]
   }
 }

@@ -27,8 +27,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isInTimeline, setIsInTimeline] = useState(false);
-  const [isInEcossistema, setIsInEcossistema] = useState(false);
+  const [isTimelineVisible, setIsTimelineVisible] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const scrollTo = (id: string) => {
@@ -45,19 +44,13 @@ export function Header() {
           // Scrolled past hero
           setIsScrolled(scrollPos > window.innerHeight - 80);
 
-          // Check if inside Timeline (Dark Section)
+          // Check if inside Timeline range
           const timeline = document.getElementById('timeline');
-          if (timeline) {
-            const rect = timeline.getBoundingClientRect();
-            setIsInTimeline(rect.top <= 80 && rect.bottom >= 80);
-          }
+          const timelineRect = timeline?.getBoundingClientRect();
+          const nextTimelineVisible = Boolean(timelineRect && timelineRect.top <= 80 && timelineRect.bottom >= 80);
 
-          // Check if inside Ecossistema (light section after timeline)
-          const ecossistema = document.getElementById('ecossistema');
-          if (ecossistema) {
-            const rect = ecossistema.getBoundingClientRect();
-            setIsInEcossistema(rect.top <= 80 && rect.bottom >= 80);
-          }
+          setIsTimelineVisible(nextTimelineVisible);
+
           ticking = false;
         });
         ticking = true;
@@ -70,23 +63,33 @@ export function Header() {
   }, []);
 
   // Determine header appearance
-  const headerClasses = isInEcossistema
-    ? "backdrop-blur-lg bg-[#FFFFFF]/90 border-b border-black/5 text-neutral-900 shadow-sm"
-    : isInTimeline
-      ? "backdrop-blur-lg bg-black/40 border-b border-white/10 text-[#fdfdfc] shadow-lg"
-      : isScrolled
-        ? "backdrop-blur-lg bg-[#FFFFFF]/80 border-b border-black/5 text-neutral-900 shadow-sm"
-        : "backdrop-blur-sm bg-black/10 border-b border-transparent text-[#FFFFFF]";
+  const headerClasses = isTimelineVisible
+    ? "backdrop-blur-lg bg-black/40 border-b border-white/10 text-[#fdfdfc] shadow-lg"
+    : isScrolled
+      ? "backdrop-blur-lg bg-[#FFFFFF]/80 border-b border-black/5 text-neutral-900 shadow-sm"
+      : "backdrop-blur-sm bg-black/10 border-b border-transparent text-[#FFFFFF]";
 
-  const isLight = isInEcossistema || (isScrolled && !isInTimeline);
+  const isLight = isScrolled && !isTimelineVisible;
 
   return (
     <>
-      <motion.header
-        className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-20 transition-all duration-300 ease-out ${headerClasses}`}
-      >
+      <AnimatePresence initial={false}>
+        <motion.header
+          key="site-header"
+          initial={false}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -96, opacity: 0 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-20 transition-all duration-300 ease-out ${headerClasses}`}
+        >
         <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto px-5 md:px-20">
-          <EnergisaLogo />
+          <button
+            onClick={() => scrollToSection("hero")}
+            className="transition-all duration-300 hover:opacity-80 active:scale-95 cursor-pointer outline-none"
+            aria-label="Voltar para o topo"
+          >
+            <EnergisaLogo />
+          </button>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-8">
@@ -121,7 +124,8 @@ export function Header() {
             }
           </button>
         </div>
-      </motion.header>
+        </motion.header>
+      </AnimatePresence>
 
       {/* Mobile drawer */}
       <AnimatePresence>
@@ -134,10 +138,10 @@ export function Header() {
             className="fixed top-20 left-0 right-0 z-40 bg-white border-b border-black/10 shadow-lg md:hidden"
           >
             <div className="flex flex-col px-5 py-6 gap-1">
-              {navLinks.map((link) => (
+              {NAV_LINKS.map((link) => (
                 <button
                   key={link.href}
-                  onClick={() => scrollTo(link.href.replace("#", ""))}
+                  onClick={() => scrollTo(getSectionId(link.href))}
                   className="flex items-center min-h-[44px] text-[18px] font-medium text-neutral-900 text-left"
                   style={{ fontFamily: "Sora, sans-serif" }}
                 >

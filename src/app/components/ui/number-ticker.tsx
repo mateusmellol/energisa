@@ -21,7 +21,7 @@ export function NumberTicker({
   useEffect(() => {
     if (!isInView) return;
 
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
     let frameId: number;
 
     const startAnimation = () => {
@@ -51,7 +51,7 @@ export function NumberTicker({
     }
 
     return () => {
-      clearTimeout(timeoutId);
+      if (timeoutId) clearTimeout(timeoutId);
       cancelAnimationFrame(frameId);
     };
   }, [isInView, value, duration, delay]);

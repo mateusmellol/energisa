@@ -3,6 +3,8 @@
 import { useScroll, useSpring, motion } from "motion/react";
 import type { MotionValue } from "motion/react";
 import { cn } from "@/lib/utils";
+import { createPortal } from "react-dom";
+import { useEffect, useState } from "react";
 
 interface ScrollProgressProps {
   className?: string;
@@ -17,6 +19,9 @@ export function ScrollProgress({
   motionValue: externalProgress,
   opacityValue,
 }: ScrollProgressProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const { scrollYProgress } = useScroll();
   const raw = externalProgress ?? scrollYProgress;
 
@@ -26,10 +31,14 @@ export function ScrollProgress({
     restDelta: 0.001,
   });
 
-  return (
+  const content = (
     <motion.div
-      className={cn("fixed left-0 right-0 h-[3px] z-50 origin-left", className)}
+      className={cn("fixed left-0 right-0 h-[3px] z-[9999] origin-left pointer-events-none", className)}
       style={{ scaleX, backgroundColor: color, opacity: opacityValue }}
     />
   );
+
+  if (!mounted) return null;
+
+  return createPortal(content, document.body);
 }

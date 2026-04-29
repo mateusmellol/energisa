@@ -1,9 +1,24 @@
-import { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, useSpring, animate } from "motion/react";
-import { VoxelGlobe } from "./VoxelGlobe";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, animate, motion, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import { ScrollProgress } from "@/registry/magicui/scroll-progress";
 import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
+import { useIsMobile } from "./ui/use-mobile";
+
+const VoxelGlobe = lazy(() =>
+  import("./VoxelGlobe").then((module) => ({
+    default: module.VoxelGlobe,
+  })),
+);
+
+function GlobeFallback() {
+  return (
+    <div
+      className="h-full w-full"
+      style={{ background: "radial-gradient(ellipse at 50% 55%, #2a3020 0%, #121312 70%)" }}
+    />
+  );
+}
 
 const TABS = [
   {
@@ -34,7 +49,7 @@ const TABS = [
     id: "futuro",
     label: "Futuro",
     title: "Acolhemos o novo",
-    body: "A meta é clara: 100% de energia renovável até 2030. Com o ecossistema Energisa, estamos redefinindo como o Brasil se conecta",
+    body: "A meta é clara: 100% de energia renovável até 2030. Com o ecossistema Energisa, estamos redefinindo como o Brasil se conecta.",
     metrics: [
       { value: "100%", label: "renovável" },
       { value: "2030", label: "meta" },
@@ -118,7 +133,7 @@ function TimelineDesktop() {
       style={{ height: shouldReduceMotion ? "100svh" : "200svh", marginTop: "-15svh", position: "relative", zIndex: 1, background: "#121312" }}
     >
       <motion.section
-        className="relative overflow-hidden"
+        className="timeline-visual relative overflow-hidden will-change-transform"
         style={{
           position: "sticky",
           top: 0,
@@ -132,7 +147,7 @@ function TimelineDesktop() {
           <ScrollProgress
             motionValue={barProgress}
             opacityValue={barOpacity}
-            className="top-[80px] h-[1.5px]"
+            className="top-[80px] h-[1px]"
             color="#D4EC28"
           />
         )}
@@ -161,12 +176,14 @@ function TimelineDesktop() {
             WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 150px)",
           }}
         >
-          <VoxelGlobe
-            className="w-full h-full"
-            targetPhi={TABS[active].globe.phi}
-            targetTheta={TABS[active].globe.theta}
-            highlightRegion={TABS[active].globe.highlight}
-          />
+          <Suspense fallback={<GlobeFallback />}>
+            <VoxelGlobe
+              className="w-full h-full"
+              targetPhi={TABS[active].globe.phi}
+              targetTheta={TABS[active].globe.theta}
+              highlightRegion={TABS[active].globe.highlight}
+            />
+          </Suspense>
         </motion.div>
 
         {/* Content — vertically centered */}
@@ -254,6 +271,15 @@ function TimelineMobile() {
   const [active, setActive] = useState(0);
   const current = TABS[active];
 
+  const hasWebGL = useMemo(() => {
+    try {
+      const canvas = document.createElement('canvas');
+      return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+    } catch {
+      return false;
+    }
+  }, []);
+
   return (
     <section
       className="relative overflow-hidden bg-[#121312]"
@@ -264,12 +290,18 @@ function TimelineMobile() {
         className="absolute top-[-5svh] left-0 right-0 h-[65svh] pointer-events-none"
         style={{ touchAction: "none" }}
       >
-        <VoxelGlobe
-          className="w-full h-full"
-          targetPhi={TABS[active].globe.phi}
-          targetTheta={TABS[active].globe.theta}
-          highlightRegion={TABS[active].globe.highlight}
-        />
+        {hasWebGL ? (
+          <Suspense fallback={<GlobeFallback />}>
+            <VoxelGlobe
+              className="w-full h-full"
+              targetPhi={TABS[active].globe.phi}
+              targetTheta={TABS[active].globe.theta}
+              highlightRegion={TABS[active].globe.highlight}
+            />
+          </Suspense>
+        ) : (
+          <GlobeFallback />
+        )}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, transparent 40%, #121312 95%)" }}
@@ -360,15 +392,12 @@ function TimelineMobile() {
    EXPORTED WRAPPER — renders the right instance per breakpoint
 ───────────────────────────────────────────────────────────── */
 export function TimelineSection() {
+  const isMobile = useIsMobile();
+
   return (
-    <div id="timeline">
-      {/* Mobile only */}
-      <div className="block md:hidden">
-        <TimelineMobile />
-      </div>
-      {/* Desktop only */}
-      <div className="hidden md:block">
-        <TimelineDesktop />
+    <div id="timeline" className="section origin-center bg-[#121312]">
+      <div className="section-inner">
+        {isMobile ? <TimelineMobile /> : <TimelineDesktop />}
       </div>
     </div>
   );

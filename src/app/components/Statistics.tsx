@@ -1,8 +1,9 @@
 import { useRef, useState, useEffect } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
 import { NumberTicker } from "./ui/number-ticker";
+import { useIsMobile } from "./ui/use-mobile";
 
 // ---- Data (Unified for both versions) ----
 const STATS_DATA = [
@@ -29,52 +30,118 @@ const STATS_DATA = [
   },
 ];
 
-// ---- Scroll prevention helpers ----
-const BLOCKED_KEYS = ["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "End", "Home"];
-function blockScroll(e: Event) { e.preventDefault(); }
-function blockKeys(e: KeyboardEvent) { if (BLOCKED_KEYS.includes(e.key)) e.preventDefault(); }
+type ImpactAnimationMode = "idle" | "charge" | "discharge";
 
-function lockScroll() {
-  document.addEventListener("wheel", blockScroll, { passive: false });
-  document.addEventListener("touchmove", blockScroll, { passive: false });
-  document.addEventListener("keydown", blockKeys);
-}
-function unlockScroll() {
-  document.removeEventListener("wheel", blockScroll);
-  document.removeEventListener("touchmove", blockScroll);
-  document.removeEventListener("keydown", blockKeys);
+function useImpactAnimation() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isCharged, setIsCharged] = useState(false);
+  const [animationCycle, setAnimationCycle] = useState(0);
+  const [animationMode, setAnimationMode] = useState<ImpactAnimationMode>("idle");
+  const scrollDirectionRef = useRef<"down" | "up">("down");
+  const lastScrollYRef = useRef(0);
+  const dischargeTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    lastScrollYRef.current = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY === lastScrollYRef.current) {
+        return;
+      }
+
+      scrollDirectionRef.current = currentScrollY > lastScrollYRef.current ? "down" : "up";
+      lastScrollYRef.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const element = sectionRef.current;
+    if (!element) return;
+
+    const clearDischargeTimer = () => {
+      if (dischargeTimerRef.current !== null) {
+        window.clearTimeout(dischargeTimerRef.current);
+        dischargeTimerRef.current = null;
+      }
+    };
+
+    const playChargeAnimation = () => {
+      clearDischargeTimer();
+      setAnimationMode("charge");
+      setIsCharged((previouslyCharged) => {
+        if (previouslyCharged) return previouslyCharged;
+        setAnimationCycle((currentCycle) => currentCycle + 1);
+        return true;
+      });
+    };
+
+    const playDischargeAnimation = () => {
+      clearDischargeTimer();
+      setAnimationMode("discharge");
+      setIsCharged(false);
+      dischargeTimerRef.current = window.setTimeout(() => {
+        setAnimationMode("idle");
+        dischargeTimerRef.current = null;
+      }, 950);
+    };
+
+    const handleViewportProgress = () => {
+      const rect = element.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const loadStartLine = viewportHeight * 0.9;
+      const exitWindow = viewportHeight * 0.2;
+      const isEnteringFromBottom = rect.top <= loadStartLine && rect.top >= -rect.height * 0.15;
+      const isBottomSliceVisible = rect.bottom > 0 && rect.bottom <= exitWindow;
+
+      if (scrollDirectionRef.current === "down") {
+        if (!isCharged && isEnteringFromBottom) {
+          playChargeAnimation();
+          return;
+        }
+
+        if (isCharged && isBottomSliceVisible) {
+          playDischargeAnimation();
+          return;
+        }
+      }
+
+      if (scrollDirectionRef.current === "up" && !isCharged && isBottomSliceVisible) {
+        playChargeAnimation();
+        return;
+      }
+
+      if (rect.top >= viewportHeight || rect.bottom <= 0) {
+        clearDischargeTimer();
+        setAnimationMode("idle");
+      }
+    };
+
+    handleViewportProgress();
+    window.addEventListener("scroll", handleViewportProgress, { passive: true });
+    window.addEventListener("resize", handleViewportProgress);
+
+    return () => {
+      window.removeEventListener("scroll", handleViewportProgress);
+      window.removeEventListener("resize", handleViewportProgress);
+      clearDischargeTimer();
+    };
+  }, [isCharged]);
+
+  return { sectionRef, isCharged, animationCycle, animationMode };
 }
 
 // ---- Desktop Version (from commit 14048f189dfc) ----
 
 function StatisticsDesktop() {
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const { sectionRef, isCharged, animationCycle, animationMode } = useImpactAnimation();
   const shouldReduceMotion = useReducedMotion();
-  const [played, setPlayed] = useState(false);
-
-  // Lock scroll for a brief moment to ensure animations are seen
-  useEffect(() => {
-    if (played) return;
-    const el = sectionRef.current;
-    if (!el) return;
-
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting || played) return;
-        setPlayed(true);
-        lockScroll();
-        const timer = setTimeout(unlockScroll, 2500);
-        return () => clearTimeout(timer);
-      },
-      { threshold: 0.6 }
-    );
-
-    io.observe(el);
-    return () => {
-      io.disconnect();
-      unlockScroll();
-    };
-  }, [played]);
+  const animationState = isCharged ? "visible" : animationMode === "discharge" ? "discharged" : "hidden";
+  const showChargedValue = isCharged || animationMode === "discharge";
 
   return (
     <div ref={sectionRef} className="h-svh w-full overflow-hidden relative bg-white">
@@ -159,9 +226,8 @@ function StatisticsDesktop() {
 
           {/* ── Bars row ── */}
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.25 }}
+            initial={false}
+            animate={animationState}
             style={{
               height: "100%",
               display: "grid",
@@ -184,13 +250,23 @@ function StatisticsDesktop() {
               >
                 {/* Number — sits on top of the bar, outside */}
                 <motion.div
+                  custom={idx}
                   variants={{
-                    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
-                    visible: {
+                    hidden: () => ({ opacity: 0, y: shouldReduceMotion ? 0 : 20 }),
+                    visible: (index: number) => ({
                       opacity: 1,
                       y: 0,
-                      transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: idx * 0.2 }
-                    }
+                      transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: index * 0.2 }
+                    }),
+                    discharged: (index: number) => ({
+                      opacity: 0.42,
+                      y: 0,
+                      transition: {
+                        duration: 0.45,
+                        ease: [0.55, 0, 1, 0.45],
+                        delay: (STATS_DATA.length - 1 - index) * 0.08,
+                      }
+                    }),
                   }}
                   style={{
                     display: "flex",
@@ -212,7 +288,15 @@ function StatisticsDesktop() {
                       display: "block",
                     }}
                   >
-                    <NumberTicker value={stat.value} duration={2000 + idx * 400} />
+                    {showChargedValue ? (
+                      <NumberTicker
+                        key={`${animationCycle}-${stat.label}`}
+                        value={stat.value}
+                        duration={1200 + idx * 200}
+                      />
+                    ) : (
+                      "0"
+                    )}
                     {stat.suffix}
                   </span>
                   <span
@@ -233,13 +317,23 @@ function StatisticsDesktop() {
 
                 {/* Bar */}
                 <motion.div
+                  custom={idx}
                   variants={{
-                    hidden: { height: shouldReduceMotion ? stat.barHeight : "0%", opacity: 0 },
-                    visible: {
+                    hidden: { height: shouldReduceMotion ? stat.barHeight : "0%", opacity: 1 },
+                    visible: (index: number) => ({
                       height: stat.barHeight,
                       opacity: 1,
-                      transition: { duration: 1.6, ease: [0.77, 0, 0.175, 1], delay: idx * 0.3 }
-                    }
+                      transition: { duration: 1.2, ease: [0.77, 0, 0.175, 1], delay: index * 0.3 }
+                    }),
+                    discharged: (index: number) => ({
+                      height: "0%",
+                      opacity: 1,
+                      transition: {
+                        duration: 0.9,
+                        ease: [0.55, 0, 1, 0.45],
+                        delay: (STATS_DATA.length - 1 - index) * 0.12,
+                      }
+                    }),
                   }}
                   style={{
                     background: "#D4EC28",
@@ -262,32 +356,10 @@ function StatisticsDesktop() {
 // ---- Mobile Version (Current) ----
 
 function StatisticsMobile() {
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const { sectionRef, isCharged, animationCycle, animationMode } = useImpactAnimation();
   const shouldReduceMotion = useReducedMotion();
-  const [played, setPlayed] = useState(false);
-
-  useEffect(() => {
-    if (played) return;
-    const el = sectionRef.current;
-    if (!el) return;
-
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting || played) return;
-        setPlayed(true);
-        lockScroll();
-        const timer = setTimeout(unlockScroll, 2500);
-        return () => clearTimeout(timer);
-      },
-      { threshold: 0.6 }
-    );
-
-    io.observe(el);
-    return () => {
-      io.disconnect();
-      unlockScroll();
-    };
-  }, [played]);
+  const animationState = isCharged ? "visible" : animationMode === "discharge" ? "discharged" : "hidden";
+  const showChargedValue = isCharged || animationMode === "discharge";
 
   return (
     <div ref={sectionRef} className="h-full w-full py-24 px-5 bg-white">
@@ -314,26 +386,35 @@ function StatisticsMobile() {
             margin: 0,
           }}
         >
-          A Energisa distribui energia em 97% do território brasileiro.
+          Conectamos famílias e impulsionamos comunidades ao redor do Brasil
         </p>
       </div>
 
       <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.25 }}
+        initial={false}
+        animate={animationState}
         className="flex flex-col gap-10"
       >
         {STATS_DATA.map((stat, idx) => (
           <div key={idx} className="flex flex-col">
             <motion.div
+              custom={idx}
               variants={{
-                hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
-                visible: {
+                hidden: () => ({ opacity: 0, y: shouldReduceMotion ? 0 : 20 }),
+                visible: (index: number) => ({
                   opacity: 1,
                   y: 0,
-                  transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: idx * 0.2 }
-                }
+                  transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: index * 0.2 }
+                }),
+                discharged: (index: number) => ({
+                  opacity: 0.42,
+                  y: 0,
+                  transition: {
+                    duration: 0.4,
+                    ease: [0.55, 0, 1, 0.45],
+                    delay: (STATS_DATA.length - 1 - index) * 0.06,
+                  }
+                }),
               }}
             >
               <div className="flex flex-row items-baseline gap-3 mb-4">
@@ -347,7 +428,15 @@ function StatisticsMobile() {
                     letterSpacing: "-0.04em",
                   }}
                 >
-                  <NumberTicker value={stat.value} />
+                  {showChargedValue ? (
+                    <NumberTicker
+                      key={`${animationCycle}-${stat.label}`}
+                      value={stat.value}
+                      duration={1200 + idx * 200}
+                    />
+                  ) : (
+                    "0"
+                  )}
                   {stat.suffix}
                 </span>
                 <span
@@ -362,13 +451,23 @@ function StatisticsMobile() {
               </div>
             </motion.div>
             <motion.div
+              custom={idx}
               variants={{
-                hidden: { height: 0, opacity: 0 },
-                visible: {
+                hidden: { height: 0, opacity: 1 },
+                visible: (index: number) => ({
                   height: 48,
                   opacity: 1,
-                  transition: { duration: 1.6, ease: [0.77, 0, 0.175, 1], delay: idx * 0.3 }
-                }
+                  transition: { duration: 1.2, ease: [0.77, 0, 0.175, 1], delay: index * 0.3 }
+                }),
+                discharged: (index: number) => ({
+                  height: 0,
+                  opacity: 1,
+                  transition: {
+                    duration: 0.8,
+                    ease: [0.55, 0, 1, 0.45],
+                    delay: (STATS_DATA.length - 1 - index) * 0.08,
+                  }
+                }),
               }}
               className="bg-[#D4EC28] w-full"
             />
@@ -382,6 +481,8 @@ function StatisticsMobile() {
 // ---- Main Section Wrapper ----
 
 export function Statistics() {
+  const isMobile = useIsMobile();
+
   return (
     <section
       id="impacto"
@@ -392,15 +493,7 @@ export function Statistics() {
       }}
     >
       <div className="relative z-10 h-full w-full">
-        {/* Desktop View (from commit 14048f1) */}
-        <div className="hidden md:block">
-          <StatisticsDesktop />
-        </div>
-
-        {/* Mobile View (Current) */}
-        <div className="block md:hidden">
-          <StatisticsMobile />
-        </div>
+        {isMobile ? <StatisticsMobile /> : <StatisticsDesktop />}
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
 import { EnergisaLogo } from "./EnergisaLogo";
+import { scrollToSection } from "./navigation";
 
 const COLUMNS = [
   {
@@ -75,7 +76,13 @@ export function Footer() {
       {/* Bottom bar */}
       <div className="max-w-[1440px] mx-auto px-8 md:px-20 pb-10 pt-6 border-t border-white/[0.06] flex items-end justify-between">
         <div className="flex flex-col gap-3">
-          <EnergisaLogo color="#CAD71D" scale={1.4} />
+          <button
+            onClick={() => scrollToSection("hero")}
+            className="transition-all duration-300 hover:opacity-80 active:scale-95 cursor-pointer outline-none w-fit text-left"
+            aria-label="Voltar para o topo"
+          >
+            <EnergisaLogo color="#CAD71D" scale={1.4} />
+          </button>
           <span
             style={{
               fontFamily: "Sora, sans-serif",

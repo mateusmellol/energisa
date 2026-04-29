@@ -1,262 +1,485 @@
-"use client";
-
-import { type CSSProperties } from "react";
-import { motion } from "motion/react";
-import { Leaf, Cpu, Zap, Shield, Globe, Settings, Sparkles, ArrowUpRight } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import { Flip, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
+import "./Ecossistema.css";
 
-// ── Asset URLs ─────────────────────────────────────────────────────────────────
-const FLEXLAB_BG = "https://www.figma.com/api/mcp/asset/b5dd4e22-eb5c-41cb-8eb5-8b22f7153dcd";
-const ESGAS_BG = "https://www.figma.com/api/mcp/asset/3ac5b52d-4bdf-426c-a6c9-21a05eabfa89";
-const REENERGISA_BG_1 = "https://www.figma.com/api/mcp/asset/b3e5ed59-d655-4245-a03a-4be6448416ff";
-const REENERGISA_BG_2 = "https://www.figma.com/api/mcp/asset/34e25aec-76d8-45b6-98b2-06650878ac2c";
-const REENERGISA_BG_3 = "https://www.figma.com/api/mcp/asset/c83fbb18-f7e9-49c3-a90b-98b429e895a6";
-
-const FLEXLAB_LOGO_A = "https://www.figma.com/api/mcp/asset/ef472955-cd1b-41c0-a6d1-9c9f9db4879a";
-const FLEXLAB_LOGO_B = "https://www.figma.com/api/mcp/asset/6c66f47b-62c9-42b5-bcd5-ee84852e45ec";
-const ESGAS_LOGO = "https://www.figma.com/api/mcp/asset/2b41dc55-dcf7-4da7-8275-3c1ca0728db0";
-const REENERGISA_LOGO = "https://www.figma.com/api/mcp/asset/66123b68-8b5a-4479-bce9-dead2baac88b";
-
-// ── Constants ─────────────────────────────────────────────────────────────────
-const ACCENT = "#d4ec28";
-
-const SUBTITLE = "Um ecossistema completo de inovação,\ntecnologia e serviços que redefine\ncomo a energia chega a cada brasileiro.";
-
-// ── Text styles ───────────────────────────────────────────────────────────────
-const headingStyle: CSSProperties = {
-  fontFamily: "Sora, sans-serif",
-  fontWeight: 400,
-  fontSize: "clamp(28px, 2.6vw, 42px)",
-  lineHeight: 1.15,
-  letterSpacing: "-0.02em",
-  color: "#121312",
+type LayoutRect = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 };
 
-const subtitleStyle: CSSProperties = {
-  fontFamily: "Sora, sans-serif",
-  fontSize: "clamp(14px, 1.1vw, 17px)",
-  color: "#404040", // Neutron 700
-  lineHeight: 1.65,
-  whiteSpace: "pre-line",
-  marginTop: 16,
-};
+type LayoutMap = Record<string, LayoutRect>;
+type SlotMap = Record<string, string>;
 
-const cardDescStyle: CSSProperties = {
-  fontFamily: "Sora, sans-serif",
-  fontSize: "clamp(14px, 1.1vw, 17px)",
-  lineHeight: 1.65,
-  letterSpacing: "-0.02em",
-  color: "#121312",
-  margin: 0,
-};
-
-// ── FlexLab wordmark ──────────────────────────────────────────────────────────
-function FlexLabLogo() {
-  return (
-    <div style={{ position: "relative", width: 160, height: 36, flexShrink: 0 }}>
-      <img alt="" src={FLEXLAB_LOGO_B} style={{ position: "absolute", left: 0, top: 1, width: 80, height: 34, objectFit: "contain" }} />
-      <img alt="" src={FLEXLAB_LOGO_A} style={{ position: "absolute", left: 83, top: 0, width: 75, height: 35, objectFit: "contain" }} />
-    </div>
-  );
-}
-
-// ── ReEnergisa composite background ──────────────────────────────────────────
-function ReeEnergisaBg() {
-  return (
-    <>
-      <img alt="" src={REENERGISA_BG_1} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-      <img alt="" src={REENERGISA_BG_2} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-    </>
-  );
-}
-
-// ── Card data ─────────────────────────────────────────────────────────────────
-const CARDS = [
+const GALLERY_ITEMS = [
   {
-    id: "flexlab",
-    renderBg: () => (
-      <img
-        alt="FlexLab"
-        src={FLEXLAB_BG}
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-      />
-    ),
-    renderLogo: () => <FlexLabLogo />,
-    description: "Soluções flexíveis de energia para empresas que buscam eficiência e controle inteligente do consumo.",
-    features: [
-      { icon: Leaf, label: "Eficiência" },
-      { icon: Cpu, label: "Controle" },
-      { icon: Zap, label: "Smart Grid" },
-    ],
-    panelBg: "#FFFFFF",
-    panelText: "#121312",
-    panelSubtext: "rgba(18, 19, 18, 0.7)",
-    buttonBg: "#d4ec28",
-    buttonText: "#121312",
-    invertLogo: false,
+    id: "pattern-1",
+    src: "https://images.unsplash.com/photo-1750074905164-916edae569ed?auto=format&fit=crop&w=1600&q=80",
+    alt: "Usina termoeletrica a gas natural junto a agua",
   },
   {
-    id: "esgas",
-    renderBg: () => (
-      <img
-        alt="S-Gás"
-        src={ESGAS_BG}
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-      />
-    ),
-    renderLogo: () => (
-      <img alt="ESgás" src={ESGAS_LOGO} style={{ width: 103, height: 44.5, display: "block", objectFit: "contain" }} />
-    ),
-    description: "Distribuição de gás natural com segurança, eficiência e presença em todo o território atendido.",
-    features: [
-      { icon: Shield, label: "Segurança" },
-      { icon: Globe, label: "Presença" },
-      { icon: Zap, label: "Eficiência" },
-    ],
-    panelBg: "#FFFFFF",
-    panelText: "#121312",
-    panelSubtext: "rgba(18, 19, 18, 0.7)",
-    buttonBg: "#d4ec28",
-    buttonText: "#121312",
-    invertLogo: false,
+    id: "image-12",
+    src: "https://images.unsplash.com/photo-1589201529153-5297335c1684?auto=format&fit=crop&w=1600&q=80",
+    alt: "Paineis solares em campo aberto",
   },
   {
-    id: "reenergisa",
-    renderBg: () => <ReeEnergisaBg />,
-    renderLogo: () => (
-      <img alt="(re)energisa" src={REENERGISA_LOGO} style={{ width: 166, height: 34, display: "block", objectFit: "contain" }} />
-    ),
-    description: "Modernização da rede elétrica para uma distribution de energia mais confiável e sustentável.",
-    features: [
-      { icon: Settings, label: "Modernização" },
-      { icon: Leaf, label: "Energia Limpa" },
-      { icon: Sparkles, label: "Inovação" },
-    ],
-    panelBg: "#FFFFFF",
-    panelText: "#121312",
-    panelSubtext: "rgba(18, 19, 18, 0.7)",
-    buttonBg: "#d4ec28",
-    buttonText: "#121312",
-    invertLogo: false,
+    id: "image-8",
+    src: "https://images.unsplash.com/photo-1509390288171-ce2088f7d08e?auto=format&fit=crop&w=1800&q=85",
+    alt: "Usina de gas natural iluminada a noite",
+  },
+  {
+    id: "image-3",
+    src: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&w=1600&q=80",
+    alt: "Campo de paineis solares visto de cima",
+  },
+  {
+    id: "image-1",
+    src: "https://images.unsplash.com/photo-1668097613572-40b7c11c8727?auto=format&fit=crop&w=1600&q=80",
+    alt: "Profissional trabalhando em painel solar",
   },
 ];
 
-// ── Component ─────────────────────────────────────────────────────────────────
+const COPY_PARAGRAPHS = [
+  "O ecossistema Energisa conecta distribuicao, tecnologia, servicos e novas fontes de energia em uma unica camada de experiencia.",
+  "A mesma rede que ilumina cidades agora tambem organiza dados, mobilidade eletrica, geracao distribuida e produtos digitais com a mesma fluidez.",
+  "Nesta secao, a animacao deixa isso visivel: blocos que pareciam independentes se reorganizam como partes de um sistema vivo.",
+];
+
+const CENTER_ITEM_ID = "image-8";
+const INITIAL_ITEM_SLOTS: SlotMap = Object.fromEntries(GALLERY_ITEMS.map((item) => [item.id, item.id]));
+const ECOSYSTEM_INTRO_BOTTOM_PADDING = 24;
+const ECOSYSTEM_SCROLL_TRIGGER_ID = "ecossistema";
+const ECOSYSTEM_SCROLL_START_DESKTOP = "top 40%";
+const ECOSYSTEM_SCROLL_START_MOBILE = "top 48%";
+const ECOSYSTEM_SCROLL_START_DESKTOP_OFFSET = 0.3;
+const ECOSYSTEM_GALLERY_LIFT_DESKTOP = 0.4;
+const ECOSYSTEM_GALLERY_LIFT_MOBILE = 0.48;
+const ECOSYSTEM_SCROLL_DISTANCE_MULTIPLIER = 1.55;
+const ECOSYSTEM_SCROLL_SCRUB = 0.9;
+const ECOSYSTEM_CLICK_OPEN_DELAY = 0.18;
+const ECOSYSTEM_MAIN_ITEM_FOCUS_START = 72;
+const ECOSYSTEM_MAIN_ITEM_FOCUS_END = 82;
+const ECOSYSTEM_MAIN_ITEM_SCALE_START = 1.04;
+const ECOSYSTEM_MAIN_ITEM_SCALE_END = 1.1;
+
+function getEcosystemScrollStart() {
+  return window.innerWidth <= 900 ? ECOSYSTEM_SCROLL_START_MOBILE : ECOSYSTEM_SCROLL_START_DESKTOP;
+}
+
+function getEcosystemGalleryLiftDistance(galleryWrapElement: HTMLElement) {
+  const liftRatio = window.innerWidth <= 900 ? ECOSYSTEM_GALLERY_LIFT_MOBILE : ECOSYSTEM_GALLERY_LIFT_DESKTOP;
+  const paddingTop = Number.parseFloat(window.getComputedStyle(galleryWrapElement).paddingTop) || 0;
+  const headerHeight = document.querySelector("header")?.getBoundingClientRect().height ?? 80;
+
+  return Math.max(0, Math.round(window.innerHeight * liftRatio + paddingTop - headerHeight));
+}
+
+const DESKTOP_COMPACT_LAYOUT: LayoutMap = {
+  "pattern-1": { x: 13.333, y: 4, w: 18, h: 23.04 },
+  "image-12": { x: 68.667, y: 4, w: 18, h: 23.04 },
+  "image-8": { x: 34, y: 4, w: 32, h: 53.76 },
+  "image-3": { x: 13.333, y: 34.24, w: 18, h: 23.04 },
+  "image-1": { x: 68.667, y: 34.24, w: 18, h: 23.04 },
+};
+
+const MOBILE_COMPACT_LAYOUT: LayoutMap = {
+  "pattern-1": { x: 6, y: 4, w: 26, h: 17.28 },
+  "image-12": { x: 68, y: 4, w: 26, h: 17.28 },
+  "image-8": { x: 18, y: 4, w: 64, h: 40.32 },
+  "image-3": { x: 6, y: 26.08, w: 26, h: 17.28 },
+  "image-1": { x: 68, y: 26.08, w: 26, h: 17.28 },
+};
+
+function waitForImages(container: HTMLElement) {
+  const images = Array.from(container.querySelectorAll("img"));
+
+  return Promise.all(
+    images.map((img) => {
+      if (img.complete && img.naturalWidth > 0) {
+        return Promise.resolve();
+      }
+
+      return new Promise<void>((resolve) => {
+        const done = () => {
+          img.removeEventListener("load", done);
+          img.removeEventListener("error", done);
+          resolve();
+        };
+
+        img.addEventListener("load", done, { once: true });
+        img.addEventListener("error", done, { once: true });
+      });
+    }),
+  );
+}
+
+function clampUnit(value: number) {
+  return Math.round(value * 1000) / 1000;
+}
+
+function createTunnelLayout(compactLayout: LayoutMap, pushDistance: number, activeItemId: string): LayoutMap {
+  return Object.fromEntries(
+    Object.entries(compactLayout).map(([id, rect]) => {
+      if (id === activeItemId) {
+        return [id, { x: 0, y: 0, w: 100, h: 68 }];
+      }
+
+      const centerX = rect.x + rect.w / 2;
+      const centerY = rect.y + rect.h / 2;
+      const vectorX = centerX - 50;
+      const vectorY = centerY - 50;
+      const length = Math.max(Math.hypot(vectorX, vectorY), 1);
+      const distance = pushDistance + length * 0.46;
+      const x = rect.x + (vectorX / length) * distance;
+      const y = rect.y + (vectorY / length) * distance;
+
+      return [
+        id,
+        {
+          x: clampUnit(x),
+          y: clampUnit(y),
+          w: rect.w,
+          h: rect.h,
+        },
+      ];
+    }),
+  );
+}
+
+function getSlottedLayout(baseLayout: LayoutMap, itemSlots: SlotMap): LayoutMap {
+  return Object.fromEntries(
+    GALLERY_ITEMS.map((item) => {
+      const slotId = itemSlots[item.id] ?? item.id;
+      return [item.id, baseLayout[slotId] ?? baseLayout[item.id]];
+    }),
+  );
+}
+
+function getLayoutSet(activeItemId: string, itemSlots: SlotMap) {
+  const baseCompact = window.innerWidth <= 900 ? MOBILE_COMPACT_LAYOUT : DESKTOP_COMPACT_LAYOUT;
+  const compact = getSlottedLayout(baseCompact, itemSlots);
+  const spread = createTunnelLayout(compact, window.innerWidth <= 900 ? 30 : 42, activeItemId);
+
+  return { compact, spread };
+}
+
+function applyLayout(items: HTMLElement[], layout: LayoutMap) {
+  items.forEach((item) => {
+    const itemId = item.dataset.galleryId;
+    if (!itemId) return;
+
+    const rect = layout[itemId];
+    if (!rect) return;
+
+    gsap.set(item, {
+      left: `${rect.x}%`,
+      top: `${rect.y}%`,
+      width: `${rect.w}%`,
+      height: `${rect.h}%`,
+    });
+  });
+}
+
 export function Ecossistema() {
+  const [activeItemId, setActiveItemId] = useState(CENTER_ITEM_ID);
+  const [itemSlots, setItemSlots] = useState<SlotMap>(INITIAL_ITEM_SLOTS);
+  const sectionRef = useRef<HTMLElement>(null);
+  const galleryWrapRef = useRef<HTMLDivElement>(null);
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const activeItemIdRef = useRef(activeItemId);
+  const pendingOpenRef = useRef(false);
+  const shouldReduceMotionRef = useRef(false);
+  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
+
+  activeItemIdRef.current = activeItemId;
+
+  const scrollToOpenGallery = useCallback(() => {
+    const galleryWrapElement = galleryWrapRef.current;
+    if (!galleryWrapElement) return;
+
+    const trigger = scrollTriggerRef.current;
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const fallbackTop = window.scrollY + galleryWrapElement.getBoundingClientRect().top + window.innerHeight * 0.66;
+    const copyRevealOffset = Math.min(280, Math.max(180, window.innerHeight * 0.29));
+    const targetTop = trigger ? trigger.end + copyRevealOffset : fallbackTop;
+
+    window.scrollTo({
+      top: Math.min(maxScroll, Math.max(0, targetTop)),
+      behavior: shouldReduceMotionRef.current ? "auto" : "smooth",
+    });
+  }, []);
+
+  const handleGalleryItemClick = useCallback(
+    (itemId: string) => {
+      if (itemId === activeItemIdRef.current) {
+        scrollToOpenGallery();
+        return;
+      }
+
+      pendingOpenRef.current = true;
+      setItemSlots((currentSlots) => {
+        const previousActiveItemId = activeItemIdRef.current;
+        const clickedSlot = currentSlots[itemId] ?? itemId;
+        const activeSlot = currentSlots[previousActiveItemId] ?? CENTER_ITEM_ID;
+
+        return {
+          ...currentSlots,
+          [itemId]: activeSlot,
+          [previousActiveItemId]: clickedSlot,
+        };
+      });
+      setActiveItemId(itemId);
+    },
+    [scrollToOpenGallery],
+  );
+
+  useGSAP(
+    () => {
+      const galleryWrapElement = galleryWrapRef.current;
+      const galleryElement = galleryRef.current;
+      const sectionElement = sectionRef.current;
+      if (!galleryWrapElement || !galleryElement || !sectionElement) return;
+
+      const galleryItems = gsap.utils.toArray<HTMLElement>(".gallery__item", galleryElement);
+      const shouldReduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      shouldReduceMotionRef.current = shouldReduceMotion;
+
+      let cancelled = false;
+      let flipCtx: gsap.Context | undefined;
+      let resizeCall: gsap.core.Tween | undefined;
+      let refreshCall: gsap.core.Tween | undefined;
+      let lateRefreshCall: gsap.core.Tween | undefined;
+      let openPendingCall: gsap.core.Tween | undefined;
+
+      const openPendingItem = () => {
+        if (!pendingOpenRef.current) return;
+
+        pendingOpenRef.current = false;
+        if (shouldReduceMotionRef.current) {
+          requestAnimationFrame(scrollToOpenGallery);
+          return;
+        }
+
+        openPendingCall?.kill();
+        openPendingCall = gsap.delayedCall(ECOSYSTEM_CLICK_OPEN_DELAY, () => {
+          requestAnimationFrame(scrollToOpenGallery);
+        });
+      };
+
+      const createTween = () => {
+        flipCtx?.revert();
+        const layouts = getLayoutSet(activeItemId, itemSlots);
+        const galleryToCopyDistance = window.innerHeight * 0.2 + ECOSYSTEM_INTRO_BOTTOM_PADDING;
+        const startCompensation =
+          window.innerWidth <= 900 ? 0 : window.innerHeight * ECOSYSTEM_SCROLL_START_DESKTOP_OFFSET;
+        const galleryLiftDistance = getEcosystemGalleryLiftDistance(galleryWrapElement);
+
+        galleryWrapElement.classList.remove("gallery-wrap--animating");
+
+        flipCtx = gsap.context(() => {
+          applyLayout(galleryItems, layouts.compact);
+          gsap.set(galleryElement, { y: 0 });
+          gsap.set(galleryItems, { xPercent: 0, yPercent: 0, scale: 1, rotate: 0 });
+
+          const mainItem = galleryItems.find((item) => item.dataset.galleryId === activeItemId);
+          const flipState = Flip.getState(galleryItems);
+          applyLayout(galleryItems, layouts.spread);
+          galleryItems.forEach((item) => {
+            item.classList.toggle("gallery__item--main", item.dataset.galleryId === activeItemId);
+          });
+
+          if (mainItem) {
+            gsap.set(mainItem, {
+              transformOrigin: "50% 50%",
+              "--gallery-image-focus-y": `${ECOSYSTEM_MAIN_ITEM_FOCUS_START}%`,
+              "--gallery-image-scale": ECOSYSTEM_MAIN_ITEM_SCALE_START,
+            });
+          }
+
+          const flip = Flip.from(flipState, {
+            absolute: true,
+            scale: false,
+            simple: true,
+            ease: "none",
+            duration: 1,
+          });
+
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: galleryWrapElement,
+              id: ECOSYSTEM_SCROLL_TRIGGER_ID,
+              start: getEcosystemScrollStart,
+              end: `+=${Math.round(
+                Math.max(window.innerHeight * 0.18, galleryToCopyDistance * ECOSYSTEM_SCROLL_DISTANCE_MULTIPLIER) +
+                  startCompensation,
+              )}`,
+              scrub: ECOSYSTEM_SCROLL_SCRUB,
+              pin: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              refreshPriority: 2,
+              onUpdate: (self) => {
+                if (!mainItem) return;
+
+                gsap.set(mainItem, {
+                  "--gallery-image-focus-y": `${gsap.utils.interpolate(
+                    ECOSYSTEM_MAIN_ITEM_FOCUS_START,
+                    ECOSYSTEM_MAIN_ITEM_FOCUS_END,
+                    self.progress,
+                  )}%`,
+                  "--gallery-image-scale": gsap.utils.interpolate(
+                    ECOSYSTEM_MAIN_ITEM_SCALE_START,
+                    ECOSYSTEM_MAIN_ITEM_SCALE_END,
+                    self.progress,
+                  ),
+                });
+              },
+              onToggle: (self) => {
+                galleryWrapElement.classList.toggle("gallery-wrap--animating", self.isActive || self.progress >= 0.999);
+              },
+            },
+          });
+
+          tl.add(flip, 0);
+          tl.to(galleryElement, { y: -galleryLiftDistance, ease: "power2.inOut", duration: 1 }, 0);
+          if (mainItem) {
+            tl.to(mainItem, { borderRadius: 0, ease: "none", duration: 1 }, 0);
+          }
+          scrollTriggerRef.current = tl.scrollTrigger ?? null;
+
+          return () => {
+            galleryItems.forEach((item) => item.classList.remove("gallery__item--main"));
+            gsap.set(galleryElement, { clearProps: "transform" });
+            gsap.set(galleryItems, { clearProps: "all" });
+          };
+        }, sectionRef);
+      };
+
+      if (shouldReduceMotion) {
+        const layouts = getLayoutSet(activeItemId, itemSlots);
+        applyLayout(galleryItems, layouts.compact);
+        openPendingItem();
+        return;
+      }
+
+      applyLayout(galleryItems, getLayoutSet(activeItemId, itemSlots).compact);
+
+      const handleResize = () => {
+        resizeCall?.kill();
+        resizeCall = gsap.delayedCall(0.12, createTween);
+      };
+
+      const fontsReady = document.fonts?.ready ?? Promise.resolve();
+
+      fontsReady.then(() => {
+        if (cancelled) return;
+
+        window.addEventListener("resize", handleResize);
+        requestAnimationFrame(() => {
+          if (cancelled) return;
+
+          createTween();
+          ScrollTrigger.refresh();
+          refreshCall = gsap.delayedCall(0.25, () => ScrollTrigger.refresh());
+          lateRefreshCall = gsap.delayedCall(0.75, () => ScrollTrigger.refresh());
+          openPendingItem();
+        });
+      });
+
+      waitForImages(galleryElement).then(() => {
+        if (cancelled) return;
+
+        ScrollTrigger.refresh();
+      });
+
+      return () => {
+        cancelled = true;
+        window.removeEventListener("resize", handleResize);
+        resizeCall?.kill();
+        refreshCall?.kill();
+        lateRefreshCall?.kill();
+        openPendingCall?.kill();
+        flipCtx?.revert();
+        galleryWrapElement.classList.remove("gallery-wrap--animating");
+        scrollTriggerRef.current = null;
+      };
+    },
+    { scope: sectionRef, dependencies: [activeItemId, itemSlots, scrollToOpenGallery], revertOnUpdate: true },
+  );
+
   return (
-    <div id="ecossistema" className="relative z-[50] bg-white overflow-hidden">
-      {/* Background Grid Pattern */}
+    <section id="ecossistema" ref={sectionRef} className="ecosystem-section">
       <GridPattern
         width={40}
         height={40}
         x={-1}
         y={-1}
         className={cn(
-          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]",
-          "[mask-image:radial-gradient(1000px_circle_at_top_right,white,transparent)]"
+          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.06]",
+          "[mask-image:radial-gradient(1000px_circle_at_top_left,white,transparent)]",
         )}
       />
-
-      {/* Heading — top left */}
-      <div
-        className="px-5 md:px-[80px] pt-24 md:pt-[144px] pb-12 md:pb-[64px]"
-        style={{
-          maxWidth: 1440,
-          margin: "0 auto",
-        }}
-      >
-        <div style={{ maxWidth: 520 }}>
-          <h2 style={headingStyle}>
-            Ecossistema<br />Energisa
-          </h2>
-          <p style={subtitleStyle}>{SUBTITLE}</p>
+      <GridPattern
+        width={40}
+        height={40}
+        x={-1}
+        y={-1}
+        className={cn(
+          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.06]",
+          "[mask-image:radial-gradient(1000px_circle_at_top_right,white,transparent)]",
+        )}
+      />
+      <div className="ecosystem-intro-copy">
+        <h2>Conheça o ecossistema Energisa</h2>
+        <p>
+          Que move o Brasil de norte a sul, conectando energia, tecnologia e novas soluções para
+          um futuro mais limpo.
+        </p>
+      </div>
+      <div ref={galleryWrapRef} className="gallery-wrap">
+        <div
+          id="gallery-8"
+          ref={galleryRef}
+          className="gallery gallery--bento gallery--switch"
+          aria-label="Galeria visual do ecossistema Energisa"
+        >
+          {GALLERY_ITEMS.map((item, index) => (
+            <button
+              key={item.id}
+              type="button"
+              className="gallery__item"
+              data-gallery-id={item.id}
+              aria-label={`Abrir imagem: ${item.alt}`}
+              aria-pressed={activeItemId === item.id}
+              onClick={() => handleGalleryItemClick(item.id)}
+            >
+              <div className="gallery__media" data-gallery-id={item.id}>
+                <img
+                  src={item.src}
+                  alt={item.alt}
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority={index < 4 ? "high" : "auto"}
+                />
+              </div>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Stacked cards — constrained to grid */}
-      <div
-        className="px-5 md:px-[80px] pb-24 flex flex-col gap-6"
-        style={{
-          maxWidth: 1440,
-          margin: "0 auto",
-        }}
-      >
-        {CARDS.map((card, idx) => (
-          <motion.div
-            key={card.id}
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{
-              duration: 0.6,
-              ease: [0.16, 1, 0.3, 1]
-            }}
-            className="flex flex-col md:flex-row min-h-[640px] md:h-[480px] w-full overflow-hidden"
-          >
-            {/* Left column — photo */}
-            <div
-              className="h-[280px] md:h-full md:flex-[0_0_60%] relative overflow-hidden"
-            >
-              {card.renderBg()}
-            </div>
+      <div className="ecosystem-copy">
+        <p className="ecosystem-copy__eyebrow">Ecossistema Energisa</p>
+        <h2>Uma rede que muda de forma conforme o futuro pede.</h2>
 
-            {/* Right column — content panel */}
-            <div
-              className="flex-1 md:flex-[0_0_40%] flex flex-col justify-between p-8 md:p-[64px]"
-              style={{
-                backgroundColor: card.panelBg,
-              }}
-            >
-              {/* Top: Logo & Description */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-                <div style={{ filter: card.invertLogo ? "invert(1) brightness(2)" : "none" }}>
-                  {card.renderLogo()}
-                </div>
-                <p style={{ ...cardDescStyle, color: card.panelSubtext }}>{card.description}</p>
-              </div>
-
-              {/* Middle: Features — 2x2 grid, now independent to float towards center */}
-              <div className="grid grid-cols-2 gap-x-8 gap-y-6 py-8">
-                {card.features.map(({ icon: Icon, label }) => (
-                  <div key={label} className="flex items-center gap-3">
-                    <Icon size={20} style={{ color: card.panelText }} strokeWidth={1.5} />
-                    <span
-                      style={{
-                        fontFamily: "Sora, sans-serif",
-                        fontSize: "15px",
-                        color: card.panelText,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Bottom: CTA Button */}
-              <button
-                className="flex items-center justify-center gap-2 px-8 py-4 rounded-[4px] w-fit group cursor-pointer active:scale-95 transition-all hover:opacity-90 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)]"
-                style={{
-                  backgroundColor: card.buttonBg,
-                  color: card.buttonText,
-                }}
-              >
-                <span style={{
-                  fontFamily: "Sora, sans-serif",
-                  fontSize: "15px",
-                  fontWeight: 600,
-                  }}>
-                    Saiba mais
-                  </span>
-                  <ArrowUpRight size={18} style={{ color: card.buttonText }} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </button>
-            </div>
-          </motion.div>
-        ))}
+        <div className="ecosystem-copy__body">
+          {COPY_PARAGRAPHS.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </div>
       </div>
-
-    </div>
+    </section>
   );
 }

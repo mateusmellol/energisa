@@ -221,13 +221,6 @@ export function Services() {
                 ))}
               </div>
             </div>
-            <button
-              onClick={(e) => e.preventDefault()}
-              className="underline cursor-pointer bg-transparent border-none p-0 active:scale-[0.97] transition-transform duration-200"
-              style={{ fontFamily: "Sora, sans-serif", fontSize: "13px", color: "#121312" }}
-            >
-              Mais
-            </button>
           </div>
         </div>
 

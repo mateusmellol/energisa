@@ -12,6 +12,10 @@ const GLOBE_RADIUS = 2;
 const LAT_STEPS = 60;
 const LON_STEPS = 120;
 const HIGHLIGHT_COLOR = '#D4EC28';
+const ENERGISA_LIGHT_KEY = '#FFFFFF';
+const ENERGISA_LIGHT_FILL = '#FFFFFF';
+const ENERGISA_LIGHT_RIM = '#FFFFFF';
+const ENERGISA_LIGHT_SOFT = '#FFFFFF';
 
 export interface TileData {
   matrix: THREE.Matrix4;
@@ -143,7 +147,7 @@ function isInRegion(lat: number, lon: number, region: string): boolean {
   return false;
 }
 
-// No elevation — highlighted tiles stay at their original position, only color changes
+// No elevation â€” highlighted tiles stay at their original position, only color changes
 
 function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef }: {
   tiles: TileData[];
@@ -160,7 +164,7 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef }:
   // Shared geometry for both meshes
   const roundedGeom = useMemo(() => new RoundedBoxGeometry(1, 1, 1, 4, 0.15), []);
 
-  // Pre-compute per-tile data — single base matrix (no elevation, no scale change on highlight)
+  // Pre-compute per-tile data â€” single base matrix (no elevation, no scale change on highlight)
   const tileInfo = useMemo(() => tiles.map((t) => {
     const m = t.matrix;
     const e = m.elements;
@@ -184,7 +188,7 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef }:
 
   const hideMatrix = useMemo(() => new THREE.Matrix4().makeScale(0, 0, 0), []);
 
-  // Initialize glass mesh (base dots — always visible when not highlighted)
+  // Initialize glass mesh (base dots â€” always visible when not highlighted)
   useEffect(() => {
     const mesh = glassMeshRef.current;
     if (!mesh) return;
@@ -192,7 +196,7 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef }:
     mesh.instanceMatrix.needsUpdate = true;
   }, [tileInfo]);
 
-  // Initialize solid mesh (highlighted dots — hidden initially)
+  // Initialize solid mesh (highlighted dots â€” hidden initially)
   useEffect(() => {
     const mesh = solidMeshRef.current;
     if (!mesh) return;
@@ -331,7 +335,7 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef }:
       tileRandomPhaseRef.current = phases;
     }
 
-    // Wave transition — swap glass ↔ solid as wave front passes each tile
+    // Wave transition â€” swap glass â†” solid as wave front passes each tile
     if (tState.progress < 1) {
       isTransitioningRef.current = true;
       tState.progress = Math.min(1, tState.progress + delta * 2.0);
@@ -352,7 +356,7 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef }:
       isTransitioningRef.current = false;
     }
 
-    // Pulse animation on highlighted dots — color lerp yellow → white, no geometry change
+    // Pulse animation on highlighted dots â€” color lerp yellow â†’ white, no geometry change
     const phases = tileRandomPhaseRef.current;
     let hasHighlight = false;
     if (!solidMesh.instanceColor) {
@@ -372,7 +376,7 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef }:
 
   return (
     <group ref={groupRef}>
-      {/* Base dots — gray, shown when tile is NOT highlighted */}
+      {/* Base dots â€” gray, shown when tile is NOT highlighted */}
       <instancedMesh
         ref={glassMeshRef}
         args={[undefined, undefined, tileInfo.length]}
@@ -390,7 +394,7 @@ function GlobeMesh({ tiles, targetPhi, targetTheta, highlightRegion, groupRef }:
         />
       </instancedMesh>
 
-      {/* Highlight dots — same geometry/size, only color+emissive differs */}
+      {/* Highlight dots â€” same geometry/size, only color+emissive differs */}
       <instancedMesh
         ref={solidMeshRef}
         args={[undefined, undefined, tileInfo.length]}
@@ -426,9 +430,28 @@ interface VoxelGlobeProps {
 export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegion, className = '' }: VoxelGlobeProps) {
   const [tiles, setTiles] = useState<TileData[] | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isInView, setIsInView] = useState(true);
   const groupRef = useRef<THREE.Group>(null);
   const controlsRef = useRef<any>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting && entry.intersectionRatio > 0.15);
+      },
+      {
+        threshold: [0, 0.15, 0.35],
+      },
+    );
+
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
 
 
   useEffect(() => {
@@ -497,6 +520,7 @@ export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegi
 
   return (
     <div
+      ref={rootRef}
       className={`relative select-none ${className}`}
       style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       onPointerDown={() => setIsDragging(true)}
@@ -511,35 +535,37 @@ export function VoxelGlobe({ targetPhi = 1.0, targetTheta = -0.24, highlightRegi
       {tiles !== null && (
         <Canvas
           camera={{ position: [0, 0, 8], fov: 45 }}
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
+          frameloop={isInView ? 'always' : 'never'}
           gl={{ antialias: false, powerPreference: 'high-performance', alpha: false }}
           onCreated={({ gl }) => gl.setClearColor('#121312', 1)}
         >
           {/* Primary Lighting Setup */}
           <ambientLight intensity={0.6} />
 
-          {/* Key Light (Frontal/Yellowish) */}
-          <directionalLight position={[5, 5, 5]} intensity={1.5} color="#fffcf0" />
+          {/* Key light pulled left so it stops grazing the seam from the front */}
+          <directionalLight position={[4.35, 5, 4.59]} intensity={1.2} color={ENERGISA_LIGHT_KEY} />
 
           {/* Fill Light (Side/Neutral) */}
-          <directionalLight position={[-5, 2, 2]} intensity={0.8} color="#ffffff" />
+          <directionalLight position={[-3.69, 2, 3.93]} intensity={0.8} color={ENERGISA_LIGHT_FILL} />
 
-          {/* Rim Light (Back/White for depth) */}
-          <pointLight position={[0, 0, -10]} intensity={2.0} color="#ffffff" />
+          {/* Rim Light moved to the front */}
+          <pointLight position={[-4.23, 0, 9.06]} intensity={2.0} color={ENERGISA_LIGHT_RIM} />
 
           {/* New Accents for coverage */}
-          <pointLight position={[-5, -5, 5]} intensity={0.8} color="#ffffff" />
-          <pointLight position={[10, 0, 0]} intensity={1.0} color="#ffffff" />
-          <pointLight position={[0, 10, -10]} intensity={1.2} color="#ffffff" />
+          <pointLight position={[-2.42, -5, 6.64]} intensity={0.8} color={ENERGISA_LIGHT_SOFT} />
+          <pointLight position={[7.13, -1, 1.09]} intensity={0.6} color={ENERGISA_LIGHT_FILL} />
+          <pointLight position={[-4.23, 10, 9.06]} intensity={1.2} color={ENERGISA_LIGHT_RIM} />
+          <pointLight position={[5.5, -4.5, 4.5]} intensity={0.75} color={ENERGISA_LIGHT_SOFT} />
 
           {/* Top/Bottom Accents */}
           <pointLight position={[0, 10, 0]} intensity={0.8} />
           <pointLight position={[0, -10, 0]} intensity={0.5} />
 
-          {/*Asia/Russia Coverage - Back side lighting */}
-          <pointLight position={[0, 0, -8]} intensity={1.5} color="#ffffff" />
-          <directionalLight position={[-3, 2, -6]} intensity={1.2} color="#f0f0f0" />
-          <directionalLight position={[0, -2, -7]} intensity={0.9} color="#ffffff" />
+          {/* Former back lighting moved to the front and front rim sent behind */}
+          <pointLight position={[-6.16, 3, 3.75]} intensity={1.1} color={ENERGISA_LIGHT_KEY} />
+          <directionalLight position={[-6.22, 4, 1.51]} intensity={0.85} color={ENERGISA_LIGHT_SOFT} />
+          <directionalLight position={[-3.93, -1, 3.69]} intensity={0.65} color={ENERGISA_LIGHT_FILL} />
 
           {tiles.length > 0 && (
             <GlobeMesh
