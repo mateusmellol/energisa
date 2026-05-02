@@ -7,7 +7,6 @@ const COLUMNS = [
     links: [
       { label: "Impacto", href: "#impacto" },
       { label: "Sobre", href: "#timeline" },
-      { label: "Ecossistema", href: "#ecossistema" },
     ],
   },
   {

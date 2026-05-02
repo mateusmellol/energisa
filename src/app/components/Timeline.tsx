@@ -20,7 +20,19 @@ function GlobeFallback() {
   );
 }
 
-const TABS = [
+export type TimelineMetric = {
+  value: string;
+  label: string;
+};
+
+const TABS: Array<{
+  id: string;
+  label: string;
+  title: string;
+  body: string;
+  metrics: TimelineMetric[];
+  globe: { phi: number; theta: number; highlight: string };
+}> = [
   {
     id: "antes",
     label: "Antes",
@@ -49,7 +61,7 @@ const TABS = [
     id: "futuro",
     label: "Futuro",
     title: "Acolhemos o novo",
-    body: "A meta é clara: 100% de energia renovável até 2030. Com o ecossistema Energisa, estamos redefinindo como o Brasil se conecta.",
+    body: "A meta é clara: 100% de energia renovável até 2030. Com a Energisa, estamos redefinindo como o Brasil se conecta.",
     metrics: [
       { value: "100%", label: "renovável" },
       { value: "2030", label: "meta" },
@@ -58,6 +70,94 @@ const TABS = [
     globe: { phi: 1.12, theta: -0.30, highlight: 'sa' },
   },
 ];
+
+export function TimelineMetricStrip({
+  metrics,
+  size = "desktop",
+  surface = "dark",
+  gap: gapOverride,
+  valueColor = surface === "dark" ? "#FFFFFF" : "rgba(18, 19, 18, 0.58)",
+  labelColor = surface === "dark" ? "rgba(246, 248, 237, 0.4)" : "rgba(18, 19, 18, 0.28)",
+  dividerColor = surface === "dark" ? "rgba(246, 248, 237, 0.1)" : "rgba(18, 19, 18, 0.1)",
+  className,
+}: {
+  metrics: TimelineMetric[];
+  size?: "desktop" | "mobile" | "card";
+  surface?: "dark" | "light";
+  gap?: number;
+  valueColor?: string;
+  labelColor?: string;
+  dividerColor?: string;
+  className?: string;
+}) {
+  const isCard = size === "card";
+  const isMobile = size === "mobile";
+  const gap = gapOverride ?? (isCard ? 9 : isMobile ? 8 : 12);
+  const valueSize = isCard ? 20 : isMobile ? 28 : 32;
+  const labelSize = isCard ? 6 : isMobile ? 10 : 12;
+  const dividerHeight = isCard ? 28 : isMobile ? 36 : 40;
+
+  return (
+    <div className={cn("flex items-center", className)} style={{ gap }}>
+      {metrics.map((metric, idx) => (
+        <div key={`${metric.value}-${metric.label}`} className="flex items-center" style={{ gap }}>
+          <div className="flex flex-col gap-1">
+            <span
+              style={{
+                fontFamily: "Sora, sans-serif",
+                fontSize: valueSize,
+                color: valueColor,
+                fontWeight: 400,
+                lineHeight: 1,
+              }}
+            >
+              {metric.value}
+            </span>
+            <span
+              style={{
+                fontFamily: "Sora, sans-serif",
+                fontSize: labelSize,
+                color: labelColor,
+                letterSpacing: "0.04em",
+                lineHeight: 1.2,
+                textTransform: "lowercase",
+              }}
+            >
+              {metric.label}
+            </span>
+          </div>
+          {idx < metrics.length - 1 && (
+            <div style={{ width: 1, height: dividerHeight, background: dividerColor }} />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const DESKTOP_TAB_PROGRESS_BREAKPOINTS = [0.39, 0.52];
+const DESKTOP_TAB_SCROLL_TARGETS = [0.335, 0.455, 0.565];
+
+function getTabIndexFromProgress(progress: number) {
+  if (progress < DESKTOP_TAB_PROGRESS_BREAKPOINTS[0]) return 0;
+  if (progress < DESKTOP_TAB_PROGRESS_BREAKPOINTS[1]) return 1;
+  return 2;
+}
+
+let webGLSupport: boolean | null = null;
+
+function supportsWebGL() {
+  if (webGLSupport !== null) return webGLSupport;
+
+  try {
+    const canvas = document.createElement("canvas");
+    webGLSupport = Boolean(canvas.getContext("webgl2") || canvas.getContext("webgl"));
+  } catch {
+    webGLSupport = false;
+  }
+
+  return webGLSupport;
+}
 
 /* ─────────────────────────────────────────────────────────────
    DESKTOP — scroll-driven sticky experience (original behaviour)
@@ -79,9 +179,8 @@ function TimelineDesktop() {
     if (shouldReduceMotion) return;
     return scrollYProgress.on("change", (latest) => {
       if (isManualScrolling.current) return;
-      if (latest < 0.39) setActive(0);
-      else if (latest < 0.52) setActive(1);
-      else setActive(2);
+      const nextActive = getTabIndexFromProgress(latest);
+      setActive((currentActive) => (currentActive === nextActive ? currentActive : nextActive));
     });
   }, [scrollYProgress, shouldReduceMotion]);
 
@@ -106,8 +205,7 @@ function TimelineDesktop() {
     const windowHeight = window.innerHeight;
 
     // Progress values that correspond to each tab's center in the scroll range
-    const targets = [0.335, 0.455, 0.565];
-    const targetProgress = targets[index];
+    const targetProgress = DESKTOP_TAB_SCROLL_TARGETS[index];
 
     const targetScroll = targetProgress * (elementHeight + windowHeight) + elementTop - windowHeight;
 
@@ -132,7 +230,7 @@ function TimelineDesktop() {
       ref={containerRef}
       style={{ height: shouldReduceMotion ? "100svh" : "200svh", marginTop: "-15svh", position: "relative", zIndex: 1, background: "#121312" }}
     >
-      <motion.section
+      <section
         className="timeline-visual relative overflow-hidden will-change-transform"
         style={{
           position: "sticky",
@@ -165,7 +263,7 @@ function TimelineDesktop() {
         />
 
         {/* Globe — right side, full height */}
-        <motion.div
+        <div
           className="absolute top-0 bottom-0 right-0 pointer-events-auto"
           style={{
             width: "65%",
@@ -184,7 +282,7 @@ function TimelineDesktop() {
               highlightRegion={TABS[active].globe.highlight}
             />
           </Suspense>
-        </motion.div>
+        </div>
 
         {/* Content — vertically centered */}
         <div className="max-w-[1440px] mx-auto relative px-20 flex flex-col justify-center pointer-events-none h-full" style={{ zIndex: 3 }}>
@@ -241,28 +339,12 @@ function TimelineDesktop() {
                 </p>
 
                 {/* Metrics */}
-                <div className="flex items-center gap-12 mt-4">
-                  {current.metrics.map((m, idx) => (
-                    <div key={idx} className="flex items-center gap-12">
-                      <div className="flex flex-col gap-1">
-                        <span style={{ fontFamily: "Sora, sans-serif", fontSize: "32px", color: "#FFFFFF", fontWeight: 400 }}>
-                          {m.value}
-                        </span>
-                        <span style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", color: "rgba(246, 248, 237, 0.4)", letterSpacing: "0.04em", textTransform: "lowercase" }}>
-                          {m.label}
-                        </span>
-                      </div>
-                      {idx < current.metrics.length - 1 && (
-                        <div style={{ width: 1, height: 40, background: "rgba(246, 248, 237, 0.1)" }} />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+              <TimelineMetricStrip metrics={current.metrics} className="mt-4" />
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </motion.section>
+      </div>
+      </section>
     </div>
   );
 }
@@ -270,15 +352,7 @@ function TimelineDesktop() {
 function TimelineMobile() {
   const [active, setActive] = useState(0);
   const current = TABS[active];
-
-  const hasWebGL = useMemo(() => {
-    try {
-      const canvas = document.createElement('canvas');
-      return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
-    } catch {
-      return false;
-    }
-  }, []);
+  const hasWebGL = useMemo(() => supportsWebGL(), []);
 
   return (
     <section
@@ -362,23 +436,7 @@ function TimelineMobile() {
               </p>
 
               {/* Metrics */}
-              <div className="flex items-center gap-8 mt-1">
-                {current.metrics.map((m, idx) => (
-                  <div key={idx} className="flex items-center gap-8">
-                    <div className="flex flex-col gap-1">
-                      <span style={{ fontFamily: "Sora, sans-serif", fontSize: "28px", color: "#FFFFFF", fontWeight: 400 }}>
-                        {m.value}
-                      </span>
-                      <span style={{ fontFamily: "Sora, sans-serif", fontSize: "10px", color: "rgba(246, 248, 237, 0.4)", letterSpacing: "0.04em", textTransform: "lowercase" }}>
-                        {m.label}
-                      </span>
-                    </div>
-                    {idx < current.metrics.length - 1 && (
-                      <div style={{ width: 1, height: 36, background: "rgba(246, 248, 237, 0.1)" }} />
-                    )}
-                  </div>
-                ))}
-              </div>
+              <TimelineMetricStrip metrics={current.metrics} size="mobile" className="mt-1" />
             </motion.div>
           </AnimatePresence>
 

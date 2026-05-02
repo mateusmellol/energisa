@@ -2,14 +2,26 @@ import { lazy, Suspense, useRef } from "react";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
 import { Services } from "./components/Services";
-import { Ecossistema } from "./components/Ecossistema";
 import { Statistics } from "./components/Statistics";
+import { FooterCTA } from "./components/FooterCTA";
 import { Footer } from "./components/Footer";
 import { motion, useScroll, useTransform } from "motion/react";
 
 const TimelineSection = lazy(() =>
   import("./components/Timeline").then((module) => ({
     default: module.TimelineSection,
+  })),
+);
+
+const Ecossistema = lazy(() =>
+  import("./components/Ecossistema").then((module) => ({
+    default: module.Ecossistema,
+  })),
+);
+
+const Noticias = lazy(() =>
+  import("./components/Noticias").then((module) => ({
+    default: module.Noticias,
   })),
 );
 
@@ -43,7 +55,13 @@ export default function App() {
         <Suspense fallback={<section id="timeline" className="min-h-[100svh] bg-[#121312]" />}>
           <TimelineSection />
         </Suspense>
-        <Ecossistema />
+        <Suspense fallback={<section id="ecossistema" className="min-h-[300svh] bg-white" />}>
+          <Ecossistema />
+        </Suspense>
+        <Suspense fallback={<section id="noticias" className="min-h-[70svh] bg-[#f8f8f7]" />}>
+          <Noticias />
+        </Suspense>
+        <FooterCTA />
         <Footer />
       </main>
     </div>

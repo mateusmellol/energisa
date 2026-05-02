@@ -28,7 +28,9 @@
       "WebFetch(domain:designerup.co)",
       "Bash(npx skillfish:*)",
       "mcp__browser-mcp__browser_navigate",
-      "WebFetch(domain:mateusmellol.github.io)"
+      "WebFetch(domain:mateusmellol.github.io)",
+      "Bash(curl -sIL \"https://www.figma.com/api/mcp/asset/83c8214b-1404-450a-8256-3e7e98ef4403\")",
+      "mcp__plugin_figma_figma__use_figma"
     ]
   }
 }
