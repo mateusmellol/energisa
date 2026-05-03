@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "motion/react";
-import heroVideo from "../../assets/Timeline 1.mp4";
 import { GridBackground } from "../../components/ui/grid-background";
 
 export function Hero() {
@@ -15,7 +14,7 @@ export function Hero() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover object-center"
         >
-          <source src={heroVideo} type="video/mp4" />
+          <source src="/hero-video.mp4" type="video/mp4" />
         </video>
 
         <GridBackground className="opacity-30" />
