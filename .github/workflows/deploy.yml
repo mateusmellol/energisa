@@ -19,6 +19,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+          lfs: true
       
       - name: Set up Node
         uses: actions/setup-node@v4
