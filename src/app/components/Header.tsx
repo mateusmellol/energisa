@@ -20,14 +20,13 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
       style={{ fontFamily: 'var(--font-sora)' }}
     >
       <span className="group-hover:opacity-80 transition-opacity">{children}</span>
-      <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-current origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" />
     </a>
   );
 }
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isTimelineVisible, setIsTimelineVisible] = useState(false);
+  const [isDarkSection, setIsDarkSection] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const scrollTo = (id: string) => {
@@ -44,12 +43,17 @@ export function Header() {
           // Scrolled past hero
           setIsScrolled(scrollPos > window.innerHeight - 80);
 
-          // Check if inside Timeline range
+          // Check if inside any dark section (Timeline or Footer CTA)
           const timeline = document.getElementById('timeline');
+          const footerCTA = document.getElementById('footer-cta');
+          
           const timelineRect = timeline?.getBoundingClientRect();
-          const nextTimelineVisible = Boolean(timelineRect && timelineRect.top <= 80 && timelineRect.bottom >= 80);
+          const footerRect = footerCTA?.getBoundingClientRect();
 
-          setIsTimelineVisible(nextTimelineVisible);
+          const isInsideTimeline = Boolean(timelineRect && timelineRect.top <= 80 && timelineRect.bottom >= 80);
+          const isInsideFooter = Boolean(footerRect && footerRect.top <= 80);
+
+          setIsDarkSection(isInsideTimeline || isInsideFooter);
 
           ticking = false;
         });
@@ -63,13 +67,13 @@ export function Header() {
   }, []);
 
   // Determine header appearance
-  const headerClasses = isTimelineVisible
+  const headerClasses = isDarkSection
     ? "backdrop-blur-lg bg-black/40 border-b border-white/10 text-[#fdfdfc] shadow-lg"
     : isScrolled
       ? "backdrop-blur-lg bg-[#FFFFFF]/80 border-b border-black/5 text-neutral-900 shadow-sm"
-      : "backdrop-blur-sm bg-black/10 border-b border-transparent text-[#FFFFFF]";
+      : "backdrop-blur-sm bg-black/10 border-b border-white/10 text-[#FFFFFF]";
 
-  const isLight = isScrolled && !isTimelineVisible;
+  const isLight = isScrolled && !isDarkSection;
 
   return (
     <>
@@ -102,7 +106,7 @@ export function Header() {
 
           {/* Desktop CTA */}
           <button
-            onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
             className={`hidden md:inline-flex px-8 py-4 rounded-[4px] border font-medium text-[16px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.97] cursor-pointer ${isLight
               ? "border-black/20 text-[#20201f] hover:bg-black/5"
               : "border-white/20 text-[#FFFFFF] hover:bg-white/5"

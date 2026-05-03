@@ -168,7 +168,7 @@ export function Services() {
   const cards = tab === "Casa" ? CARDS_CASA : CARDS_EMPRESA;
 
   return (
-    <section id="solucoes" className="relative overflow-hidden" style={{ paddingTop: "17.5vh", paddingBottom: "12.5vh" }}>
+    <section id="solucoes" className="relative overflow-hidden bg-white" style={{ paddingTop: "8.75vh", paddingBottom: "6.25vh", scrollMarginTop: "80px" }}>
       {/* Background Grid Pattern */}
       <GridPattern
         width={40}

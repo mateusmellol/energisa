@@ -181,17 +181,24 @@ function StatisticsDesktop() {
           }}
         >
           {/* ── Header row ── */}
-          <div
+          <motion.div
+            initial={false}
+            animate={animationState}
             style={{
               display: "grid",
               gridTemplateColumns: "max-content 1fr 1fr",
               columnGap: 54,
               alignItems: "end",
-              padding: "0 80px 24px",
+              padding: "6.25vh 80px 24px",
             }}
           >
             {/* Title */}
-            <h3
+            <motion.h3
+              variants={{
+                hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" },
+                visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0 } },
+                discharged: { opacity: 0.42, x: 0, filter: "blur(0px)", transition: { duration: 0.45, ease: [0.55, 0, 1, 0.45] } },
+              }}
               style={{
                 fontFamily: "Sora, sans-serif",
                 fontWeight: 400,
@@ -205,10 +212,15 @@ function StatisticsDesktop() {
               O impacto
               <br />
               da Energisa
-            </h3>
+            </motion.h3>
 
             {/* Description — now in the second column */}
-            <p
+            <motion.p
+              variants={{
+                hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" },
+                visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 } },
+                discharged: { opacity: 0.42, x: 0, filter: "blur(0px)", transition: { duration: 0.45, ease: [0.55, 0, 1, 0.45], delay: 0.05 } },
+              }}
               style={{
                 fontFamily: "Sora, sans-serif",
                 fontSize: "20px",
@@ -218,11 +230,11 @@ function StatisticsDesktop() {
               }}
             >
               Conectamos famílias e impulsionamos comunidades ao redor do Brasil
-            </p>
+            </motion.p>
 
             {/* Empty third column */}
             <div />
-          </div>
+          </motion.div>
 
           {/* ── Bars row ── */}
           <motion.div
@@ -252,15 +264,17 @@ function StatisticsDesktop() {
                 <motion.div
                   custom={idx}
                   variants={{
-                    hidden: () => ({ opacity: 0, y: shouldReduceMotion ? 0 : 20 }),
+                    hidden: () => ({ opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" }),
                     visible: (index: number) => ({
                       opacity: 1,
-                      y: 0,
-                      transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: index * 0.2 }
+                      x: 0,
+                      filter: "blur(0px)",
+                      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 + index * 0.12 }
                     }),
                     discharged: (index: number) => ({
                       opacity: 0.42,
-                      y: 0,
+                      x: 0,
+                      filter: "blur(0px)",
                       transition: {
                         duration: 0.45,
                         ease: [0.55, 0, 1, 0.45],
@@ -362,9 +376,18 @@ function StatisticsMobile() {
   const showChargedValue = isCharged || animationMode === "discharge";
 
   return (
-    <div ref={sectionRef} className="h-full w-full py-24 px-5 bg-white">
-      <div className="flex flex-col gap-6 mb-12">
-        <h3
+    <div ref={sectionRef} className="h-full w-full px-5 bg-white" style={{ paddingTop: "calc(6rem + 6.25vh)", paddingBottom: "6rem" }}>
+      <motion.div
+        initial={false}
+        animate={animationState}
+        className="flex flex-col gap-6 mb-12"
+      >
+        <motion.h3
+          variants={{
+            hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" },
+            visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0 } },
+            discharged: { opacity: 0.42, x: 0, filter: "blur(0px)", transition: { duration: 0.45, ease: [0.55, 0, 1, 0.45] } },
+          }}
           style={{
             fontFamily: "Sora, sans-serif",
             fontWeight: 400,
@@ -376,8 +399,13 @@ function StatisticsMobile() {
           }}
         >
           O impacto<br />da Energisa
-        </h3>
-        <p
+        </motion.h3>
+        <motion.p
+          variants={{
+            hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" },
+            visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 } },
+            discharged: { opacity: 0.42, x: 0, filter: "blur(0px)", transition: { duration: 0.45, ease: [0.55, 0, 1, 0.45], delay: 0.05 } },
+          }}
           style={{
             fontFamily: "Sora, sans-serif",
             fontSize: "18px",
@@ -387,8 +415,8 @@ function StatisticsMobile() {
           }}
         >
           Conectamos famílias e impulsionamos comunidades ao redor do Brasil
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
       <motion.div
         initial={false}
@@ -400,15 +428,17 @@ function StatisticsMobile() {
             <motion.div
               custom={idx}
               variants={{
-                hidden: () => ({ opacity: 0, y: shouldReduceMotion ? 0 : 20 }),
+                hidden: () => ({ opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" }),
                 visible: (index: number) => ({
                   opacity: 1,
-                  y: 0,
-                  transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: index * 0.2 }
+                  x: 0,
+                  filter: "blur(0px)",
+                  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 + index * 0.12 }
                 }),
                 discharged: (index: number) => ({
                   opacity: 0.42,
-                  y: 0,
+                  x: 0,
+                  filter: "blur(0px)",
                   transition: {
                     duration: 0.4,
                     ease: [0.55, 0, 1, 0.45],
@@ -480,6 +510,7 @@ function StatisticsMobile() {
 
 // ---- Main Section Wrapper ----
 
+
 export function Statistics() {
   const isMobile = useIsMobile();
 
@@ -490,6 +521,7 @@ export function Statistics() {
       style={{
         minHeight: "100svh",
         scrollSnapAlign: "start",
+        scrollMarginTop: "80px",
       }}
     >
       <div className="relative z-10 h-full w-full">

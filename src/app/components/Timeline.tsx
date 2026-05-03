@@ -36,38 +36,38 @@ const TABS: Array<{
   {
     id: "antes",
     label: "Antes",
-    title: "Começamos assim",
-    body: "Em 1905, nascia em Cataguases, Minas Gerais, uma pequena empresa de energia que viria a transformar o cenário energético brasileiro.",
+    title: "Comecamos assim",
+    body: "Em 1905, nascia em Cataguases, Minas Gerais, uma pequena empresa de energia que viria a transformar o cenario energetico brasileiro.",
     metrics: [
-      { value: "1905", label: "fundação" },
+      { value: "1905", label: "fundacao" },
       { value: "MG", label: "origem" },
-      { value: "1ª", label: "do setor" },
+      { value: "1a", label: "do setor" },
     ],
-    globe: { phi: 0.90, theta: -0.18, highlight: 'mg' },
+    globe: { phi: 0.9, theta: -0.18, highlight: "mg" },
   },
   {
     id: "agora",
     label: "Agora",
     title: "Estamos prontos para inovar",
-    body: "Com investimentos massivos em tecnologia e inovação, a Energisa se posiciona na vanguarda da transição energética brasileira.",
+    body: "Com investimentos massivos em tecnologia e inovacao, a Energisa se posiciona na vanguarda da transicao energetica brasileira.",
     metrics: [
       { value: "11", label: "distribuidoras" },
       { value: "20M+", label: "clientes" },
       { value: "862k", label: "km de rede" },
     ],
-    globe: { phi: 1.00, theta: -0.24, highlight: 'br' },
+    globe: { phi: 1.0, theta: -0.24, highlight: "br" },
   },
   {
     id: "futuro",
     label: "Futuro",
     title: "Acolhemos o novo",
-    body: "A meta é clara: 100% de energia renovável até 2030. Com a Energisa, estamos redefinindo como o Brasil se conecta.",
+    body: "A meta e clara: 100% de energia renovavel ate 2030. Com a Energisa, estamos redefinindo como o Brasil se conecta.",
     metrics: [
-      { value: "100%", label: "renovável" },
+      { value: "100%", label: "renovavel" },
       { value: "2030", label: "meta" },
       { value: "Net", label: "zero" },
     ],
-    globe: { phi: 1.12, theta: -0.30, highlight: 'sa' },
+    globe: { phi: 1.12, theta: -0.3, highlight: "sa" },
   },
 ];
 
@@ -126,9 +126,7 @@ export function TimelineMetricStrip({
               {metric.label}
             </span>
           </div>
-          {idx < metrics.length - 1 && (
-            <div style={{ width: 1, height: dividerHeight, background: dividerColor }} />
-          )}
+          {idx < metrics.length - 1 && <div style={{ width: 1, height: dividerHeight, background: dividerColor }} />}
         </div>
       ))}
     </div>
@@ -159,9 +157,6 @@ function supportsWebGL() {
   return webGLSupport;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   DESKTOP — scroll-driven sticky experience (original behaviour)
- ───────────────────────────────────────────────────────────── */
 function TimelineDesktop() {
   const [active, setActive] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -193,7 +188,7 @@ function TimelineDesktop() {
     isManualScrolling.current = true;
     setActive(index);
 
-    if (shouldReduceMotion || !containerRef.current) {
+    if (!containerRef.current) {
       isManualScrolling.current = false;
       return;
     }
@@ -203,16 +198,12 @@ function TimelineDesktop() {
     const elementTop = rect.top + scrollTop;
     const elementHeight = rect.height;
     const windowHeight = window.innerHeight;
-
-    // Progress values that correspond to each tab's center in the scroll range
     const targetProgress = DESKTOP_TAB_SCROLL_TARGETS[index];
-
     const targetScroll = targetProgress * (elementHeight + windowHeight) + elementTop - windowHeight;
 
-    // Custom smooth scroll animation using framer-motion's animate
     animationRef.current = animate(window.scrollY, targetScroll, {
       duration: 1.0,
-      ease: [0.22, 1, 0.36, 1], // Balanced smooth scroll
+      ease: [0.22, 1, 0.36, 1],
       onUpdate: (latest) => window.scrollTo(0, latest),
       onComplete: () => {
         isManualScrolling.current = false;
@@ -222,13 +213,16 @@ function TimelineDesktop() {
   };
 
   const current = TABS[active];
-  const yOffset = shouldReduceMotion ? 0 : 16;
-  const yExitOffset = shouldReduceMotion ? 0 : -10;
-
   return (
     <div
       ref={containerRef}
-      style={{ height: shouldReduceMotion ? "100svh" : "200svh", marginTop: "-15svh", position: "relative", zIndex: 1, background: "#121312" }}
+      style={{
+        height: "200svh",
+        marginTop: "-15svh",
+        position: "relative",
+        zIndex: 1,
+        background: "#121312",
+      }}
     >
       <section
         className="timeline-visual relative overflow-hidden will-change-transform"
@@ -240,17 +234,10 @@ function TimelineDesktop() {
           opacity: 1,
         }}
       >
-        {/* Progress bar */}
         {!shouldReduceMotion && (
-          <ScrollProgress
-            motionValue={barProgress}
-            opacityValue={barOpacity}
-            className="top-[80px] h-[1px]"
-            color="#D4EC28"
-          />
+          <ScrollProgress motionValue={barProgress} opacityValue={barOpacity} className="top-[80px] h-[1px]" color="#D4EC28" />
         )}
 
-        {/* Background grid */}
         <GridPattern
           width={40}
           height={40}
@@ -258,11 +245,10 @@ function TimelineDesktop() {
           y={-1}
           className={cn(
             "absolute inset-0 h-full w-full pointer-events-none stroke-white/[0.05] z-[2]",
-            "[mask-image:radial-gradient(1000px_circle_at_top_left,white,transparent)]"
+            "[mask-image:radial-gradient(1000px_circle_at_top_left,white,transparent)]",
           )}
         />
 
-        {/* Globe — right side, full height */}
         <div
           className="absolute top-0 bottom-0 right-0 pointer-events-auto"
           style={{
@@ -284,10 +270,8 @@ function TimelineDesktop() {
           </Suspense>
         </div>
 
-        {/* Content — vertically centered */}
         <div className="max-w-[1440px] mx-auto relative px-20 flex flex-col justify-center pointer-events-none h-full" style={{ zIndex: 3 }}>
           <div className="relative z-10 flex flex-col gap-12 pointer-events-none" style={{ maxWidth: 480 }}>
-            {/* Toggles (outside AnimatePresence for persistence) */}
             <div className="flex items-center gap-2 pointer-events-auto">
               {TABS.map((tab, i) => (
                 <button
@@ -299,7 +283,6 @@ function TimelineDesktop() {
                     border: "1px solid rgba(246, 248, 237, 0.08)",
                   }}
                 >
-                  {/* Active pill background */}
                   {active === i && (
                     <motion.div
                       layoutId="active-pill-desktop"
@@ -323,27 +306,38 @@ function TimelineDesktop() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={current.id}
-                initial={{ opacity: 0, y: yOffset }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
-                exit={{ opacity: 0, y: yExitOffset, transition: { duration: 0.15, ease: [0.55, 0, 1, 0.45] } }}
+                exit={{ opacity: 0, y: -10, transition: { duration: 0.15, ease: [0.55, 0, 1, 0.45] } }}
                 className="flex flex-col gap-6"
               >
-                {/* Title */}
-                <h2 style={{ fontFamily: "Sora, sans-serif", fontWeight: 400, fontSize: "clamp(24px, 2.6vw, 32px)", color: "#FFFFFF", lineHeight: 1.2 }}>
+                <h2
+                  style={{
+                    fontFamily: "Sora, sans-serif",
+                    fontWeight: 400,
+                    fontSize: "clamp(24px, 2.6vw, 32px)",
+                    color: "#FFFFFF",
+                    lineHeight: 1.2,
+                  }}
+                >
                   {current.title}
                 </h2>
-
-                {/* Body */}
-                <p style={{ fontFamily: "Sora, sans-serif", fontSize: "clamp(14px, 1.1vw, 16px)", color: "rgba(246, 248, 237, 0.6)", lineHeight: 1.7, maxWidth: 400 }}>
+                <p
+                  style={{
+                    fontFamily: "Sora, sans-serif",
+                    fontSize: "clamp(14px, 1.1vw, 16px)",
+                    color: "rgba(246, 248, 237, 0.6)",
+                    lineHeight: 1.7,
+                    maxWidth: 400,
+                  }}
+                >
                   {current.body}
                 </p>
-
-                {/* Metrics */}
-              <TimelineMetricStrip metrics={current.metrics} className="mt-4" />
-            </motion.div>
-          </AnimatePresence>
+                <TimelineMetricStrip metrics={current.metrics} className="mt-4" />
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
-      </div>
       </section>
     </div>
   );
@@ -355,15 +349,8 @@ function TimelineMobile() {
   const hasWebGL = useMemo(() => supportsWebGL(), []);
 
   return (
-    <section
-      className="relative overflow-hidden bg-[#121312]"
-      style={{ minHeight: "100svh" }}
-    >
-      {/* Globe -- shifted up on mobile */}
-      <div
-        className="absolute top-[-5svh] left-0 right-0 h-[65svh] pointer-events-none"
-        style={{ touchAction: "none" }}
-      >
+    <section className="relative overflow-hidden bg-[#121312]" style={{ minHeight: "100svh" }}>
+      <div className="absolute top-[-5svh] left-0 right-0 h-[65svh] pointer-events-none" style={{ touchAction: "none" }}>
         {hasWebGL ? (
           <Suspense fallback={<GlobeFallback />}>
             <VoxelGlobe
@@ -376,17 +363,11 @@ function TimelineMobile() {
         ) : (
           <GlobeFallback />
         )}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, transparent 40%, #121312 95%)" }}
-        />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, transparent 40%, #121312 95%)" }} />
       </div>
 
-      {/* Content -- pinned to bottom */}
       <div className="relative z-10 flex flex-col justify-end" style={{ minHeight: "100svh" }}>
         <div className="px-5 pb-14 flex flex-col gap-10">
-
-          {/* Toggles (Always visible) */}
           <div className="flex items-center gap-2">
             {TABS.map((tab, i) => (
               <button
@@ -416,7 +397,6 @@ function TimelineMobile() {
             ))}
           </div>
 
-          {/* Animated content */}
           <AnimatePresence mode="wait">
             <motion.div
               key={current.id}
@@ -425,38 +405,27 @@ function TimelineMobile() {
               exit={{ opacity: 0, y: -10, transition: { duration: 0.15, ease: [0.55, 0, 1, 0.45] } }}
               className="flex flex-col gap-6"
             >
-              {/* Title */}
               <h2 style={{ fontFamily: "Sora, sans-serif", fontWeight: 400, fontSize: "24px", color: "#FFFFFF", lineHeight: 1.25 }}>
                 {current.title}
               </h2>
-
-              {/* Body */}
               <p style={{ fontFamily: "Sora, sans-serif", fontSize: "14px", color: "rgba(246, 248, 237, 0.6)", lineHeight: 1.7 }}>
                 {current.body}
               </p>
-
-              {/* Metrics */}
               <TimelineMetricStrip metrics={current.metrics} size="mobile" className="mt-1" />
             </motion.div>
           </AnimatePresence>
-
         </div>
       </div>
     </section>
   );
 }
 
-/* ─────────────────────────────────────────────────────────────
-   EXPORTED WRAPPER — renders the right instance per breakpoint
-───────────────────────────────────────────────────────────── */
 export function TimelineSection() {
   const isMobile = useIsMobile();
 
   return (
     <div id="timeline" className="section origin-center bg-[#121312]">
-      <div className="section-inner">
-        {isMobile ? <TimelineMobile /> : <TimelineDesktop />}
-      </div>
+      <div className="section-inner">{isMobile ? <TimelineMobile /> : <TimelineDesktop />}</div>
     </div>
   );
 }

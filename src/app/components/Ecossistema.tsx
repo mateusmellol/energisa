@@ -1,18 +1,11 @@
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion, useInView, useScroll, useTransform } from "motion/react";
 import { Sparkles } from "lucide-react";
 import { useRef } from "react";
-import { AvatarCircles } from "@/registry/magicui/avatar-circles";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
 import { cn } from "@/lib/utils";
-import { colors } from "@/lib/tokens";
 import flexlabImage from "@/assets/ecossistema/flexlab-solar.webp";
 import reenergisaImage from "@/assets/ecossistema/reenergisa-building.webp";
 import esgasImage from "@/assets/ecossistema/esgas-field.webp";
-import flexlabLogo from "@/assets/ecossistema/flexlab-logo.svg";
-import reenergisaLogo from "@/assets/ecossistema/reenergisa-logo.svg";
-import esgasLogo from "@/assets/ecossistema/esgas-logo.svg";
-import { TimelineMetricStrip, type TimelineMetric } from "./Timeline";
-import { useIsMobile } from "./ui/use-mobile";
 
 type EcosystemCard = {
   title: string;
@@ -20,17 +13,8 @@ type EcosystemCard = {
   body: string[];
   cta: string;
   image: string;
-  logo: string;
   imageAlt: string;
-  visual: "avatars" | "metrics";
-  metrics?: TimelineMetric[];
 };
-
-const TIMELINE_METRICS: TimelineMetric[] = [
-  { value: "1905", label: "fundação" },
-  { value: "MG", label: "origem" },
-  { value: "1ª", label: "do setor" },
-];
 
 const ECOSYSTEM_CARDS: EcosystemCard[] = [
   {
@@ -41,9 +25,7 @@ const ECOSYSTEM_CARDS: EcosystemCard[] = [
     ],
     cta: "Ver FlexLab",
     image: flexlabImage,
-    logo: flexlabLogo,
     imageAlt: "Painéis solares em campo aberto representando inovação e energia renovável.",
-    visual: "avatars",
   },
   {
     title: "Reenergisa",
@@ -53,10 +35,7 @@ const ECOSYSTEM_CARDS: EcosystemCard[] = [
     ],
     cta: "Ver Reenergisa",
     image: reenergisaImage,
-    logo: reenergisaLogo,
     imageAlt: "Fachada de edifício corporativo da Energisa.",
-    visual: "metrics",
-    metrics: TIMELINE_METRICS,
   },
   {
     title: "ESgas",
@@ -67,10 +46,7 @@ const ECOSYSTEM_CARDS: EcosystemCard[] = [
     ],
     cta: "Ver ESgas",
     image: esgasImage,
-    logo: esgasLogo,
     imageAlt: "Técnico da ESgas operando equipamentos de distribuição de gás.",
-    visual: "metrics",
-    metrics: TIMELINE_METRICS,
   },
 ];
 
@@ -102,40 +78,26 @@ function EcosystemButton({ children }: { children: React.ReactNode }) {
   );
 }
 
-function CardVisual({ card }: { card: EcosystemCard }) {
-  const isMobile = useIsMobile();
-
-  if (card.visual === "avatars") {
-    return <AvatarCircles numPeople={99} avatarUrls={[]} />;
-  }
-
-  return (
-    <TimelineMetricStrip
-      metrics={card.metrics ?? TIMELINE_METRICS}
-      size={isMobile ? "mobile" : "desktop"}
-      surface="light"
-      gap={10}
-      valueColor={colors.neutral[950]}
-      labelColor={colors.neutral[700]}
-      className="w-full"
-    />
-  );
-}
-
 function EcosystemSlide({
   card,
   index,
   isLast,
+  id,
+  style,
 }: {
   card: EcosystemCard;
   index: number;
   isLast: boolean;
+  id?: string;
+  style?: React.CSSProperties;
 }) {
   const slideRef = useRef<HTMLElement | null>(null);
+  const textRef = useRef<HTMLDivElement | null>(null);
   const { scrollYProgress } = useScroll({
     target: slideRef,
     offset: ["start start", "end start"],
   });
+  const isTextInView = useInView(textRef, { once: true, margin: "0px 0px -60px 0px" });
 
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.86, 0.72]);
   const y = useTransform(scrollYProgress, [0, 0.5, 1], [0, -42, -120]);
@@ -145,6 +107,8 @@ function EcosystemSlide({
   return (
     <section
       ref={slideRef}
+      id={id}
+      style={style}
       className={cn(
         "relative flex min-h-[87svh] justify-center",
         !isLast && "mb-0",
@@ -155,7 +119,13 @@ function EcosystemSlide({
         className="sticky top-[4svh] flex h-[85svh] w-full items-center px-3 py-0 md:px-5"
       >
         <div className="relative mx-auto grid h-full w-full max-w-[1440px] grid-cols-1 items-center gap-8 px-5 py-8 md:grid-cols-12 md:gap-8 md:px-12 md:py-10">
-          <div className="relative z-10 flex min-h-[562px] flex-col items-start justify-between gap-14 md:col-span-5">
+          <motion.div
+            ref={index === 0 ? textRef : undefined}
+            initial={index === 0 ? { opacity: 0, x: -40, filter: "blur(8px)" } : false}
+            animate={index === 0 ? (isTextInView ? { opacity: 1, x: 0, filter: "blur(0px)" } : {}) : undefined}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-10 flex min-h-[562px] flex-col items-start justify-between gap-14 md:col-span-5"
+          >
             <div className="flex w-full flex-col gap-10">
               <div className="flex flex-col items-start gap-4">
                 {card.eyebrow && (
@@ -178,11 +148,6 @@ function EcosystemSlide({
                     letterSpacing: "-0.035em",
                   }}
                 >
-                  <img
-                    src={card.logo}
-                    alt={`${card.title} logo`}
-                    className="h-10 w-auto object-contain object-left mb-6"
-                  />
                   {card.title}
                 </h2>
               </div>
@@ -195,30 +160,21 @@ function EcosystemSlide({
                     color: "rgba(18, 19, 18, 0.48)",
                   }}
                 >
-                  {card.visual === "avatars" && <CardVisual card={card} />}
-                  {card.visual === "metrics" ? (
-                    <>
-                      <div className="flex flex-col gap-4">
-                        {card.body.map((paragraph) => (
-                          <p key={paragraph}>{paragraph}</p>
-                        ))}
-                      </div>
-                      <div className="pt-8">
-                        <CardVisual card={card} />
-                      </div>
-                    </>
-                  ) : (
-                    card.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)
-                  )}
+                  {card.body.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
                 </div>
               </div>
             </div>
 
             <EcosystemButton>{card.cta}</EcosystemButton>
-          </div>
+          </motion.div>
 
           <motion.div
             style={{ scale: imageScale, y: imageY }}
+            initial={index === 0 ? { opacity: 0, x: -40, filter: "blur(8px)" } : false}
+            animate={index === 0 ? (isTextInView ? { opacity: 1, x: 0, filter: "blur(0px)" } : {}) : undefined}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
             className="relative z-10 h-[48svh] overflow-hidden rounded-none md:col-span-7 md:h-[633px]"
           >
             <img
@@ -236,7 +192,7 @@ function EcosystemSlide({
 
 export function Ecossistema() {
   return (
-    <section id="ecossistema" className="relative overflow-hidden bg-white py-3 md:py-5">
+    <section className="relative overflow-hidden bg-white pt-3 pb-0 md:pt-5 md:pb-0">
       <GridPattern
         width={40}
         height={40}
@@ -252,9 +208,11 @@ export function Ecossistema() {
         {ECOSYSTEM_CARDS.map((card, index) => (
           <EcosystemSlide
             key={card.title}
+            id={index === 0 ? "ecossistema" : undefined}
             card={card}
             index={index}
             isLast={index === ECOSYSTEM_CARDS.length - 1}
+            style={index === 0 ? { scrollMarginTop: "80px" } : undefined}
           />
         ))}
       </div>

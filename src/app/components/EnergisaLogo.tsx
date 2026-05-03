@@ -1,4 +1,4 @@
-import svgPaths from "../../imports/Header/svg-exccz6k13i";
+import React from "react";
 
 interface EnergisaLogoProps {
   color?: string;
@@ -6,52 +6,92 @@ interface EnergisaLogoProps {
   className?: string;
 }
 
-const LOGO_SEGMENTS = [
-  { inset: "42.17% 45.3% 21.2% 44.71%", viewBox: "0 0 11.5852 13.9184", path: svgPaths.p22035800 },
-  { inset: "42.11% 69.3% 21.18% 20.72%", viewBox: "0 0 11.5746 13.9474", path: svgPaths.p459a300 },
-  { inset: "42.16% 57.34% 21.8% 32.92%", viewBox: "0 0 11.2952 13.6957", path: svgPaths.p12e93f00 },
-  { inset: "42.24% 25.83% 21.11% 63.76%", viewBox: "0 0 12.0719 13.9273", path: svgPaths.p18a8b300 },
-  { inset: "42.39% 10.42% 21.41% 81.29%", viewBox: "0 0 9.61278 13.7554", path: svgPaths.pd22a1c0 },
-  { inset: "42.17% 37.06% 21.81% 56.91%", viewBox: "0 0 6.99685 13.6905", path: svgPaths.p1d77b700 },
-  { inset: "42.81% 21.03% 21.83% 76.49%", viewBox: "0 0 2.86987 13.4366", path: svgPaths.p3ca12800 },
-  { inset: "19.52% 59.96% 69.59% 36.47%", viewBox: "0 0 4.13783 4.13968", path: svgPaths.p11889800 },
-  { inset: "19.61% 71.41% 69.65% 25.92%", viewBox: "0 0 3.09427 4.07846", path: svgPaths.p22b6c600 },
-  { inset: "19.63% 63.95% 69.63% 33.54%", viewBox: "0 0 2.90426 4.07822", path: svgPaths.pf9170c0 },
-  { inset: "19.54% 75.14% 69.63% 21.74%", viewBox: "0 0 3.61209 4.11566", path: svgPaths.pd2ea700 },
-  { inset: "19.68% 67.59% 69.6% 29.29%", viewBox: "0 0 3.61755 4.07341", path: svgPaths.p3f72aa00 },
-  { inset: "29.06% 76.61% 0 2.25%", viewBox: "0 0 24.5099 26.9564", path: svgPaths.p38f1df80 },
-  { inset: "0 82.7% 52.24% 1.65%", viewBox: "0 0 18.1386 18.1498", path: svgPaths.p3b3b8980 },
-  { inset: "42.16% 0 21.06% 90.71%", viewBox: "0 0 10.7701 13.9751", path: svgPaths.pcc93d80 },
-  { inset: "62.55% 89.77% 0 0", viewBox: "0 0 11.8548 14.2322", path: svgPaths.p2a81db00 },
-] as const;
-
+/**
+ * EnergisaLogo component - Official Vectorized Version
+ * Based on the Figma design and official brand assets.
+ */
 export function EnergisaLogo({
   color = "currentColor",
   scale = 1,
   className,
 }: EnergisaLogoProps) {
-  const width = 115.93 * scale;
-  const height = 38 * scale;
+  // Official dimensions from viewBox 0 0 1000 325.7
+  const baseWidth = 115.93;
+  const baseHeight = 37.75; // Adjusted to match ratio ~3.07
+  
+  const width = baseWidth * scale;
+  const height = baseHeight * scale;
 
   return (
-    <div
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 1000 325.7"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ width, height, position: "relative", flexShrink: 0, color }}
+      style={{ flexShrink: 0 }}
     >
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-        {LOGO_SEGMENTS.map((segment) => (
-          <div key={segment.path} style={{ position: "absolute", inset: segment.inset }}>
-            <svg
-              className="absolute block inset-0 size-full"
-              fill="none"
-              preserveAspectRatio="none"
-              viewBox={segment.viewBox}
-            >
-              <path d={segment.path} fill="currentColor" />
-            </svg>
-          </div>
-        ))}
-      </div>
-    </div>
+      <g>
+        {/* E Symbol - Top Swoosh */}
+        <path
+          d="M154.1,0.4c-72.8,0-134.2,0-134.2,0s153.9,51.2,86.9,155.1C106.8,155.5,220.7,75,154.1,0.4"
+          fill={color}
+        />
+        {/* E Symbol - Bottom Swoosh */}
+        <path
+          d="M110.5,96.4c-76.8,31.3-142.1,113.1,3.5,229h123.8C237.8,325.3-11.8,180,110.5,96.4"
+          fill={color}
+        />
+        {/* E Symbol - Accent Swoosh */}
+        <path
+          d="M8.6,203.5c0,0-22.6,58.6,12.2,121.9h84C62.9,306.2,6.9,252.7,8.6,203.5"
+          fill={color}
+        />
+        
+        {/* Text "energisa" */}
+        {/* e */}
+        <path
+          d="M262.6,137c-32.4,0-50.7,25.6-50.7,59.9c0,40,19,58.3,53.7,58.3c13.1,0.1,26.2-2.4,38.4-7.3l-2.3-19.4c-10.2,4.9-21.2,7.3-32.5,7.3c-22.1,0-33.5-11.9-32.8-38.2h70.8c0.4-3.8,0.7-7.6,0.7-11.4C308,159.2,294.3,137,262.6,137L262.6,137z M236.9,180.4c2-15.4,11.4-25.5,24.9-25.5c14.1,0,22.8,9.8,22.3,25.5H236.9z"
+          fill={color}
+        />
+        {/* n */}
+        <path
+          d="M392.1,137c-19.4,0-33.2,10.2-39.8,25.2l-0.2-0.2c1.1-7.5,1.6-15,1.6-22.6h-23.5v115.9h24.6v-56c0-23.1,12.7-41.5,29.9-41.5c13.1,0,17.1,8.4,17.1,22.9v74.7h24.4V174C426.1,153.5,418,137,392.1,137z"
+          fill={color}
+        />
+        {/* e */}
+        <path
+          d="M500.9,137c-33.6,0-52.6,25.6-52.6,59.9c0,40,19.7,58.3,55.7,58.3c13.6,0.1,27.2-2.4,39.9-7.3l-2.3-19.4c-10.5,4.8-22,7.3-33.6,7.3c-22.9,0-34.7-11.9-34.1-38.2h73.5c0.4-4.4,0.7-8.2,0.7-11.4C548,159.2,533.9,137,500.9,137L500.9,137z M474.3,180.4c2.1-15.4,11.8-25.5,25.7-25.5c14.6,0,23.6,9.8,23.2,25.5H474.3z"
+          fill={color}
+        />
+        {/* r */}
+        <path
+          d="M591.6,165.2h-0.4c1.4-8.5,2.2-17,2.3-25.6h-23.3v115.6h24.4v-47c0-34.7,11-50.7,33.5-46.6l1.1-24.4C608,135.1,596.6,149.5,591.6,165.2"
+          fill={color}
+        />
+        {/* g */}
+        <path
+          d="M716,232.1c-5.5,1.4-11.2,2.2-17,2.2c-21.7,0-36.7-13.4-36.7-37.9c0-26,17.5-39.4,39.1-39.4c10.9,0,21.8,2.1,31.9,6.2l4.3-20.7c-11.8-3.5-24.1-5.3-36.4-5.3c-40.5,0-64.6,26.9-64.6,61.3c0,37.5,25.2,56.9,60.1,56.9c14.8,0.1,29.5-2.5,43.3-7.7v-54H716V232.1z"
+          fill={color}
+        />
+        {/* i */}
+        <path
+          d="M788.1,140.7h-25.9v114.5h25.9V140.7z"
+          fill={color}
+        />
+        {/* s */}
+        <path
+          d="M836.8,167.9c0-8.7,12.1-12.6,26.4-12.6c8-0.1,15.9,1.3,23.4,4.1l1.1-19c-5.9-2.4-15.4-3.4-22.4-3.4c-32.6,0-55,13.6-55,33.3c-0.1,39.3,57.9,30.5,57.9,53.4c0,9.4-8.7,11-22.7,11c-9.2,0-23.7-3.5-32-7.1l-0.8,21.9c10,3.5,20.6,5.4,31.2,5.7c32.1,0,51.2-12.6,51.3-33.8C895.3,183.6,836.8,189.9,836.8,167.9"
+          fill={color}
+        />
+        {/* a */}
+        <path
+          d="M998.6,252.9c-0.5-9.6-0.7-21.2-0.7-31v-46.5c0-23.3-9.4-38.4-43.5-38.4c-13.4,0.1-26.7,2.6-39.2,7.5l2.2,20.8c9.4-6,22.9-9.2,33.2-9.2c17.4,0,23.3,9.6,23.3,23.7c-23.1,0-45.8,5.8-57.6,18c-3.1,3.2-5.7,7-7.4,11.2c-2.2,5.2-3.1,10.9-2.6,16.5s2.5,11.1,5.7,15.7c6.9,10.4,14.5,14.2,27.3,13.9c17.7-0.4,31.6-10.1,37-23.5l0.2,0.2c-0.9,7-1.2,14-1.1,21H998.6z M973.9,198.5c0,16.2-11,37.5-27.3,37.5c-3.3,0.2-6.6-0.5-9.6-1.9c-6.1-3.3-12.3-19.5-0.5-29.3c3.7-2.8,8-4.7,12.5-5.7c8.2-2,16.5-2.9,24.9-2.8L973.9,198.5z"
+          fill={color}
+        />
+      </g>
+    </svg>
   );
 }
+

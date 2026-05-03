@@ -1,4 +1,8 @@
 import { ArrowUpRight } from "lucide-react";
+import { motion, useInView } from "motion/react";
+import { useRef } from "react";
+import { GridPattern } from "@/registry/magicui/grid-pattern";
+import { cn } from "@/lib/utils";
 import laboratorioImage from "@/assets/noticias/inovacao-laboratorio.webp";
 import infraestruturaImage from "@/assets/noticias/infraestrutura-industrial.webp";
 import solarImage from "@/assets/noticias/energia-solar.webp";
@@ -18,7 +22,7 @@ const NEWS_ITEMS: NewsItem[] = [
     category: "Inovação",
     date: "30 abr 2026",
     dateTime: "2026-04-30",
-    title: "FlexLab amplia testes com tecnologias para redes mais inteligentes",
+    title: "FlexLab amplia testes com tecnologias",
     summary:
       "Novas frentes de pesquisa conectam automação, dados e eficiência operacional para acelerar soluções que chegam ao cliente.",
     image: laboratorioImage,
@@ -26,23 +30,23 @@ const NEWS_ITEMS: NewsItem[] = [
       "Equipe técnica trabalhando em bancada de prototipagem com equipamentos eletrônicos.",
   },
   {
-    category: "Infraestrutura",
-    date: "24 abr 2026",
-    dateTime: "2026-04-24",
-    title: "Grupo avança em projetos para diversificar a matriz energética",
+    category: "Sustentabilidade",
+    date: "14 abr 2026",
+    dateTime: "2026-04-14",
+    title: "GreenTech revoluciona energia renovável",
     summary:
-      "Investimentos em operações complementares reforçam segurança, previsibilidade e capacidade de atendimento em novos mercados.",
+      "Novas soluções em energia solar e eólica reduzem custos e aumentam a eficiência, transformando o mercado energético.",
     image: infraestruturaImage,
     imageAlt:
       "Vista aérea de planta industrial com tanques, tubulações e áreas verdes ao redor.",
   },
   {
-    category: "Transição energética",
-    date: "16 abr 2026",
-    dateTime: "2026-04-16",
-    title: "Geração solar ganha escala em iniciativas para empresas e cidades",
+    category: "Inteligência Artificial",
+    date: "02 abr 2026",
+    dateTime: "2026-04-02",
+    title: "AI Health transforma cuidados médicos",
     summary:
-      "Projetos de energia renovável combinam implantação técnica e gestão digital para apoiar metas de descarbonização.",
+      "A integração de IA na análise de dados médicos promete diagnósticos mais rápidos e precisão no tratamento de doenças.",
     image: solarImage,
     imageAlt:
       "Técnico instalando painéis solares em uma estrutura de geração fotovoltaica.",
@@ -50,9 +54,22 @@ const NEWS_ITEMS: NewsItem[] = [
 ];
 
 function NewsCard({ item, index }: { item: NewsItem; index: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "0px 0px -80px 0px" });
+
   return (
-    <article className="group flex min-w-0 flex-col gap-5">
-      <div className="relative block aspect-[1.18] w-full overflow-hidden bg-[#e6e7e4]">
+    <motion.article
+      ref={ref}
+      className="group flex min-w-0 cursor-pointer flex-col gap-4"
+      initial={{ opacity: 0, x: -40, filter: "blur(8px)" }}
+      animate={isInView ? { opacity: 1, x: 0, filter: "blur(0px)" } : {}}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.12,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+    >
+      <div className="relative block aspect-[1.18] w-full overflow-hidden bg-[#e6e7e4] shadow-[0_15px_35px_-5px_rgba(0,0,0,0.1),0_10px_20px_-10px_rgba(0,0,0,0.05)] transition-shadow duration-300 group-hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)]">
         <img
           src={item.image}
           alt={item.imageAlt}
@@ -62,36 +79,32 @@ function NewsCard({ item, index }: { item: NewsItem; index: number }) {
         />
       </div>
 
-      <div className="flex flex-col gap-4">
-        <div
-          className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] uppercase tracking-[0.14em] text-[#555653]"
-          style={{ fontFamily: "Sora, sans-serif" }}
-        >
-          <span>{item.category}</span>
-          <span aria-hidden="true" className="h-1 w-1 bg-[#8b8d85]" />
-          <time dateTime={item.dateTime}>{item.date}</time>
+      <div className="flex flex-col items-start gap-4">
+        <div className="flex h-[34px] items-center justify-center rounded-full bg-[#cad71d] px-4">
+          <span className="font-['Sora',sans-serif] text-[13px] leading-[1.4] text-[#121312]">
+            {item.category}
+          </span>
         </div>
 
-        <h3
-          className="max-w-[720px] text-[#121312] transition-colors duration-200 group-hover:text-[#055e3a]"
-          style={{
-            fontFamily: "Sora, sans-serif",
-            fontSize: "clamp(22px, 2vw, 31px)",
-            fontWeight: 400,
-            lineHeight: 1.16,
-          }}
-        >
-          {item.title}
-        </h3>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
+            <h3 className="font-['Sora',sans-serif] text-[31px] font-normal leading-[1.16] text-[#121312]">
+              {item.title}
+            </h3>
+            <p className="font-['Sora',sans-serif] text-[16px] leading-[1.6] text-[#555653]">
+              {item.summary}
+            </p>
+          </div>
 
-        <p
-          className="max-w-[610px] text-[15px] leading-[1.6] text-[#71726b] md:text-[16px]"
-          style={{ fontFamily: "Sora, sans-serif" }}
-        >
-          {item.summary}
-        </p>
+          <time
+            dateTime={item.dateTime}
+            className="font-['Sora',sans-serif] text-[10px] leading-[1.4] text-[#555653]"
+          >
+            {item.date}
+          </time>
+        </div>
       </div>
-    </article>
+    </motion.article>
   );
 }
 
@@ -99,33 +112,27 @@ export function Noticias() {
   return (
     <section
       id="noticias"
-      className="relative overflow-hidden bg-[#f8f8f7] py-24 md:py-32"
+      className="relative overflow-hidden bg-white pt-12 pb-24 md:pt-16 md:pb-[128px]"
     >
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-14 px-5 md:px-20">
-        <div className="flex flex-col items-start justify-between gap-8 border-b border-[#dadad6] pb-8 md:flex-row md:items-end">
-          <div className="flex max-w-[770px] flex-col gap-4">
-            <span
-              className="text-[13px] font-medium uppercase tracking-[0.16em] text-[#055e3a]"
-              style={{ fontFamily: "Sora, sans-serif" }}
-            >
-              Notícias
-            </span>
-            <h2
-              className="text-[#121312]"
-              style={{
-                fontFamily: "Sora, sans-serif",
-                fontSize: "clamp(36px, 4.5vw, 72px)",
-                fontWeight: 400,
-                lineHeight: 1.04,
-              }}
-            >
-              Atualizações do ecossistema Energisa
-            </h2>
-          </div>
+      <GridPattern
+        width={40}
+        height={40}
+        x={-1}
+        y={-1}
+        className={cn(
+          "pointer-events-none absolute inset-0 h-full w-full stroke-gray-900/[0.06]",
+          "[mask-image:radial-gradient(900px_circle_at_top_right,white,transparent)]",
+        )}
+      />
+      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col gap-7 px-5 md:px-20">
+        <div className="flex flex-col items-start justify-between gap-8 pb-8 md:flex-row md:items-end">
+          <h2 className="font-['Sora',sans-serif] text-[39px] font-normal leading-[1.4] text-[#121312]">
+            Notícias
+          </h2>
 
           <button
             type="button"
-            className="group inline-flex min-h-[48px] items-center gap-3 border border-[#121312] px-5 text-[15px] font-medium text-[#121312] transition-colors duration-200 hover:bg-[#121312] hover:text-[#fdfdfc] active:scale-[0.98]"
+            className="group inline-flex items-center gap-1.5 rounded-[4px] border border-[#121312]/20 px-8 py-4 text-[16px] font-medium text-[#121312] transition-all duration-200 hover:bg-[#121312] hover:text-[#fdfdfc] active:scale-[0.98] cursor-pointer"
             style={{ fontFamily: "Sora, sans-serif" }}
           >
             Ver tudo

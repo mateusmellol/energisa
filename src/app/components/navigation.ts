@@ -1,6 +1,7 @@
 export const NAV_LINKS = [
   { label: "Impacto", href: "#impacto" },
   { label: "Sobre", href: "#timeline" },
+  { label: "Ecossistema", href: "#ecossistema" },
 ] as const;
 
 export function getSectionId(href: string) {
@@ -8,5 +9,5 @@ export function getSectionId(href: string) {
 }
 
 export function scrollToSection(sectionId: string) {
-  document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+  document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
