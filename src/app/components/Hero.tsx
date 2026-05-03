@@ -14,7 +14,7 @@ export function Hero() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover object-center"
         >
-          <source src="/hero-video.mp4" type="video/mp4" />
+          <source src="hero-video.mp4" type="video/mp4" />
         </video>
 
         <GridBackground className="opacity-30" />
