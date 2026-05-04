@@ -41,6 +41,8 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --neutral-50: #F8F8F7;
+  --tremor-ring: 229 231 235;
+  --dark-tremor-ring: 31 41 55;
 }
 
 .dark {
@@ -78,6 +80,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  --tremor-ring: 31 41 55;
+  --dark-tremor-ring: 229 231 235;
 }
 
 @theme inline {
@@ -120,6 +124,15 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-neutral-50: var(--neutral-50);
+  --radius-tremor-small: 9999px;
+  --radius-tremor-default: 9999px;
+  --text-tremor-label: 13px;
+  --color-tremor-background: rgba(255, 255, 255, 0.92);
+  --color-tremor-background-subtle: #f3f4f6;
+  --color-tremor-content-emphasis: #374151;
+  --color-dark-tremor-background: rgba(15, 23, 42, 0.72);
+  --color-dark-tremor-background-subtle: #1f2937;
+  --color-dark-tremor-content-emphasis: #d1d5db;
 }
 
 @layer base {
