@@ -71,9 +71,9 @@ export function Header() {
     ? "backdrop-blur-lg bg-black/40 border-b border-white/10 text-[#fdfdfc] shadow-lg"
     : isScrolled
       ? "backdrop-blur-lg bg-[#FFFFFF]/80 border-b border-black/5 text-neutral-900 shadow-sm"
-      : "backdrop-blur-sm bg-black/10 border-b border-white/10 text-[#FFFFFF]";
+      : "backdrop-blur-sm bg-white/10 border-b border-black/5 text-neutral-900";
 
-  const isLight = isScrolled && !isDarkSection;
+  const isLight = !isDarkSection;
 
   return (
     <>
