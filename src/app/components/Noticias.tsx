@@ -1,8 +1,13 @@
-import { ArrowUpRight } from "lucide-react";
-import { motion, useInView } from "motion/react";
-import { useRef } from "react";
+import { motion } from "motion/react";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
 import { cn } from "@/lib/utils";
+import {
+  liftHover,
+  motionTransition,
+  motionViewport,
+  pressTap,
+  sectionHeaderVariants,
+} from "@/lib/motion";
 import laboratorioImage from "@/assets/noticias/inovacao-laboratorio.webp";
 import infraestruturaImage from "@/assets/noticias/infraestrutura-industrial.webp";
 import solarImage from "@/assets/noticias/energia-solar.webp";
@@ -54,33 +59,56 @@ const NEWS_ITEMS: NewsItem[] = [
 ];
 
 function NewsCard({ item, index }: { item: NewsItem; index: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "0px 0px -80px 0px" });
-
   return (
     <motion.article
-      ref={ref}
-      className="group flex min-w-0 cursor-pointer flex-col gap-4"
-      initial={{ opacity: 0, x: -40, filter: "blur(8px)" }}
-      animate={isInView ? { opacity: 1, x: 0, filter: "blur(0px)" } : {}}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.12,
-        ease: [0.16, 1, 0.3, 1],
+      className="flex min-w-0 cursor-pointer flex-col gap-4"
+      initial="hidden"
+      whileInView="visible"
+      viewport={motionViewport}
+      whileHover="hover"
+      custom={index}
+      variants={{
+        hidden: { opacity: 0, y: 24 },
+        visible: (cardIndex: number) => ({
+          opacity: 1,
+          y: 0,
+          transition: {
+            ...motionTransition.entrance,
+            delay: cardIndex * 0.08,
+          },
+        }),
+        hover: {
+          y: -4,
+          transition: motionTransition.fast,
+        },
       }}
     >
-      <div className="relative block aspect-[1.18] w-full overflow-hidden bg-[#e6e7e4] shadow-[0_15px_35px_-5px_rgba(0,0,0,0.1),0_10px_20px_-10px_rgba(0,0,0,0.05)] transition-shadow duration-300 group-hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)]">
-        <img
+      <motion.div
+        className="relative block aspect-[1.18] w-full overflow-hidden bg-[#e6e7e4] shadow-[0_15px_35px_-5px_rgba(0,0,0,0.1),0_10px_20px_-10px_rgba(0,0,0,0.05)]"
+        variants={{
+          hover: {
+            boxShadow:
+              "0 25px 50px -12px rgba(0,0,0,0.15), 0 12px 22px -14px rgba(0,0,0,0.12)",
+          },
+        }}
+      >
+        <motion.img
           src={item.image}
           alt={item.imageAlt}
-          className="h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.035]"
+          className="h-full w-full object-cover"
           loading={index === 0 ? "eager" : "lazy"}
           decoding="async"
+          variants={{
+            hover: {
+              scale: 1.035,
+              transition: motionTransition.fast,
+            },
+          }}
         />
-      </div>
+      </motion.div>
 
       <div className="flex flex-col items-start gap-4">
-        <div className="flex h-[34px] items-center justify-center rounded-full bg-[#cad71d] px-4">
+        <div className="flex h-[34px] items-center justify-center rounded-full bg-[#D4EC28] px-4">
           <span className="font-['Sora',sans-serif] text-[13px] leading-[1.4] text-[#121312]">
             {item.category}
           </span>
@@ -112,7 +140,7 @@ export function Noticias() {
   return (
     <section
       id="noticias"
-      className="relative overflow-hidden bg-white pt-12 pb-24 md:pt-16 md:pb-[128px]"
+      className="relative overflow-hidden bg-[#f2f2f2] pt-12 pb-24 md:pt-16 md:pb-[128px]"
     >
       <GridPattern
         width={40}
@@ -125,24 +153,27 @@ export function Noticias() {
         )}
       />
       <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col gap-7 px-5 md:px-20">
-        <div className="flex flex-col items-start justify-between gap-8 pb-8 md:flex-row md:items-end">
+        <motion.div
+          className="flex flex-col items-start justify-between gap-8 pb-8 md:flex-row md:items-end"
+          initial="hidden"
+          whileInView="visible"
+          viewport={motionViewport}
+          variants={sectionHeaderVariants}
+        >
           <h2 className="font-['Sora',sans-serif] text-[39px] font-normal leading-[1.4] text-[#121312]">
             Notícias
           </h2>
 
-          <button
+          <motion.button
             type="button"
-            className="group inline-flex items-center gap-1.5 rounded-[4px] border border-[#121312]/20 px-8 py-4 text-[16px] font-medium text-[#121312] transition-all duration-200 hover:bg-[#121312] hover:text-[#fdfdfc] active:scale-[0.98] cursor-pointer"
+            className="inline-flex items-center text-[16px] font-medium text-[#121312] underline underline-offset-4 cursor-pointer"
             style={{ fontFamily: "Sora, sans-serif" }}
+            whileHover={liftHover}
+            whileTap={pressTap}
           >
             Ver tudo
-            <ArrowUpRight
-              aria-hidden="true"
-              className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              strokeWidth={2}
-            />
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-3">
           {NEWS_ITEMS.map((item, index) => (

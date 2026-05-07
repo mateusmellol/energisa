@@ -124,7 +124,7 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 			positionAttribute.needsUpdate = true;
 
 			renderer.render(scene, camera);
-			count += 0.0375; // Decreased speed by 25% from 0.05
+			count += 0.030; // Decreased speed by 20% from 0.0375
 		};
 
 		// Handle window resize

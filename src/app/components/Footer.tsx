@@ -1,5 +1,7 @@
+import { motion } from "motion/react";
 import { EnergisaLogo } from "./EnergisaLogo";
 import { scrollToSection } from "./navigation";
+import { pressTap } from "@/lib/motion";
 
 const COLUMNS = [
   {
@@ -37,13 +39,15 @@ export function Footer() {
         <div className="flex flex-col md:flex-row md:justify-between items-start gap-12 md:gap-8">
           {/* Logo and Copyright */}
           <div className="flex flex-col gap-3">
-            <button
+            <motion.button
               onClick={() => scrollToSection("hero")}
-              className="transition-all duration-300 hover:opacity-80 active:scale-95 cursor-pointer outline-none w-fit text-left"
+              className="cursor-pointer outline-none w-fit text-left"
               aria-label="Voltar para o topo"
+              whileHover={{ opacity: 0.8 }}
+              whileTap={pressTap}
             >
               <EnergisaLogo color="#CAD71D" scale={1.4} />
-            </button>
+            </motion.button>
             <span
               style={{
                 fontFamily: "Sora, sans-serif",
@@ -75,19 +79,19 @@ export function Footer() {
                 <ul className="flex flex-col gap-2.5">
                   {col.links.map((link) => (
                     <li key={link.label}>
-                      <a
+                      <motion.a
                         href={link.href}
                         style={{
                           fontFamily: "Sora, sans-serif",
                           fontSize: "13px",
                           color: "rgba(255,255,255,0.55)",
                           textDecoration: "none",
-                          transition: "color 0.15s",
                         }}
-                        className="hover:text-white"
+                        whileHover={{ color: "#ffffff" }}
+                        whileTap={pressTap}
                       >
                         {link.label}
-                      </a>
+                      </motion.a>
                     </li>
                   ))}
                 </ul>

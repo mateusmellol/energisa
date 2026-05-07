@@ -1,7 +1,8 @@
 import { useRef } from "react"
+import { motion } from "motion/react"
 import { DottedSurface } from "@/components/ui/dotted-surface"
 import { ArrowUpRight } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { liftHover, motionTransition, pressTap } from "@/lib/motion"
 
 function scrollToEditais() {
   const target = document.getElementById("editais") ?? document.getElementById("solucoes")
@@ -38,19 +39,31 @@ export function FooterCTA() {
         >
           Vamos juntos <br /> mudar o futuro
         </h4>
-        <button
+        <motion.button
           onClick={scrollToEditais}
-          className="group mt-10 inline-flex min-h-[52px] cursor-pointer items-center gap-3 rounded-[4px] bg-[#D4EC28] px-8 text-[#20201f] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[#e3f654] active:scale-[0.97] pointer-events-auto"
+          className="mt-10 inline-flex min-h-[52px] cursor-pointer items-center gap-3 rounded-[4px] bg-[#D4EC28] px-8 text-[#20201f] pointer-events-auto"
           style={{ fontFamily: "Sora, sans-serif" }}
           type="button"
+          initial="rest"
+          whileHover="hover"
+          whileTap="tap"
+          variants={{
+            rest: { y: 0, scale: 1, backgroundColor: "#D4EC28" },
+            hover: { ...liftHover, backgroundColor: "#e3f654" },
+            tap: pressTap,
+          }}
         >
           <span className="text-[16px] font-semibold">Editais</span>
-          <ArrowUpRight
+          <motion.span
             aria-hidden="true"
-            className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-            strokeWidth={2}
-          />
-        </button>
+            className="inline-flex"
+            variants={{
+              hover: { x: 2, y: -2, transition: motionTransition.fast },
+            }}
+          >
+            <ArrowUpRight className="h-5 w-5" strokeWidth={2} />
+          </motion.span>
+        </motion.button>
       </div>
     </section>
   )

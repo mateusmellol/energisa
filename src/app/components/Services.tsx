@@ -3,46 +3,28 @@ import { motion, AnimatePresence } from "motion/react";
 import svgPaths from "../../imports/Site/svg-swy5fdu2p6";
 import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
+import { motionTransition, pressTap } from "@/lib/motion";
 
 function ServiceCard({ card }: { card: { icon: React.ReactNode; label: string; description: string } }) {
   return (
-    <div
+    <motion.div
       className="relative"
       style={{ height: "176px", pointerEvents: "none" }}
+      initial="rest"
+      whileHover="hover"
+      whileTap="tap"
     >
-      <style>{`
-        .service-card-visuals {
-          transition: transform 300ms cubic-bezier(0.22,1,0.36,1), box-shadow 300ms cubic-bezier(0.22,1,0.36,1);
-          border: 1px solid #8b8d85;
-        }
-        .service-desc-wrapper {
-          display: grid;
-          grid-template-rows: 0fr;
-          transition: grid-template-rows 300ms cubic-bezier(0.22,1,0.36,1);
-        }
-        .service-desc-text {
-          opacity: 0;
-          transition: opacity 200ms ease;
-        }
-        /* Hitbox logic */
-        .service-card-hitbox:hover ~ .service-card-visuals {
-          transform: translateY(-5px);
-          box-shadow: 0 12px 28px 0 rgba(0,0,0,0.12);
-        }
-        .service-card-hitbox:hover ~ .service-card-visuals .service-desc-wrapper {
-          grid-template-rows: 1fr;
-        }
-        .service-card-hitbox:hover ~ .service-card-visuals .service-desc-text {
-          opacity: 1;
-          transition-delay: 50ms;
-        }
-      `}</style>
+      <div className="absolute inset-[1px] z-20 pointer-events-auto cursor-pointer" />
 
-      {/* Static Hitbox: Inset by 1px to ignore stroke, remains still to prevent flicker. */}
-      <div className="service-card-hitbox absolute inset-[1px] z-20 pointer-events-auto cursor-pointer" />
-
-      {/* Visual Content: Includes the border, moves as a single unit. */}
-      <div className="service-card-visuals relative bg-[#FFFFFF] rounded-[4px] flex flex-col justify-between p-4 h-full w-full z-10">
+      <motion.div
+        className="relative z-10 flex h-full w-full flex-col justify-between rounded-[4px] border border-[#8b8d85] bg-[#FFFFFF] p-4"
+        variants={{
+          rest: { y: 0, boxShadow: "0 0 0 0 rgba(0,0,0,0)" },
+          hover: { y: -5, boxShadow: "0 12px 28px 0 rgba(0,0,0,0.12)" },
+          tap: { scale: 0.985 },
+        }}
+        transition={motionTransition.fast}
+      >
         <div className="relative z-10">{card.icon}</div>
 
         <div className="relative z-10 flex flex-col gap-1">
@@ -57,10 +39,20 @@ function ServiceCard({ card }: { card: { icon: React.ReactNode; label: string; d
             {card.label}
           </p>
 
-          <div className="service-desc-wrapper">
+          <motion.div
+            className="grid"
+            variants={{
+              rest: { gridTemplateRows: "0fr" },
+              hover: { gridTemplateRows: "1fr" },
+            }}
+            transition={motionTransition.layout}
+          >
             <div className="overflow-hidden flex flex-col justify-end">
-              <p
-                className="service-desc-text"
+              <motion.p
+                variants={{
+                  rest: { opacity: 0 },
+                  hover: { opacity: 1, transition: { ...motionTransition.fast, delay: 0.05 } },
+                }}
                 style={{
                   fontFamily: "Sora, sans-serif",
                   fontSize: "13px",
@@ -71,12 +63,12 @@ function ServiceCard({ card }: { card: { icon: React.ReactNode; label: string; d
                 }}
               >
                 {card.description}
-              </p>
+              </motion.p>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -197,17 +189,22 @@ export function Services() {
             <div className="flex-1">
               <div className="flex items-center gap-6">
                 {(["Casa", "Empresa"] as const).map((t) => (
-                  <button
+                  <motion.button
                     key={t}
                     onClick={() => setTab(t)}
-                    className="relative pb-1 cursor-pointer active:scale-[0.97] transition-transform duration-100"
+                    className="relative pb-1 cursor-pointer"
                     style={{
                       fontFamily: "Sora, sans-serif",
                       fontSize: "25px",
                       color: tab === t ? "#121312" : "#8b8d85",
                       fontWeight: tab === t ? 600 : 400,
-                      transition: "color 0.2s ease, transform 0.1s ease, font-weight 0.2s ease",
                     }}
+                    animate={{
+                      color: tab === t ? "#121312" : "#8b8d85",
+                      fontWeight: tab === t ? 600 : 400,
+                    }}
+                    transition={motionTransition.fast}
+                    whileTap={pressTap}
                   >
                     {t}
                     {tab === t && (
@@ -217,7 +214,7 @@ export function Services() {
                         transition={{ duration: 0.3, ease: [0.65, 0, 0.35, 1] }}
                       />
                     )}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>

@@ -1,16 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { BadgeDelta } from "@/components/ui/badge-delta";
-import heroImage from "../../assets/ChatGPT Image 4 de mai. de 2026, 01_09_32.png";
+import { liftHover, motionTransition, pressTap } from "@/lib/motion";
+import heroImage from "../../assets/hero-energisa-v2.png";
 
 export function Hero() {
+  const [isStockWidgetOpen, setIsStockWidgetOpen] = useState(false);
+
   return (
     <section id="hero" className="relative overflow-hidden flex flex-col" style={{ minHeight: "100svh" }}>
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none bg-white">
         <img
-          src={heroImage.src || heroImage}
+          src={heroImage}
           alt="Energisa Hero"
           className="absolute inset-0 w-full h-full object-contain scale-75 -translate-y-[10%] z-0"
         />
@@ -40,10 +44,19 @@ export function Hero() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 md:gap-8 mt-auto w-full max-w-[1440px] mx-auto px-5 md:px-20">
           <div className="flex flex-col items-start gap-6">
             <motion.div
-              initial={{ opacity: 0, x: -24, filter: "blur(8px)" }}
-              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="group inline-flex max-w-full flex-wrap items-center gap-x-3 gap-y-2 rounded-full border border-black/10 bg-white/25 px-5 py-2.5 text-[13px] font-medium leading-none text-black shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md transition-colors duration-200 hover:bg-white/35"
+              initial="hidden"
+              animate="visible"
+              whileHover="hover"
+              onHoverStart={() => setIsStockWidgetOpen(true)}
+              onHoverEnd={() => setIsStockWidgetOpen(false)}
+              onFocus={() => setIsStockWidgetOpen(true)}
+              onBlur={() => setIsStockWidgetOpen(false)}
+              variants={{
+                hidden: { opacity: 0, x: -24 },
+                visible: { opacity: 1, x: 0, transition: motionTransition.entrance },
+                hover: { backgroundColor: "rgba(255,255,255,0.35)", transition: motionTransition.fast },
+              }}
+              className="inline-flex max-w-full flex-wrap items-center gap-x-3 gap-y-2 rounded-full border border-black/10 bg-white/25 px-5 py-2.5 text-[13px] font-medium leading-none text-black shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md"
               style={{ fontFamily: "Sora, sans-serif" }}
               aria-label="ENGI11, R$ 53,71, alta de 0,6%, ver ações"
             >
@@ -58,22 +71,37 @@ export function Hero() {
                 value="+0,6%"
                 className="px-0 py-0 text-[13px] font-medium !text-emerald-900 ring-0 [&_svg]:!text-emerald-900"
               />
-              <span className="hidden -ml-3 max-w-0 items-center gap-3 overflow-hidden whitespace-nowrap text-black/90 opacity-0 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:ml-0 group-hover:max-w-[100px] group-hover:opacity-100 sm:inline-flex">
+              <motion.span
+                className="hidden items-center gap-3 overflow-hidden whitespace-nowrap text-black/90 sm:inline-flex"
+                initial={false}
+                animate={{
+                  opacity: isStockWidgetOpen ? 1 : 0,
+                  maxWidth: isStockWidgetOpen ? 132 : 0,
+                  marginLeft: isStockWidgetOpen ? 0 : -12,
+                }}
+                transition={motionTransition.micro}
+              >
                 <span className="text-black/35" aria-hidden="true">|</span>
                 <span className="inline-flex cursor-pointer items-center gap-0.5 hover:underline hover:underline-offset-2">
                   Ver ações
-                  <ArrowUpRight
+                  <motion.span
                     aria-hidden="true"
-                    className="h-3.5 w-3.5 translate-y-px transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0"
-                    strokeWidth={2}
-                  />
+                    className="inline-flex translate-y-px"
+                    animate={{
+                      x: isStockWidgetOpen ? 2 : 0,
+                      y: isStockWidgetOpen ? -1 : 0,
+                    }}
+                    transition={motionTransition.micro}
+                  >
+                    <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={2} />
+                  </motion.span>
                 </span>
-              </span>
+              </motion.span>
             </motion.div>
             <motion.h1
-              initial={{ opacity: 0, x: -40, filter: "blur(8px)" }}
-              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+              initial={{ opacity: 0, x: -32 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ ...motionTransition.section, delay: 0.08 }}
               style={{
                 fontFamily: "Sora, sans-serif",
                 fontWeight: 500,
@@ -92,9 +120,9 @@ export function Hero() {
           <div className="flex flex-col items-start w-full md:max-w-[380px] shrink-0 self-stretch">
             <div className="mt-auto flex flex-col items-start gap-6 w-full">
               <motion.p
-                initial={{ opacity: 0, x: -40, filter: "blur(8px)" }}
-                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
+                initial={{ opacity: 0, x: -32 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ ...motionTransition.section, delay: 0.18 }}
                 style={{
                   fontFamily: "Sora, sans-serif",
                   fontSize: "clamp(15px, 1.2vw, 18px)",
@@ -109,30 +137,34 @@ export function Hero() {
               </motion.p>
 
               <motion.div
-                initial={{ opacity: 0, x: -40, filter: "blur(8px)" }}
-                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+                initial={{ opacity: 0, x: -32 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ ...motionTransition.section, delay: 0.28 }}
                 className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full">
-                <button
+                <motion.button
                   onClick={() => document.getElementById("solucoes")?.scrollIntoView({ behavior: "smooth" })}
-                  className="relative px-8 py-4 overflow-hidden rounded-[4px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.97] hover:opacity-90 cursor-pointer"
+                  className="relative px-8 py-4 overflow-hidden rounded-[4px] cursor-pointer"
                   style={{
                     backgroundColor: "#D4EC28",
                     boxShadow: "0 10px 30px -10px rgba(0,0,0,0.2)",
                   }}
+                  whileHover={{ ...liftHover, opacity: 0.9 }}
+                  whileTap={pressTap}
                 >
                   <span className="relative inline-block font-medium text-[16px] text-[#20201f]" style={{ fontFamily: "Sora, sans-serif" }}>
                     Serviços
                   </span>
-                </button>
+                </motion.button>
 
-                <button
+                <motion.button
                   onClick={() => document.getElementById("ecossistema")?.scrollIntoView({ behavior: "smooth" })}
-                  className="px-8 py-4 rounded-[4px] border border-black/20 text-[#000000] font-medium text-[16px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-black/5 active:scale-[0.97] cursor-pointer"
+                  className="px-8 py-4 rounded-[4px] border border-black/20 text-[#000000] font-medium text-[16px] cursor-pointer"
                   style={{ fontFamily: "Sora, sans-serif" }}
+                  whileHover={{ ...liftHover, backgroundColor: "rgba(0,0,0,0.05)" }}
+                  whileTap={pressTap}
                 >
                   <span className="inline-block">Ecossistema</span>
-                </button>
+                </motion.button>
               </motion.div>
             </div>
           </div>

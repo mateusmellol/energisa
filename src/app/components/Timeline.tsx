@@ -92,7 +92,7 @@ export function TimelineMetricStrip({
 }) {
   const isCard = size === "card";
   const isMobile = size === "mobile";
-  const gap = gapOverride ?? (isCard ? 9 : isMobile ? 8 : 12);
+  const gap = gapOverride ?? (isCard ? 18 : isMobile ? 16 : 24);
   const valueSize = isCard ? 20 : isMobile ? 28 : 32;
   const labelSize = isCard ? 6 : isMobile ? 10 : 12;
   const dividerHeight = isCard ? 28 : isMobile ? 36 : 40;

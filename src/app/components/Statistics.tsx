@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
@@ -135,6 +135,132 @@ function useImpactAnimation() {
   return { sectionRef, isCharged, animationCycle, animationMode };
 }
 
+// ---- Interactive Bar Components ----
+
+function StaticDotPattern({ dotSpacing = 24 }: { dotSpacing?: number }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      setSize({ width: entries[0].contentRect.width, height: entries[0].contentRect.height });
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const dots = useMemo(() => {
+    if (!size.width || !size.height) return null;
+    const columns = Math.ceil(size.width / dotSpacing) + 2;
+    const rows = Math.ceil(size.height / dotSpacing) + 2;
+    const elements = [];
+
+    for (let r = -1; r < rows; r++) {
+      for (let c = -1; c < columns; c++) {
+        let cx = c * dotSpacing;
+        let cy = r * dotSpacing;
+
+        // Evita renderizar bolas que ficariam cortadas nas bordas
+        const margin = 3;
+        if (cx < margin || cx > size.width - margin || cy < margin || cy > size.height - margin) {
+          continue;
+        }
+
+        elements.push(
+          <circle
+            key={`${r}-${c}`}
+            cx={cx}
+            cy={cy}
+            r={1.5}
+            fill="rgba(255, 255, 255, 0.7)"
+          />
+        );
+      }
+    }
+    return elements;
+  }, [size, dotSpacing]);
+
+  return (
+    <div ref={containerRef} className="absolute inset-0 h-full w-full pointer-events-none overflow-hidden">
+      <svg
+        width="100%"
+        height="100%"
+        className="absolute inset-0 h-full w-full opacity-45"
+      >
+        {dots}
+      </svg>
+    </div>
+  );
+}
+
+function DesktopInteractiveBar({ stat, idx, shouldReduceMotion, STATS_DATA_LENGTH }: any) {
+  return (
+    <motion.div
+      custom={idx}
+      variants={{
+        hidden: { scaleY: shouldReduceMotion ? 1 : 0, opacity: 1 },
+        visible: (index: number) => ({
+          scaleY: 1,
+          opacity: 1,
+          transition: { duration: 1.2, ease: [0.77, 0, 0.175, 1], delay: index * 0.3 }
+        }),
+        discharged: (index: number) => ({
+          scaleY: 0,
+          opacity: 1,
+          transition: {
+            duration: 0.9,
+            ease: [0.55, 0, 1, 0.45],
+            delay: (STATS_DATA_LENGTH - 1 - index) * 0.12,
+          }
+        }),
+      }}
+      style={{
+        background: "#D4EC28",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        padding: "0 32px 28px",
+        overflow: "hidden",
+        position: "relative",
+        height: stat.barHeight,
+        transformOrigin: "bottom",
+      }}
+    >
+      <StaticDotPattern dotSpacing={24} />
+    </motion.div>
+  );
+}
+
+function MobileInteractiveBar({ stat, idx, STATS_DATA_LENGTH }: any) {
+  return (
+    <motion.div
+      custom={idx}
+      variants={{
+        hidden: { scaleY: 0, opacity: 1 },
+        visible: (index: number) => ({
+          scaleY: 1,
+          opacity: 1,
+          transition: { duration: 1.2, ease: [0.77, 0, 0.175, 1], delay: index * 0.3 }
+        }),
+        discharged: (index: number) => ({
+          scaleY: 0,
+          opacity: 1,
+          transition: {
+            duration: 0.8,
+            ease: [0.55, 0, 1, 0.45],
+            delay: (STATS_DATA_LENGTH - 1 - index) * 0.08,
+          }
+        }),
+      }}
+      className="bg-[#D4EC28] h-12 w-full origin-bottom relative overflow-hidden"
+    >
+      <StaticDotPattern dotSpacing={16} />
+    </motion.div>
+  );
+}
+
 // ---- Desktop Version (from commit 14048f189dfc) ----
 
 function StatisticsDesktop() {
@@ -195,9 +321,9 @@ function StatisticsDesktop() {
             {/* Title */}
             <motion.h3
               variants={{
-                hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" },
-                visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0 } },
-                discharged: { opacity: 0.42, x: 0, filter: "blur(0px)", transition: { duration: 0.45, ease: [0.55, 0, 1, 0.45] } },
+                hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40 },
+                visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0 } },
+                discharged: { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } },
               }}
               style={{
                 fontFamily: "Sora, sans-serif",
@@ -217,9 +343,9 @@ function StatisticsDesktop() {
             {/* Description — now in the second column */}
             <motion.p
               variants={{
-                hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" },
-                visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 } },
-                discharged: { opacity: 0.42, x: 0, filter: "blur(0px)", transition: { duration: 0.45, ease: [0.55, 0, 1, 0.45], delay: 0.05 } },
+                hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40 },
+                visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 } },
+                discharged: { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } },
               }}
               style={{
                 fontFamily: "Sora, sans-serif",
@@ -264,17 +390,15 @@ function StatisticsDesktop() {
                 <motion.div
                   custom={idx}
                   variants={{
-                    hidden: () => ({ opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" }),
+                    hidden: () => ({ opacity: 0, x: shouldReduceMotion ? 0 : -40 }),
                     visible: (index: number) => ({
                       opacity: 1,
                       x: 0,
-                      filter: "blur(0px)",
                       transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 + index * 0.12 }
                     }),
                     discharged: (index: number) => ({
-                      opacity: 0.42,
+                      opacity: 1,
                       x: 0,
-                      filter: "blur(0px)",
                       transition: {
                         duration: 0.45,
                         ease: [0.55, 0, 1, 0.45],
@@ -330,33 +454,11 @@ function StatisticsDesktop() {
                 </motion.div>
 
                 {/* Bar */}
-                <motion.div
-                  custom={idx}
-                  variants={{
-                    hidden: { height: shouldReduceMotion ? stat.barHeight : "0%", opacity: 1 },
-                    visible: (index: number) => ({
-                      height: stat.barHeight,
-                      opacity: 1,
-                      transition: { duration: 1.2, ease: [0.77, 0, 0.175, 1], delay: index * 0.3 }
-                    }),
-                    discharged: (index: number) => ({
-                      height: "0%",
-                      opacity: 1,
-                      transition: {
-                        duration: 0.9,
-                        ease: [0.55, 0, 1, 0.45],
-                        delay: (STATS_DATA.length - 1 - index) * 0.12,
-                      }
-                    }),
-                  }}
-                  style={{
-                    background: "#D4EC28",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "flex-end",
-                    padding: "0 32px 28px",
-                    overflow: "hidden",
-                  }}
+                <DesktopInteractiveBar
+                  stat={stat}
+                  idx={idx}
+                  shouldReduceMotion={shouldReduceMotion}
+                  STATS_DATA_LENGTH={STATS_DATA.length}
                 />
               </div>
             ))}
@@ -384,9 +486,9 @@ function StatisticsMobile() {
       >
         <motion.h3
           variants={{
-            hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" },
-            visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0 } },
-            discharged: { opacity: 0.42, x: 0, filter: "blur(0px)", transition: { duration: 0.45, ease: [0.55, 0, 1, 0.45] } },
+            hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40 },
+            visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0 } },
+            discharged: { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } },
           }}
           style={{
             fontFamily: "Sora, sans-serif",
@@ -402,9 +504,9 @@ function StatisticsMobile() {
         </motion.h3>
         <motion.p
           variants={{
-            hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" },
-            visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 } },
-            discharged: { opacity: 0.42, x: 0, filter: "blur(0px)", transition: { duration: 0.45, ease: [0.55, 0, 1, 0.45], delay: 0.05 } },
+            hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -40 },
+            visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 } },
+            discharged: { opacity: 1, x: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } },
           }}
           style={{
             fontFamily: "Sora, sans-serif",
@@ -428,17 +530,15 @@ function StatisticsMobile() {
             <motion.div
               custom={idx}
               variants={{
-                hidden: () => ({ opacity: 0, x: shouldReduceMotion ? 0 : -40, filter: "blur(8px)" }),
+                hidden: () => ({ opacity: 0, x: shouldReduceMotion ? 0 : -40 }),
                 visible: (index: number) => ({
                   opacity: 1,
                   x: 0,
-                  filter: "blur(0px)",
                   transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 + index * 0.12 }
                 }),
                 discharged: (index: number) => ({
-                  opacity: 0.42,
+                  opacity: 1,
                   x: 0,
-                  filter: "blur(0px)",
                   transition: {
                     duration: 0.4,
                     ease: [0.55, 0, 1, 0.45],
@@ -480,26 +580,10 @@ function StatisticsMobile() {
                 </span>
               </div>
             </motion.div>
-            <motion.div
-              custom={idx}
-              variants={{
-                hidden: { height: 0, opacity: 1 },
-                visible: (index: number) => ({
-                  height: 48,
-                  opacity: 1,
-                  transition: { duration: 1.2, ease: [0.77, 0, 0.175, 1], delay: index * 0.3 }
-                }),
-                discharged: (index: number) => ({
-                  height: 0,
-                  opacity: 1,
-                  transition: {
-                    duration: 0.8,
-                    ease: [0.55, 0, 1, 0.45],
-                    delay: (STATS_DATA.length - 1 - index) * 0.08,
-                  }
-                }),
-              }}
-              className="bg-[#D4EC28] w-full"
+            <MobileInteractiveBar
+              stat={stat}
+              idx={idx}
+              STATS_DATA_LENGTH={STATS_DATA.length}
             />
           </div>
         ))}

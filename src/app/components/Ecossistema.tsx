@@ -1,8 +1,16 @@
-import { motion, useInView, useScroll, useTransform } from "motion/react";
-import { Sparkles } from "lucide-react";
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import { useRef } from "react";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
 import { cn } from "@/lib/utils";
+import {
+  cardRevealVariants,
+  liftHover,
+  motionTransition,
+  motionViewport,
+  pressTap,
+  textRevealVariants,
+} from "@/lib/motion";
 import flexlabImage from "@/assets/ecossistema/flexlab-solar.webp";
 import reenergisaImage from "@/assets/ecossistema/reenergisa-building.webp";
 import esgasImage from "@/assets/ecossistema/esgas-field.webp";
@@ -52,29 +60,20 @@ const ECOSYSTEM_CARDS: EcosystemCard[] = [
 
 function EcosystemButton({ children }: { children: React.ReactNode }) {
   return (
-    <button
+    <motion.button
       type="button"
-      className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#121312] px-8 py-4 text-[16px] font-medium text-[#fdfdfc] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:bg-[#20221f] active:scale-[0.97] cursor-pointer"
+      className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#121312] px-8 py-4 text-[16px] font-medium text-[#fdfdfc] cursor-pointer"
       style={{ fontFamily: "Sora, sans-serif" }}
+      whileHover={{ ...liftHover, backgroundColor: "#20221f" }}
+      whileTap={pressTap}
     >
       <span>{children}</span>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+      <ArrowUpRight
+        size={24}
+        strokeWidth={2}
         aria-hidden="true"
-        focusable="false"
-      >
-        <path d="M7 7h10v10" />
-        <path d="M7 17 17 7" />
-      </svg>
-    </button>
+      />
+    </motion.button>
   );
 }
 
@@ -92,17 +91,21 @@ function EcosystemSlide({
   style?: React.CSSProperties;
 }) {
   const slideRef = useRef<HTMLElement | null>(null);
-  const textRef = useRef<HTMLDivElement | null>(null);
+  const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: slideRef,
     offset: ["start start", "end start"],
   });
-  const isTextInView = useInView(textRef, { once: true, margin: "0px 0px -60px 0px" });
 
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.86, 0.72]);
-  const y = useTransform(scrollYProgress, [0, 0.5, 1], [0, -42, -120]);
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.14]);
-  const imageY = useTransform(scrollYProgress, [0, 1], [0, -54]);
+  const scaleRaw = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.94, 0.88]);
+  const yRaw = useTransform(scrollYProgress, [0, 0.5, 1], [0, -20, -58]);
+  const imageScaleRaw = useTransform(scrollYProgress, [0, 1], [1, 1.045]);
+  const imageYRaw = useTransform(scrollYProgress, [0, 1], [0, -18]);
+  const scrollResponse = { ...motionTransition.scrollSpring, stiffness: 220, damping: 42, mass: 0.18 };
+  const scale = useSpring(scaleRaw, scrollResponse);
+  const y = useSpring(yRaw, scrollResponse);
+  const imageScale = useSpring(imageScaleRaw, scrollResponse);
+  const imageY = useSpring(imageYRaw, scrollResponse);
 
   return (
     <section
@@ -115,15 +118,18 @@ function EcosystemSlide({
       )}
     >
       <motion.div
-        style={{ scale, y }}
+        style={{
+          scale: shouldReduceMotion ? 1 : scale,
+          y: shouldReduceMotion ? 0 : y,
+        }}
         className="sticky top-[4svh] flex h-[85svh] w-full items-center px-3 py-0 md:px-5"
       >
         <div className="relative mx-auto grid h-full w-full max-w-[1440px] grid-cols-1 items-center gap-8 px-5 py-8 md:grid-cols-12 md:gap-8 md:px-12 md:py-10">
           <motion.div
-            ref={index === 0 ? textRef : undefined}
-            initial={index === 0 ? { opacity: 0, x: -40, filter: "blur(8px)" } : false}
-            animate={index === 0 ? (isTextInView ? { opacity: 1, x: 0, filter: "blur(0px)" } : {}) : undefined}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={motionViewport}
+            variants={textRevealVariants}
             className="relative z-10 flex min-h-[562px] flex-col items-start justify-between gap-14 md:col-span-5"
           >
             <div className="flex w-full flex-col gap-10">
@@ -171,18 +177,31 @@ function EcosystemSlide({
           </motion.div>
 
           <motion.div
-            style={{ scale: imageScale, y: imageY }}
-            initial={index === 0 ? { opacity: 0, x: -40, filter: "blur(8px)" } : false}
-            animate={index === 0 ? (isTextInView ? { opacity: 1, x: 0, filter: "blur(0px)" } : {}) : undefined}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            style={{
+              scale: shouldReduceMotion ? 1 : imageScale,
+              y: shouldReduceMotion ? 0 : imageY,
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={motionViewport}
+            variants={cardRevealVariants}
             className="relative z-10 h-[48svh] overflow-hidden rounded-none md:col-span-7 md:h-[633px]"
           >
-            <img
-              src={card.image}
-              alt={card.imageAlt}
-              className="h-full w-full object-cover"
-              loading={index === 0 ? "eager" : "lazy"}
-            />
+            <motion.div
+              className="h-full w-full cursor-pointer"
+              whileHover={liftHover}
+              whileTap={pressTap}
+            >
+              <motion.img
+                src={card.image}
+                alt={card.imageAlt}
+                className="h-full w-full object-cover"
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
+                whileHover={{ scale: 1.025 }}
+                transition={motionTransition.fast}
+              />
+            </motion.div>
           </motion.div>
         </div>
       </motion.div>
