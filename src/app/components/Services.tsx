@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { useRef, useState } from "react";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from "motion/react";
 import svgPaths from "../../imports/Site/svg-swy5fdu2p6";
 import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
@@ -156,11 +156,28 @@ const CARDS_EMPRESA = [
 ];
 
 export function Services() {
+  const sectionRef = useRef<HTMLElement | null>(null);
   const [tab, setTab] = useState<"Casa" | "Empresa">("Casa");
   const cards = tab === "Casa" ? CARDS_CASA : CARDS_EMPRESA;
+  const shouldReduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "start start"],
+  });
+  const cardLift = useTransform(scrollYProgress, [0, 1], [96, 0]);
 
   return (
-    <section id="solucoes" className="relative overflow-hidden bg-white" style={{ paddingTop: "8.75vh", paddingBottom: "6.25vh", scrollMarginTop: "80px" }}>
+    <motion.section
+      ref={sectionRef}
+      id="solucoes"
+      className="relative w-full overflow-hidden rounded-t-[8px] border-t border-black/10 bg-white shadow-[0_-28px_80px_-40px_rgba(18,19,18,0.38),0_1px_0_rgba(255,255,255,0.8)_inset]"
+      style={{
+        y: shouldReduceMotion ? 0 : cardLift,
+        paddingTop: "clamp(72px, 12vh, 132px)",
+        paddingBottom: "12.5vh",
+        scrollMarginTop: "80px",
+      }}
+    >
       {/* Background Grid Pattern */}
       <GridPattern
         width={40}
@@ -237,6 +254,6 @@ export function Services() {
           </motion.div>
         </AnimatePresence>
       </div>
-    </section>
+    </motion.section>
   );
 }

@@ -1,175 +1,109 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "motion/react";
-import { ArrowUpRight } from "lucide-react";
-import { BadgeDelta } from "@/components/ui/badge-delta";
 import { liftHover, motionTransition, pressTap } from "@/lib/motion";
-import heroImage from "../../assets/hero-energisa-v2.png";
+import { cn } from "@/lib/utils";
+import { GridPattern } from "@/registry/magicui/grid-pattern";
+import { scrollToSection } from "./navigation";
+
+const heroImage = "http://localhost:3845/assets/254bfc894f757392f07c3c4bdef75c56564816f4.png";
 
 export function Hero() {
-  const [isStockWidgetOpen, setIsStockWidgetOpen] = useState(false);
-
   return (
-    <section id="hero" className="relative overflow-hidden flex flex-col" style={{ minHeight: "100svh" }}>
-      <div aria-hidden="true" className="absolute inset-0 pointer-events-none bg-white">
+    <section
+      id="hero"
+      className="relative h-[100svh] min-h-[760px] overflow-hidden bg-white"
+      data-node-id="370:2123"
+    >
+      <GridPattern
+        width={40}
+        height={40}
+        x={-1}
+        y={-1}
+        className={cn(
+          "absolute inset-0 z-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]",
+          "[mask-image:radial-gradient(1000px_circle_at_top_left,white,transparent)]"
+        )}
+      />
+
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...motionTransition.section, delay: 0.18 }}
+        className="absolute inset-0 z-10 overflow-hidden"
+        data-node-id="370:2042"
+      >
         <img
           src={heroImage}
-          alt="Energisa Hero"
-          className="absolute inset-0 w-full h-full object-contain scale-75 -translate-y-[10%] z-0"
+          alt="Profissional da Energisa em campo solar, usando capacete e uniforme."
+          className="size-full translate-y-[10%] object-contain object-bottom"
+          loading="eager"
+          fetchPriority="high"
         />
-        {/* Top Left Grid */}
-        <div
-          className="absolute top-0 left-0 w-[40%] h-[40%] opacity-[0.10] z-10"
-          style={{
-            backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)`,
-            backgroundSize: '40px 40px',
-            maskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 100%)',
-            WebkitMaskImage: 'radial-gradient(ellipse at top left, black 0%, transparent 100%)'
-          }}
-        />
-        {/* Bottom Right Grid */}
-        <div
-          className="absolute bottom-0 right-0 w-[40%] h-[40%] opacity-[0.10] z-10"
-          style={{
-            backgroundImage: `linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)`,
-            backgroundSize: '40px 40px',
-            maskImage: 'radial-gradient(ellipse at bottom right, black 0%, transparent 100%)',
-            WebkitMaskImage: 'radial-gradient(ellipse at bottom right, black 0%, transparent 100%)'
-          }}
-        />
-      </div>
+      </motion.div>
 
-      <div className="relative z-10 flex flex-col flex-1 pt-32 pb-32">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 md:gap-8 mt-auto w-full max-w-[1440px] mx-auto px-5 md:px-20">
-          <div className="flex flex-col items-start gap-6">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              whileHover="hover"
-              onHoverStart={() => setIsStockWidgetOpen(true)}
-              onHoverEnd={() => setIsStockWidgetOpen(false)}
-              onFocus={() => setIsStockWidgetOpen(true)}
-              onBlur={() => setIsStockWidgetOpen(false)}
-              variants={{
-                hidden: { opacity: 0, x: -24 },
-                visible: { opacity: 1, x: 0, transition: motionTransition.entrance },
-                hover: { backgroundColor: "rgba(255,255,255,0.35)", transition: motionTransition.fast },
-              }}
-              className="inline-flex max-w-full flex-wrap items-center gap-x-3 gap-y-2 rounded-full border border-black/10 bg-white/25 px-5 py-2.5 text-[13px] font-medium leading-none text-black shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md"
-              style={{ fontFamily: "Sora, sans-serif" }}
-              aria-label="ENGI11, R$ 53,71, alta de 0,6%, ver ações"
-            >
-              <span>ENGI11</span>
-              <span className="text-black/35" aria-hidden="true">|</span>
-              <span>R$ 53,71</span>
-              <span className="text-black/35" aria-hidden="true">|</span>
-              <BadgeDelta
-                variant="outline"
-                deltaType="increase"
-                iconStyle="filled"
-                value="+0,6%"
-                className="px-0 py-0 text-[13px] font-medium !text-emerald-900 ring-0 [&_svg]:!text-emerald-900"
-              />
-              <motion.span
-                className="hidden items-center gap-3 overflow-hidden whitespace-nowrap text-black/90 sm:inline-flex"
-                initial={false}
-                animate={{
-                  opacity: isStockWidgetOpen ? 1 : 0,
-                  maxWidth: isStockWidgetOpen ? 132 : 0,
-                  marginLeft: isStockWidgetOpen ? 0 : -12,
-                }}
-                transition={motionTransition.micro}
-              >
-                <span className="text-black/35" aria-hidden="true">|</span>
-                <span className="inline-flex cursor-pointer items-center gap-0.5 hover:underline hover:underline-offset-2">
-                  Ver ações
-                  <motion.span
-                    aria-hidden="true"
-                    className="inline-flex translate-y-px"
-                    animate={{
-                      x: isStockWidgetOpen ? 2 : 0,
-                      y: isStockWidgetOpen ? -1 : 0,
-                    }}
-                    transition={motionTransition.micro}
-                  >
-                    <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={2} />
-                  </motion.span>
-                </span>
-              </motion.span>
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, x: -32 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ ...motionTransition.section, delay: 0.08 }}
-              style={{
-                fontFamily: "Sora, sans-serif",
-                fontWeight: 500,
-                fontSize: "clamp(36px, 6.5vw, 84px)",
-                letterSpacing: "-0.03em",
-                color: "#000000",
-                lineHeight: 1.05,
-              }}
-            >
-              A Energisa
-              <br />
-              move o Brasil
-            </motion.h1>
-          </div>
-
-          <div className="flex flex-col items-start w-full md:max-w-[380px] shrink-0 self-stretch">
-            <div className="mt-auto flex flex-col items-start gap-6 w-full">
-              <motion.p
-                initial={{ opacity: 0, x: -32 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ ...motionTransition.section, delay: 0.18 }}
-                style={{
-                  fontFamily: "Sora, sans-serif",
-                  fontSize: "clamp(15px, 1.2vw, 18px)",
-                  color: "rgba(0, 0, 0, 0.85)",
-                  lineHeight: 1.6,
-                  fontWeight: 300,
-                }}
-              >
-                De Norte a Sul. Quando uma luz
-                <br />
-                acende, é a Energisa que faz acontecer.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, x: -32 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ ...motionTransition.section, delay: 0.28 }}
-                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full">
-                <motion.button
-                  onClick={() => document.getElementById("solucoes")?.scrollIntoView({ behavior: "smooth" })}
-                  className="relative px-8 py-4 overflow-hidden rounded-[4px] cursor-pointer"
-                  style={{
-                    backgroundColor: "#D4EC28",
-                    boxShadow: "0 10px 30px -10px rgba(0,0,0,0.2)",
-                  }}
-                  whileHover={{ ...liftHover, opacity: 0.9 }}
-                  whileTap={pressTap}
-                >
-                  <span className="relative inline-block font-medium text-[16px] text-[#20201f]" style={{ fontFamily: "Sora, sans-serif" }}>
-                    Serviços
-                  </span>
-                </motion.button>
-
-                <motion.button
-                  onClick={() => document.getElementById("ecossistema")?.scrollIntoView({ behavior: "smooth" })}
-                  className="px-8 py-4 rounded-[4px] border border-black/20 text-[#000000] font-medium text-[16px] cursor-pointer"
-                  style={{ fontFamily: "Sora, sans-serif" }}
-                  whileHover={{ ...liftHover, backgroundColor: "rgba(0,0,0,0.05)" }}
-                  whileTap={pressTap}
-                >
-                  <span className="inline-block">Ecossistema</span>
-                </motion.button>
-              </motion.div>
-            </div>
-          </div>
+      <div
+        className={cn(
+          "relative z-20 mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-8 px-5 pb-10 pt-32",
+          "sm:px-8 sm:pt-36 md:grid-cols-12 md:items-start md:gap-x-6 md:px-20",
+          "md:pb-0 md:pt-[clamp(128px,8.8vw,168px)]"
+        )}
+        data-node-id="361:2793"
+      >
+        <div className="md:col-span-6">
+          <motion.h1
+            initial={{ opacity: 0, x: -24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={motionTransition.section}
+            className="font-['Sora',sans-serif] text-[clamp(44px,3.64vw,72px)] font-normal leading-[1.35] tracking-normal text-[#20201f]"
+            data-node-id="361:2795"
+          >
+            A Energisa
+            <br />
+            move o Brasil
+          </motion.h1>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, x: -18 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ ...motionTransition.section, delay: 0.14 }}
+          className="flex w-full max-w-[491px] flex-col items-start gap-[25.2px] md:col-span-5 md:col-start-8"
+          data-node-id="361:2797"
+        >
+          <p className="font-['Sora',sans-serif] text-[clamp(16px,1.265vw,25px)] font-normal leading-[1.4] text-[#20201f] md:whitespace-nowrap">
+            De Norte a Sul. Quando uma luz
+            <br />
+            acende, é a Energisa que faz acontecer.
+          </p>
+
+          <motion.div className="flex w-full flex-wrap items-center gap-[16.8px]" data-node-id="361:2801">
+            <motion.button
+              type="button"
+              onClick={() => scrollToSection("solucoes")}
+              className="flex shrink-0 items-center justify-center rounded-[4px] bg-[#d4ec28] px-[33.6px] py-[16.8px] text-center font-['Sora',sans-serif] text-[16.8px] font-normal leading-[25.2px] text-[#20201f] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)]"
+              whileHover={liftHover}
+              whileTap={pressTap}
+              transition={motionTransition.fast}
+              data-node-id="361:2802"
+            >
+              Serviços
+            </motion.button>
+            <motion.button
+              type="button"
+              onClick={() => scrollToSection("timeline")}
+              className="flex shrink-0 items-center justify-center rounded-[4px] border border-[#121312] px-[33.6px] py-[16.8px] text-center font-['Sora',sans-serif] text-[16.8px] font-normal leading-[25.2px] text-[#121312] shadow-[0_10px_30px_0_rgba(0,0,0,0.08)]"
+              whileHover={{ ...liftHover, backgroundColor: "rgba(18,19,18,0.04)" }}
+              whileTap={pressTap}
+              transition={motionTransition.fast}
+              data-node-id="361:2805"
+            >
+              Sobre
+            </motion.button>
+          </motion.div>
+        </motion.div>
       </div>
+
     </section>
   );
 }

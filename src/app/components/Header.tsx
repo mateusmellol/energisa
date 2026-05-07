@@ -59,16 +59,6 @@ export function Header() {
           WebkitBackdropFilter: "blur(12px)",
         };
 
-  const ctaTheme = isDarkSection
-    ? {
-        borderColor: "rgba(255, 255, 255, 0.2)",
-        color: "#FFFFFF",
-      }
-    : {
-        borderColor: "rgba(0, 0, 0, 0.2)",
-        color: "#20201f",
-      };
-
   const mobileIconTheme = {
     color: isDarkSection ? "#FFFFFF" : "#20201f",
   };
@@ -110,8 +100,6 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const isLight = !isDarkSection;
-
   return (
     <>
       <AnimatePresence initial={false}>
@@ -145,12 +133,10 @@ export function Header() {
 
           {/* Desktop CTA */}
           <motion.button
-            onClick={() => document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-            className="hidden md:inline-flex px-8 py-4 rounded-[4px] border font-medium text-[16px] cursor-pointer"
-            style={{ fontFamily: "Sora, sans-serif" }}
-            animate={ctaTheme}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            whileHover={{ ...liftHover, backgroundColor: isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)" }}
+            onClick={() => scrollToSection("solucoes")}
+            className="hidden shrink-0 items-center justify-center rounded-[4px] bg-[#d4ec28] px-[33.6px] py-[16.8px] text-center font-['Sora',sans-serif] text-[16.8px] font-normal leading-[25.2px] text-[#20201f] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)] md:inline-flex"
+            transition={motionTransition.fast}
+            whileHover={liftHover}
             whileTap={pressTap}
           >
             Serviços
@@ -197,9 +183,8 @@ export function Header() {
                 </motion.button>
               ))}
               <motion.button
-                onClick={() => scrollTo("solucoes")}
-                className="mt-4 w-full min-h-[52px] rounded-[4px] border border-black/20 font-medium text-[16px] text-[#20201f]"
-                style={{ fontFamily: "Sora, sans-serif" }}
+                onClick={() => scrollToSection("solucoes")}
+                className="mt-4 min-h-[52px] w-full rounded-[4px] bg-[#d4ec28] font-['Sora',sans-serif] text-[16.8px] font-normal leading-[25.2px] text-[#20201f] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)]"
                 whileTap={pressTap}
               >
                 Serviços

@@ -233,6 +233,162 @@ function DesktopInteractiveBar({ stat, idx, shouldReduceMotion, STATS_DATA_LENGT
   );
 }
 
+function StatLabel({
+  stat,
+  shouldReduceMotion,
+}: {
+  stat: (typeof STATS_DATA)[number];
+  shouldReduceMotion: boolean | null;
+}) {
+  return (
+    <span
+      style={{
+        fontFamily: "Sora, sans-serif",
+        fontWeight: 400,
+        fontSize: "18px",
+        color: "#121312",
+        lineHeight: 1.2,
+        display: "block",
+        maxWidth: 120,
+        transform: shouldReduceMotion ? "translateY(0)" : "translateY(-25px)",
+      }}
+    >
+      {stat.label}
+    </span>
+  );
+}
+
+function StatValue({
+  stat,
+  idx,
+  animationCycle,
+  showChargedValue,
+}: {
+  stat: (typeof STATS_DATA)[number];
+  idx: number;
+  animationCycle: number;
+  showChargedValue: boolean;
+}) {
+  return (
+    <span
+      style={{
+        fontFamily: "Sora, sans-serif",
+        fontWeight: 300,
+        fontSize: "clamp(52px, 5.5vw, 96px)",
+        color: "#121312",
+        lineHeight: 1,
+        letterSpacing: "-0.045em",
+        display: "block",
+      }}
+    >
+      {showChargedValue ? (
+        <NumberTicker key={`${animationCycle}-${stat.label}`} value={stat.value} duration={1200 + idx * 200} />
+      ) : (
+        "0"
+      )}
+      {stat.suffix}
+    </span>
+  );
+}
+
+function StatColumn({
+  stat,
+  idx,
+  shouldReduceMotion,
+  animationCycle,
+  animationState,
+  showChargedValue,
+  barVariantMode,
+  barDelayStep,
+}: {
+  stat: (typeof STATS_DATA)[number];
+  idx: number;
+  shouldReduceMotion: boolean | null;
+  animationCycle: number;
+  animationState: "hidden" | "visible" | "discharged";
+  showChargedValue: boolean;
+  barVariantMode: "desktop" | "mobile";
+  barDelayStep: number;
+}) {
+  return (
+    <div
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        paddingBottom: barVariantMode === "desktop" ? "calc(8% + 10svh)" : 0,
+      }}
+    >
+      <motion.div
+        custom={idx}
+        variants={{
+          hidden: () => ({ opacity: 0, y: shouldReduceMotion ? 0 : 22 }),
+          visible: (index: number) => ({
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.12 + index * barDelayStep },
+          }),
+          discharged: (index: number) => ({
+            opacity: 1,
+            y: shouldReduceMotion ? 0 : 22,
+            transition: {
+              duration: 0.45,
+              ease: [0.55, 0, 1, 0.45],
+              delay: (STATS_DATA.length - 1 - index) * barDelayStep,
+            },
+          }),
+        }}
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "baseline",
+          gap: 8,
+          paddingLeft: 32,
+          marginBottom: 12,
+        }}
+      >
+        <StatValue stat={stat} idx={idx} animationCycle={animationCycle} showChargedValue={showChargedValue} />
+        <StatLabel stat={stat} shouldReduceMotion={shouldReduceMotion} />
+      </motion.div>
+
+      <motion.div
+        custom={idx}
+        variants={{
+          hidden: { scaleY: shouldReduceMotion ? 1 : 0, opacity: 1 },
+          visible: (index: number) => ({
+            scaleY: 1,
+            opacity: 1,
+            transition: { duration: 1.2, ease: [0.77, 0, 0.175, 1], delay: index * 0.3 },
+          }),
+          discharged: (index: number) => ({
+            scaleY: 0,
+            opacity: 1,
+            transition: {
+              duration: 0.9,
+              ease: [0.55, 0, 1, 0.45],
+              delay: (STATS_DATA.length - 1 - index) * barDelayStep,
+            },
+          }),
+        }}
+        style={{
+          background: "#D4EC28",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          padding: "0 32px 28px",
+          overflow: "hidden",
+          position: "relative",
+          height: stat.barHeight,
+          transformOrigin: "bottom",
+        }}
+      >
+        <StaticDotPattern dotSpacing={24} />
+      </motion.div>
+    </div>
+  );
+}
+
 function MobileInteractiveBar({ stat, idx, STATS_DATA_LENGTH }: any) {
   return (
     <motion.div
@@ -386,79 +542,15 @@ function StatisticsDesktop() {
                   paddingBottom: "calc(8% + 10svh)",
                 }}
               >
-                {/* Number — sits on top of the bar, outside */}
-                <motion.div
-                  custom={idx}
-                  variants={{
-                    hidden: () => ({ opacity: 0, x: shouldReduceMotion ? 0 : -40 }),
-                    visible: (index: number) => ({
-                      opacity: 1,
-                      x: 0,
-                      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 + index * 0.12 }
-                    }),
-                    discharged: (index: number) => ({
-                      opacity: 1,
-                      x: 0,
-                      transition: {
-                        duration: 0.45,
-                        ease: [0.55, 0, 1, 0.45],
-                        delay: (STATS_DATA.length - 1 - index) * 0.08,
-                      }
-                    }),
-                  }}
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "baseline",
-                    gap: 8,
-                    paddingLeft: 32,
-                    marginBottom: 12,
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "Sora, sans-serif",
-                      fontWeight: 300,
-                      fontSize: "clamp(52px, 5.5vw, 96px)",
-                      color: "#121312",
-                      lineHeight: 1,
-                      letterSpacing: "-0.045em",
-                      display: "block",
-                    }}
-                  >
-                    {showChargedValue ? (
-                      <NumberTicker
-                        key={`${animationCycle}-${stat.label}`}
-                        value={stat.value}
-                        duration={1200 + idx * 200}
-                      />
-                    ) : (
-                      "0"
-                    )}
-                    {stat.suffix}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "Sora, sans-serif",
-                      fontWeight: 400,
-                      fontSize: "18px",
-                      color: "#121312",
-                      lineHeight: 1.2,
-                      display: "block",
-                      maxWidth: 120,
-                      transform: "translateY(-25px)",
-                    }}
-                  >
-                    {stat.label}
-                  </span>
-                </motion.div>
-
-                {/* Bar */}
-                <DesktopInteractiveBar
+                <StatColumn
                   stat={stat}
                   idx={idx}
                   shouldReduceMotion={shouldReduceMotion}
-                  STATS_DATA_LENGTH={STATS_DATA.length}
+                  animationCycle={animationCycle}
+                  animationState={animationState}
+                  showChargedValue={showChargedValue}
+                  barVariantMode="desktop"
+                  barDelayStep={0.12}
                 />
               </div>
             ))}
@@ -527,63 +619,15 @@ function StatisticsMobile() {
       >
         {STATS_DATA.map((stat, idx) => (
           <div key={idx} className="flex flex-col">
-            <motion.div
-              custom={idx}
-              variants={{
-                hidden: () => ({ opacity: 0, x: shouldReduceMotion ? 0 : -40 }),
-                visible: (index: number) => ({
-                  opacity: 1,
-                  x: 0,
-                  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 + index * 0.12 }
-                }),
-                discharged: (index: number) => ({
-                  opacity: 1,
-                  x: 0,
-                  transition: {
-                    duration: 0.4,
-                    ease: [0.55, 0, 1, 0.45],
-                    delay: (STATS_DATA.length - 1 - index) * 0.06,
-                  }
-                }),
-              }}
-            >
-              <div className="flex flex-row items-baseline gap-3 mb-4">
-                <span
-                  style={{
-                    fontFamily: "Sora, sans-serif",
-                    fontWeight: 300,
-                    fontSize: "52px",
-                    color: "#121312",
-                    lineHeight: 0.9,
-                    letterSpacing: "-0.04em",
-                  }}
-                >
-                  {showChargedValue ? (
-                    <NumberTicker
-                      key={`${animationCycle}-${stat.label}`}
-                      value={stat.value}
-                      duration={1200 + idx * 200}
-                    />
-                  ) : (
-                    "0"
-                  )}
-                  {stat.suffix}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "Sora, sans-serif",
-                    fontSize: "18px",
-                    color: "#121312",
-                  }}
-                >
-                  {stat.label}
-                </span>
-              </div>
-            </motion.div>
-            <MobileInteractiveBar
+            <StatColumn
               stat={stat}
               idx={idx}
-              STATS_DATA_LENGTH={STATS_DATA.length}
+              shouldReduceMotion={shouldReduceMotion}
+              animationCycle={animationCycle}
+              animationState={animationState}
+              showChargedValue={showChargedValue}
+              barVariantMode="mobile"
+              barDelayStep={0.06}
             />
           </div>
         ))}

@@ -1,11 +1,10 @@
-import { lazy, Suspense, useRef } from "react";
+import { lazy, Suspense } from "react";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
 import { Services } from "./components/Services";
 import { Statistics } from "./components/Statistics";
 import { FooterCTA } from "./components/FooterCTA";
 import { Footer } from "./components/Footer";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 
 const TimelineSection = lazy(() =>
   import("./components/Timeline").then((module) => ({
@@ -26,51 +25,33 @@ const Noticias = lazy(() =>
 );
 
 export default function App() {
-  const containerRef = useRef(null);
-  const shouldReduceMotion = useReducedMotion();
-  const { scrollYProgress: cardProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "start start"]
-  });
-
-  const yHero = useTransform(cardProgress, [0, 1], ["0%", "-20%"]);
-  const scaleHero = useTransform(cardProgress, [0, 1], [1, 1.05]);
-
   return (
-    <div className="w-full bg-[#121312]">
+    <div className="w-full bg-white">
       <Header />
-      {/* Sticky Hero Background */}
-      <div className="sticky top-0 h-svh w-full z-0 overflow-hidden">
-        <motion.div
-          style={{
-            y: shouldReduceMotion ? "0%" : yHero,
-            scale: shouldReduceMotion ? 1 : scaleHero,
-          }}
-          className="h-full w-full"
-        >
-          <Hero />
-        </motion.div>
-      </div>
 
-      {/* Main Content "Card" sliding over Hero */}
-      <main
-        ref={containerRef}
-        className="relative z-10 bg-[#FFFFFF] shadow-[0_-40px_80px_rgba(0,0,0,0.15)]"
-      >
-        <Services />
-        <Statistics />
-        <Suspense fallback={<section id="timeline" className="min-h-[100svh] bg-[#121312]" />}>
-          <TimelineSection />
-        </Suspense>
-        <Suspense fallback={<section id="ecossistema" className="min-h-[300svh] bg-white" />}>
-          <Ecossistema />
-        </Suspense>
-        <Suspense fallback={<section id="noticias" className="min-h-[70svh] bg-[#f2f2f2]" />}>
-          <Noticias />
-        </Suspense>
-        <FooterCTA />
-        <Footer />
-      </main>
+      <div className="relative bg-white">
+        <div className="sticky top-0 z-0 h-[100svh] min-h-[760px] overflow-hidden bg-white">
+          <Hero />
+        </div>
+
+        <main className="relative z-10 bg-transparent">
+          <Services />
+          <div className="bg-white">
+            <Statistics />
+            <Suspense fallback={<section id="timeline" className="min-h-[100svh] bg-[#121312]" />}>
+              <TimelineSection />
+            </Suspense>
+            <Suspense fallback={<section id="ecossistema" className="min-h-[300svh] bg-white" />}>
+              <Ecossistema />
+            </Suspense>
+            <Suspense fallback={<section id="noticias" className="min-h-[70svh] bg-[#f2f2f2]" />}>
+              <Noticias />
+            </Suspense>
+            <FooterCTA />
+            <Footer />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
