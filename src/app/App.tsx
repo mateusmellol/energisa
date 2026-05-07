@@ -5,7 +5,7 @@ import { Services } from "./components/Services";
 import { Statistics } from "./components/Statistics";
 import { FooterCTA } from "./components/FooterCTA";
 import { Footer } from "./components/Footer";
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 
 const TimelineSection = lazy(() =>
   import("./components/Timeline").then((module) => ({
@@ -27,6 +27,7 @@ const Noticias = lazy(() =>
 
 export default function App() {
   const containerRef = useRef(null);
+  const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress: cardProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "start start"]
@@ -40,7 +41,13 @@ export default function App() {
       <Header />
       {/* Sticky Hero Background */}
       <div className="sticky top-0 h-svh w-full z-0 overflow-hidden">
-        <motion.div style={{ y: yHero, scale: scaleHero }} className="h-full w-full">
+        <motion.div
+          style={{
+            y: shouldReduceMotion ? "0%" : yHero,
+            scale: shouldReduceMotion ? 1 : scaleHero,
+          }}
+          className="h-full w-full"
+        >
           <Hero />
         </motion.div>
       </div>
@@ -48,7 +55,7 @@ export default function App() {
       {/* Main Content "Card" sliding over Hero */}
       <main
         ref={containerRef}
-        className="relative z-10 bg-[#FFFFFF] shadow-[0_-40px_80px_rgba(0,0,0,0.3)]"
+        className="relative z-10 bg-[#FFFFFF] shadow-[0_-40px_80px_rgba(0,0,0,0.15)]"
       >
         <Services />
         <Statistics />
@@ -58,7 +65,7 @@ export default function App() {
         <Suspense fallback={<section id="ecossistema" className="min-h-[300svh] bg-white" />}>
           <Ecossistema />
         </Suspense>
-        <Suspense fallback={<section id="noticias" className="min-h-[70svh] bg-[#f8f8f7]" />}>
+        <Suspense fallback={<section id="noticias" className="min-h-[70svh] bg-[#f2f2f2]" />}>
           <Noticias />
         </Suspense>
         <FooterCTA />
