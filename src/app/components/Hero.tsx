@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { Sparkles } from "lucide-react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import flexlabImage from "@/assets/ecossistema/flexlab-solar.webp";
 import { liftHover, motionTransition, pressTap } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
 import { scrollToSection } from "./navigation";
 
-const heroImage = "/Vector.png";
+const heroImage = `${import.meta.env.BASE_URL}Vector.png`;
 
 export function Hero() {
   const shouldReduceMotion = useReducedMotion();
@@ -19,7 +21,7 @@ export function Hero() {
     typeof window !== "undefined" ? window.innerHeight : 900
   );
 
-  // Global scroll Y — works correctly even inside a sticky container
+  // Global scroll Y works correctly even inside a sticky container.
   const { scrollY } = useScroll();
 
   const imageY = useTransform(scrollY, [0, vh], ["0%", "-15%"]);
@@ -42,11 +44,7 @@ export function Hero() {
         )}
       />
 
-      {/* Hero image — PNG has built-in transparency at top so the worker's helmet
-          "overflows" above the blue photo band, matching the reference design.
-          The wrapper sits at the bottom 75% of the section; the img is taller
-          than its container (-translate-y pulls it up) so the transparent region
-          shows through the white header area. */}
+      {/* Hero image uses a transparent PNG so the helmet can overflow the photo band. */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
@@ -63,48 +61,39 @@ export function Hero() {
           fetchPriority="high"
         />
 
-        {/* FlexLab card — grid-aligned wrapper mirrors the site's content container */}
         <div className="absolute inset-x-0 bottom-[8%] z-20 mx-auto w-full max-w-[1440px] px-5 sm:px-8 md:px-20">
+          <div className="flex w-[540px] gap-[16px] rounded-[4px] bg-white p-[16px] shadow-[0_8px_40px_rgba(0,0,0,0.18)]">
+            <div className="relative h-[238px] flex-1 overflow-hidden rounded-[4px]">
+              <img
+                alt="FlexLab"
+                src={flexlabImage}
+                className="absolute inset-0 h-full w-full max-w-none object-cover"
+              />
+            </div>
 
-        <div className="flex w-[540px] gap-[16px] rounded-[4px] bg-white p-[16px] shadow-[0_8px_40px_rgba(0,0,0,0.18)]">
-          {/* thumbnail — flex-1 to fill remaining width like Figma */}
-          <div className="relative h-[238px] flex-1 overflow-hidden rounded-[4px]">
-            <img
-              alt="FlexLab"
-              src="https://www.figma.com/api/mcp/asset/689315ee-9e24-497b-813c-dd4cf54e49a4"
-              className="absolute inset-0 h-full w-full max-w-none object-cover"
-            />
-          </div>
+            <div className="flex h-[238px] shrink-0 flex-col items-start justify-between">
+              <div className="flex flex-col items-start gap-[8px]">
+                <div className="flex w-fit items-center gap-[3px] rounded-full bg-[#d4ec28] px-[8.64px] py-[4px]">
+                  <Sparkles aria-hidden="true" className="h-[10px] w-[10px]" strokeWidth={2} />
+                  <span className="font-['Sora',sans-serif] text-[11px] font-normal leading-[14px] text-[#121312]">
+                    Novidade
+                  </span>
+                </div>
+                <p className="w-[250px] font-['Sora',sans-serif] text-[20px] font-normal leading-[1.4] text-[#121312]">
+                  FlexLab amplia testes com tecnologias
+                </p>
+                <p className="w-[238px] font-['Sora',sans-serif] text-[13px] font-normal leading-[1.4] text-[#555653]">
+                  Novas frentes de pesquisa conectam automação, dados e eficiência operacional para acelerar soluções que chegam ao cliente.
+                </p>
+              </div>
 
-          {/* right column */}
-          <div className="flex h-[238px] shrink-0 flex-col items-start justify-between">
-            {/* texts */}
-            <div className="flex flex-col items-start gap-[8px]">
-              {/* badge — w-fit para hug */}
-              <div className="flex w-fit items-center gap-[3px] rounded-full bg-[#d4ec28] px-[8.64px] py-[4px]">
-                <img
-                  alt=""
-                  src="https://www.figma.com/api/mcp/asset/d29f54d9-f856-4a09-b161-97b00898bc1b"
-                  className="h-[10px] w-[10px]"
-                />
-                <span className="font-['Sora',sans-serif] text-[11px] font-normal leading-[14px] text-[#121312]">
-                  Novidade
+              <div className="flex w-[112px] items-center justify-center rounded-[4px] bg-black px-[37px] py-[12px]">
+                <span className="font-['Sora',sans-serif] text-[16px] font-normal leading-[1.4] text-[#fdfdfc]">
+                  Ver
                 </span>
               </div>
-              <p className="w-[250px] font-['Sora',sans-serif] text-[20px] font-normal leading-[1.4] text-[#121312]">
-                FlexLab amplia testes com tecnologias
-              </p>
-              <p className="w-[238px] font-['Sora',sans-serif] text-[13px] font-normal leading-[1.4] text-[#555653]">
-                Novas frentes de pesquisa conectam automação, dados e eficiência operacional para acelerar soluções que chegam ao cliente.
-              </p>
-            </div>
-
-            {/* cta */}
-            <div className="flex w-[112px] items-center justify-center rounded-[4px] bg-black px-[37px] py-[12px]">
-              <span className="font-['Sora',sans-serif] text-[16px] font-normal leading-[1.4] text-[#fdfdfc]">Ver</span>
             </div>
           </div>
-        </div>
         </div>
       </motion.div>
 
@@ -170,7 +159,6 @@ export function Hero() {
           </motion.div>
         </motion.div>
       </motion.div>
-
     </section>
   );
 }
