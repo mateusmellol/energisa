@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import flexlabImage from "@/assets/ecossistema/flexlab-solar.webp";
+import laboratorioImage from "@/assets/noticias/inovacao-laboratorio.webp";
 import { liftHover, motionTransition, pressTap } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
@@ -66,7 +66,7 @@ export function Hero() {
             <div className="relative h-[238px] flex-1 overflow-hidden rounded-[4px]">
               <img
                 alt="FlexLab"
-                src={flexlabImage}
+                src={laboratorioImage}
                 className="absolute inset-0 h-full w-full max-w-none object-cover"
               />
             </div>
@@ -74,7 +74,7 @@ export function Hero() {
             <div className="flex h-[238px] shrink-0 flex-col items-start justify-between">
               <div className="flex flex-col items-start gap-[8px]">
                 <div className="flex w-fit items-center gap-[3px] rounded-full bg-[#d4ec28] px-[8.64px] py-[4px]">
-                  <Sparkles aria-hidden="true" className="h-[10px] w-[10px]" strokeWidth={2} />
+                  <Sparkles aria-hidden="true" className="h-[10px] w-[10px] text-[#121312]" strokeWidth={2} />
                   <span className="font-['Sora',sans-serif] text-[11px] font-normal leading-[14px] text-[#121312]">
                     Novidade
                   </span>
@@ -87,11 +87,18 @@ export function Hero() {
                 </p>
               </div>
 
-              <div className="flex w-[112px] items-center justify-center rounded-[4px] bg-black px-[37px] py-[12px]">
+              <motion.button
+                type="button"
+                onClick={() => scrollToSection("noticias")}
+                className="flex w-[112px] cursor-pointer items-center justify-center rounded-[4px] bg-black px-[37px] py-[12px]"
+                whileHover={liftHover}
+                whileTap={pressTap}
+                transition={motionTransition.fast}
+              >
                 <span className="font-['Sora',sans-serif] text-[16px] font-normal leading-[1.4] text-[#fdfdfc]">
                   Ver
                 </span>
-              </div>
+              </motion.button>
             </div>
           </div>
         </div>
