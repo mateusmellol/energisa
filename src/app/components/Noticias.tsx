@@ -140,7 +140,7 @@ export function Noticias() {
   return (
     <section
       id="noticias"
-      className="relative overflow-hidden bg-[#f2f2f2] pt-12 pb-24 md:pt-16 md:pb-[128px]"
+      className="relative overflow-hidden bg-[#FFFFFF] pt-12 pb-24 md:pt-16 md:pb-[128px]"
     >
       <GridPattern
         width={40}

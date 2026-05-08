@@ -19,8 +19,22 @@ function ServiceCard({ card }: { card: { icon: React.ReactNode; label: string; d
       <motion.div
         className="relative z-10 flex h-full w-full flex-col justify-between rounded-[4px] border border-[#8b8d85] bg-[#FFFFFF] p-4"
         variants={{
-          rest: { y: 0, boxShadow: "0 0 0 0 rgba(0,0,0,0)" },
-          hover: { y: -5, boxShadow: "0 12px 28px 0 rgba(0,0,0,0.12)" },
+          rest: {
+            y: 0,
+            boxShadow: "0 12px 28px 0 rgba(0,0,0,0)",
+            transition: {
+              y: motionTransition.fast,
+              boxShadow: motionTransition.layout,
+            },
+          },
+          hover: {
+            y: -5,
+            boxShadow: "0 12px 28px 0 rgba(0,0,0,0.12)",
+            transition: {
+              y: motionTransition.fast,
+              boxShadow: motionTransition.layout,
+            },
+          },
           tap: { scale: 0.985 },
         }}
         transition={motionTransition.fast}
@@ -174,7 +188,7 @@ export function Services() {
       style={{
         y: shouldReduceMotion ? 0 : cardLift,
         paddingTop: "clamp(72px, 12vh, 132px)",
-        paddingBottom: "12.5vh",
+        paddingBottom: "calc(12.5vh + 6px)",
         scrollMarginTop: "80px",
       }}
     >

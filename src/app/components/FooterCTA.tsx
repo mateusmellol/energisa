@@ -4,10 +4,6 @@ import { DottedSurface } from "@/components/ui/dotted-surface"
 import { ArrowUpRight } from "lucide-react"
 import { liftHover, motionTransition, pressTap } from "@/lib/motion"
 
-function scrollToEditais() {
-  const target = document.getElementById("editais") ?? document.getElementById("solucoes")
-  target?.scrollIntoView({ behavior: "smooth" })
-}
 
 export function FooterCTA() {
   const sectionRef = useRef<HTMLElement | null>(null)
@@ -40,7 +36,6 @@ export function FooterCTA() {
           Vamos juntos <br /> mudar o futuro
         </h4>
         <motion.button
-          onClick={scrollToEditais}
           className="mt-10 inline-flex min-h-[52px] cursor-pointer items-center gap-3 rounded-[4px] bg-[#D4EC28] px-8 text-[#20201f] pointer-events-auto"
           style={{ fontFamily: "Sora, sans-serif" }}
           type="button"

@@ -36,12 +36,12 @@ const TABS: Array<{
   {
     id: "antes",
     label: "Antes",
-    title: "Comecamos assim",
-    body: "Em 1905, nascia em Cataguases, Minas Gerais, uma pequena empresa de energia que viria a transformar o cenario energetico brasileiro.",
+    title: "Começamos assim",
+    body: "Em 1905, nascia em Cataguases, Minas Gerais, uma pequena empresa de energia que viria a transformar o cenário energético brasileiro.",
     metrics: [
-      { value: "1905", label: "fundacao" },
+      { value: "1905", label: "fundação" },
       { value: "MG", label: "origem" },
-      { value: "1a", label: "do setor" },
+      { value: "1ª", label: "do setor" },
     ],
     globe: { phi: 0.9, theta: -0.18, highlight: "mg" },
   },
@@ -49,7 +49,7 @@ const TABS: Array<{
     id: "agora",
     label: "Agora",
     title: "Estamos prontos para inovar",
-    body: "Com investimentos massivos em tecnologia e inovacao, a Energisa se posiciona na vanguarda da transicao energetica brasileira.",
+    body: "Com investimentos massivos em tecnologia e inovação, a Energisa se posiciona na vanguarda da transição energética brasileira.",
     metrics: [
       { value: "11", label: "distribuidoras" },
       { value: "20M+", label: "clientes" },
@@ -61,9 +61,9 @@ const TABS: Array<{
     id: "futuro",
     label: "Futuro",
     title: "Acolhemos o novo",
-    body: "A meta e clara: 100% de energia renovavel ate 2030. Com a Energisa, estamos redefinindo como o Brasil se conecta.",
+    body: "A meta é clara: 100% de energia renovável até 2030. Com a Energisa, estamos redefinindo como o Brasil se conecta.",
     metrics: [
-      { value: "100%", label: "renovavel" },
+      { value: "100%", label: "renovável" },
       { value: "2030", label: "meta" },
       { value: "Net", label: "zero" },
     ],

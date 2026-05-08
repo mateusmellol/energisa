@@ -13,7 +13,7 @@ export function scrollToSection(sectionId: string, offset = 80) {
   const el = document.getElementById(sectionId);
   if (!el) return;
   const sectionOffset =
-    sectionId === "timeline" ? -80 : sectionId === "impacto" ? 140 : sectionId === "solucoes" ? -40 : offset;
+    sectionId === "timeline" ? -80 : sectionId === "impacto" ? 140 : sectionId === "solucoes" ? 90 : offset;
   const top = el.getBoundingClientRect().top + window.scrollY - sectionOffset;
   window.scrollTo({ top, behavior: "smooth" });
 }

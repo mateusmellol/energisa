@@ -433,9 +433,12 @@ function StatisticsDesktop() {
         height={40}
         x={-1}
         y={-1}
+        style={{
+          maskImage: "radial-gradient(760px 520px at top left, white 0%, white 52%, transparent 78%)",
+          WebkitMaskImage: "radial-gradient(760px 520px at top left, white 0%, white 52%, transparent 78%)",
+        }}
         className={cn(
-          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]",
-          "[mask-image:radial-gradient(1000px_circle_at_top_left,white,transparent)]"
+          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]"
         )}
       />
       {/* Background Grid Pattern — Bottom Right */}
@@ -471,7 +474,7 @@ function StatisticsDesktop() {
               gridTemplateColumns: "max-content 1fr 1fr",
               columnGap: 54,
               alignItems: "end",
-              padding: "6.25vh 80px 24px",
+              padding: "calc(6.25vh + 10px) 80px 24px",
             }}
           >
             {/* Title */}
@@ -528,7 +531,7 @@ function StatisticsDesktop() {
               gridTemplateColumns: "1fr 1fr 1fr",
               padding: "0 80px",
               gap: "9px",
-              transform: "translateY(-15%)",
+              transform: "translateY(-5%)",
             }}
           >
             {STATS_DATA.map((stat, idx) => (
@@ -570,7 +573,7 @@ function StatisticsMobile() {
   const showChargedValue = isCharged || animationMode === "discharge";
 
   return (
-    <div ref={sectionRef} className="h-full w-full px-5 bg-white" style={{ paddingTop: "calc(6rem + 6.25vh)", paddingBottom: "6rem" }}>
+    <div ref={sectionRef} className="h-full w-full px-5 bg-white" style={{ paddingTop: "calc(6rem + 6.25vh + 10px)", paddingBottom: "6rem" }}>
       <motion.div
         initial={false}
         animate={animationState}
@@ -616,6 +619,7 @@ function StatisticsMobile() {
         initial={false}
         animate={animationState}
         className="flex flex-col gap-10"
+        style={{ marginTop: "10%" }}
       >
         {STATS_DATA.map((stat, idx) => (
           <div key={idx} className="flex flex-col">

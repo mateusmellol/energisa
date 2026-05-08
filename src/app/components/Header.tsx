@@ -134,7 +134,7 @@ export function Header() {
           {/* Desktop CTA */}
           <motion.button
             onClick={() => scrollToSection("solucoes")}
-            className="hidden shrink-0 items-center justify-center rounded-[4px] bg-[#d4ec28] px-[33.6px] py-[16.8px] text-center font-['Sora',sans-serif] text-[16.8px] font-normal leading-[25.2px] text-[#20201f] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)] md:inline-flex"
+            className="hidden shrink-0 cursor-pointer items-center justify-center rounded-[4px] bg-[#d4ec28] px-[33.6px] py-[16.8px] text-center font-['Sora',sans-serif] text-[16.8px] font-normal leading-[25.2px] text-[#20201f] md:inline-flex"
             transition={motionTransition.fast}
             whileHover={liftHover}
             whileTap={pressTap}
@@ -144,7 +144,7 @@ export function Header() {
 
           {/* Mobile hamburger */}
           <motion.button
-            className="md:hidden flex items-center justify-center w-11 h-11"
+            className="md:hidden flex cursor-pointer items-center justify-center w-11 h-11"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Abrir menu"
             animate={mobileIconTheme}
@@ -175,7 +175,7 @@ export function Header() {
                 <motion.button
                   key={link.href}
                   onClick={() => scrollTo(getSectionId(link.href))}
-                  className="flex items-center min-h-[44px] text-[18px] font-medium text-neutral-900 text-left"
+                  className="flex cursor-pointer items-center min-h-[44px] text-[18px] font-medium text-neutral-900 text-left"
                   style={{ fontFamily: "Sora, sans-serif" }}
                   whileTap={pressTap}
                 >
@@ -184,7 +184,7 @@ export function Header() {
               ))}
               <motion.button
                 onClick={() => scrollToSection("solucoes")}
-                className="mt-4 min-h-[52px] w-full rounded-[4px] bg-[#d4ec28] font-['Sora',sans-serif] text-[16.8px] font-normal leading-[25.2px] text-[#20201f] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)]"
+                className="mt-4 min-h-[52px] w-full cursor-pointer rounded-[4px] bg-[#d4ec28] font-['Sora',sans-serif] text-[16.8px] font-normal leading-[25.2px] text-[#20201f]"
                 whileTap={pressTap}
               >
                 Serviços

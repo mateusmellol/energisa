@@ -1,5 +1,20 @@
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import {
+  ArrowUpRight,
+  BarChart3,
+  Building2,
+  Factory,
+  Flame,
+  FlaskConical,
+  Network,
+  type LucideIcon,
+  ShieldCheck,
+  Sparkles,
+  SunMedium,
+  Telescope,
+  TrendingDown,
+  Zap,
+} from "lucide-react";
 import { useRef } from "react";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
 import { cn } from "@/lib/utils";
@@ -15,10 +30,17 @@ import flexlabImage from "@/assets/ecossistema/flexlab-solar.webp";
 import reenergisaImage from "@/assets/ecossistema/reenergisa-building.webp";
 import esgasImage from "@/assets/ecossistema/esgas-field.webp";
 
+type EcosystemHighlight = {
+  icon: LucideIcon;
+  label: string;
+  description: string;
+};
+
 type EcosystemCard = {
   title: string;
   eyebrow?: string;
-  body: string[];
+  intro: string;
+  highlights: EcosystemHighlight[];
   cta: string;
   image: string;
   imageAlt: string;
@@ -27,9 +49,29 @@ type EcosystemCard = {
 const ECOSYSTEM_CARDS: EcosystemCard[] = [
   {
     title: "FlexLab",
-    body: [
+    intro:
       "O FlexLab acelera projetos de inovação em energia solar, eficiência energética e novas tecnologias para clientes residenciais e empresariais.",
-      "É o espaço onde a Energisa testa soluções digitais, valida modelos de negócio e transforma pesquisa aplicada em serviços mais simples, seguros e escaláveis.",
+    highlights: [
+      {
+        icon: FlaskConical,
+        label: "Testes rápidos",
+        description: "Experimenta soluções digitais com agilidade.",
+      },
+      {
+        icon: Telescope,
+        label: "Validação",
+        description: "Refina modelos de negócio antes da escala.",
+      },
+      {
+        icon: Zap,
+        label: "Pesquisa aplicada",
+        description: "Transforma estudo em serviço utilizável.",
+      },
+      {
+        icon: ShieldCheck,
+        label: "Escalabilidade",
+        description: "Leva inovação com mais segurança operacional.",
+      },
     ],
     cta: "Ver FlexLab",
     image: flexlabImage,
@@ -37,9 +79,29 @@ const ECOSYSTEM_CARDS: EcosystemCard[] = [
   },
   {
     title: "Reenergisa",
-    body: [
+    intro:
       "A Reenergisa conecta a experiência centenária do grupo a soluções para mercado livre de energia, geração distribuída e gestão inteligente do consumo.",
-      "Com uma operação orientada por dados, ajuda empresas a reduzir custos, ampliar previsibilidade e avançar em metas de descarbonização.",
+    highlights: [
+      {
+        icon: BarChart3,
+        label: "Dados operacionais",
+        description: "Orienta decisões com leitura contínua de consumo.",
+      },
+      {
+        icon: TrendingDown,
+        label: "Redução de custos",
+        description: "Cria eficiência financeira para empresas.",
+      },
+      {
+        icon: SunMedium,
+        label: "Previsibilidade",
+        description: "Amplia controle sobre demanda e geração.",
+      },
+      {
+        icon: Building2,
+        label: "Descarbonização",
+        description: "Apoia metas energéticas mais sustentáveis.",
+      },
     ],
     cta: "Ver Reenergisa",
     image: reenergisaImage,
@@ -48,9 +110,29 @@ const ECOSYSTEM_CARDS: EcosystemCard[] = [
   {
     title: "ESgas",
     eyebrow: "Novidade",
-    body: [
+    intro:
       "A ESgas amplia o ecossistema Energisa para a distribuição de gás canalizado, fortalecendo a infraestrutura energética no Espírito Santo.",
-      "A operação combina segurança, expansão de rede e atendimento próximo para apoiar indústrias, comércios e cidades em uma transição energética mais eficiente.",
+    highlights: [
+      {
+        icon: ShieldCheck,
+        label: "Segurança",
+        description: "Opera a rede com foco em confiabilidade.",
+      },
+      {
+        icon: Network,
+        label: "Expansão",
+        description: "Amplia cobertura para novos territórios.",
+      },
+      {
+        icon: Factory,
+        label: "Atendimento próximo",
+        description: "Apoia indústrias e comércios no dia a dia.",
+      },
+      {
+        icon: Flame,
+        label: "Transição eficiente",
+        description: "Integra gás à evolução energética regional.",
+      },
     ],
     cta: "Ver ESgas",
     image: esgasImage,
@@ -62,17 +144,13 @@ function EcosystemButton({ children }: { children: React.ReactNode }) {
   return (
     <motion.button
       type="button"
-      className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#121312] px-8 py-4 text-[16px] font-medium text-[#fdfdfc] cursor-pointer"
+      className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-[#121312] px-8 py-4 text-[16px] font-medium text-[#fdfdfc]"
       style={{ fontFamily: "Sora, sans-serif" }}
       whileHover={{ ...liftHover, backgroundColor: "#20221f" }}
       whileTap={pressTap}
     >
       <span>{children}</span>
-      <ArrowUpRight
-        size={24}
-        strokeWidth={2}
-        aria-hidden="true"
-      />
+      <ArrowUpRight size={24} strokeWidth={2} aria-hidden="true" />
     </motion.button>
   );
 }
@@ -101,7 +179,7 @@ function EcosystemSlide({
   const yRaw = useTransform(scrollYProgress, [0, 0.5, 1], [0, -20, -58]);
   const imageScaleRaw = useTransform(scrollYProgress, [0, 1], [1, 1.045]);
   const imageYRaw = useTransform(scrollYProgress, [0, 1], [0, -18]);
-  const scrollResponse = { ...motionTransition.scrollSpring, stiffness: 220, damping: 42, mass: 0.18 };
+  const scrollResponse = { ...motionTransition.scrollSpring, stiffness: 1000, damping: 80, mass: 0.18 };
   const scale = useSpring(scaleRaw, scrollResponse);
   const y = useSpring(yRaw, scrollResponse);
   const imageScale = useSpring(imageScaleRaw, scrollResponse);
@@ -112,10 +190,7 @@ function EcosystemSlide({
       ref={slideRef}
       id={id}
       style={style}
-      className={cn(
-        "relative flex min-h-[87svh] justify-center",
-        !isLast && "mb-0",
-      )}
+      className={cn("relative flex min-h-[87svh] justify-center", !isLast && "mb-0")}
     >
       <motion.div
         style={{
@@ -160,15 +235,45 @@ function EcosystemSlide({
 
               <div className="flex flex-col gap-6">
                 <div
-                  className="flex flex-col gap-4 text-[18px] leading-[1.55] md:text-[20px]"
+                  className="text-[18px] leading-[1.55] md:text-[20px]"
                   style={{
                     fontFamily: "Sora, sans-serif",
                     color: "rgba(18, 19, 18, 0.48)",
                   }}
                 >
-                  {card.body.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
+                  <p>{card.intro}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 md:gap-4">
+                  {card.highlights.map((highlight) => {
+                    const Icon = highlight.icon;
+
+                    return (
+                      <div
+                        key={highlight.label}
+                        className="pr-4 pb-1"
+                      >
+                        <div className="mb-3 inline-flex text-[#121312]">
+                          <Icon size={18} strokeWidth={2} aria-hidden="true" />
+                        </div>
+
+                        <div className="space-y-1">
+                          <p
+                            className="text-[14px] leading-none text-[#121312] md:text-[15px]"
+                            style={{ fontFamily: "Sora, sans-serif", fontWeight: 500 }}
+                          >
+                            {highlight.label}
+                          </p>
+                          <p
+                            className="text-[13px] leading-[1.45] text-[#121312]/58 md:text-[14px]"
+                            style={{ fontFamily: "Sora, sans-serif" }}
+                          >
+                            {highlight.description}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -187,11 +292,7 @@ function EcosystemSlide({
             variants={cardRevealVariants}
             className="relative z-10 h-[48svh] overflow-hidden rounded-none md:col-span-7 md:h-[633px]"
           >
-            <motion.div
-              className="h-full w-full cursor-pointer"
-              whileHover={liftHover}
-              whileTap={pressTap}
-            >
+            <motion.div className="h-full w-full cursor-pointer" whileHover={liftHover} whileTap={pressTap}>
               <motion.img
                 src={card.image}
                 alt={card.imageAlt}

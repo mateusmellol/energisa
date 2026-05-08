@@ -59,7 +59,6 @@ export const cardRevealVariants = {
 } as const;
 
 export const liftHover = {
-  y: -4,
   transition: motionTransition.fast,
 } as const;
 
