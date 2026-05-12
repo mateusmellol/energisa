@@ -1,8 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Sparkles } from "lucide-react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { useCallback, useRef, useState } from "react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import laboratorioImage from "@/assets/noticias/inovacao-laboratorio.webp";
 import { liftHover, motionTransition, pressTap } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -11,21 +17,141 @@ import { scrollToSection } from "./navigation";
 
 const heroImage = `${import.meta.env.BASE_URL}Vector.png`;
 
+const TILT_MAX = 3;
+const SPRING_CONFIG = { stiffness: 260, damping: 28, mass: 0.6 };
+
+function HeroNewsCard() {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+  const [isHovered, setIsHovered] = useState(false);
+
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const rotateX = useSpring(rawX, SPRING_CONFIG);
+  const rotateY = useSpring(rawY, SPRING_CONFIG);
+
+  const glareX = useTransform(rotateY, [-TILT_MAX, TILT_MAX], ["0%", "100%"]);
+  const glareY = useTransform(rotateX, [TILT_MAX, -TILT_MAX], ["0%", "100%"]);
+  const glareBackground = useTransform(
+    [glareX, glareY],
+    ([x, y]: string[]) =>
+      `radial-gradient(circle at ${x} ${y}, rgba(255,255,255,0.22) 0%, transparent 60%)`
+  );
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!cardRef.current || shouldReduceMotion) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) / (rect.width / 2);
+      const dy = (e.clientY - cy) / (rect.height / 2);
+      rawY.set(dx * TILT_MAX);
+      rawX.set(-dy * TILT_MAX);
+    },
+    [rawX, rawY, shouldReduceMotion]
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    rawX.set(0);
+    rawY.set(0);
+    setIsHovered(false);
+  }, [rawX, rawY]);
+
+  return (
+    <div style={{ perspective: "900px" }}>
+      <motion.div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          rotateX: shouldReduceMotion ? 0 : rotateX,
+          rotateY: shouldReduceMotion ? 0 : rotateY,
+          transformStyle: "preserve-3d",
+          background: "rgba(0,0,0,0.44)",
+          backdropFilter: "blur(12.6px) saturate(1.4)",
+          WebkitBackdropFilter: "blur(12.6px) saturate(1.4)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          boxShadow: "0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
+        }}
+        className="relative flex w-full cursor-default gap-[16px] overflow-hidden rounded-[4px] p-[16px]"
+      >
+        {!shouldReduceMotion && (
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-10 rounded-[4px]"
+            style={{ background: glareBackground }}
+            animate={{ opacity: isHovered ? 1 : 0 }}
+            transition={{ duration: 0.2 }}
+          />
+        )}
+
+        <div className="relative h-[160px] flex-1 overflow-hidden rounded-[4px]">
+          <img
+            alt="FlexLab"
+            src={laboratorioImage}
+            className="absolute inset-0 h-full w-full max-w-none object-cover"
+          />
+        </div>
+
+        <div className="flex h-[160px] shrink-0 flex-col items-start justify-between">
+          <p className="w-[250px] font-['Sora',sans-serif] text-[20px] font-normal leading-[1.4] text-white">
+            FlexLab amplia testes com tecnologias
+          </p>
+
+          <motion.button
+            type="button"
+            onClick={() => scrollToSection("noticias")}
+            className="group flex cursor-pointer items-center gap-[6px] border-none bg-transparent p-0"
+            whileHover={{ opacity: 0.7 }}
+            whileTap={{ opacity: 0.5 }}
+            transition={motionTransition.fast}
+          >
+            <span className="font-['Sora',sans-serif] text-[14px] font-normal leading-[1.4] text-white underline decoration-white/50 underline-offset-[3px]">
+              Ver mais
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-white/70 transition-transform duration-200 group-hover:translate-x-[2px] group-hover:-translate-y-[2px]"
+            >
+              <line x1="7" y1="17" x2="17" y2="7" />
+              <polyline points="7 7 17 7 17 17" />
+            </svg>
+          </motion.button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function HeroNewsCardSlot() {
+  return (
+    <div className="w-[540px] max-w-full">
+      <HeroNewsCard />
+    </div>
+  );
+}
+
 export function Hero() {
   const shouldReduceMotion = useReducedMotion();
 
-  // Capture viewport height once on the client.
-  // Hero is sticky for exactly ~100svh before Services slides over it,
-  // so this is our parallax range in pixels.
   const [vh] = useState(() =>
     typeof window !== "undefined" ? window.innerHeight : 900
   );
 
-  // Global scroll Y works correctly even inside a sticky container.
   const { scrollY } = useScroll();
-
-  const imageY = useTransform(scrollY, [0, vh], ["0%", "-15%"]);
-  const textY = useTransform(scrollY, [0, vh], ["0%", "-15%"]);
+  const imageY = useTransform(scrollY, [0, vh], ["0%", "-20%"]);
+  const textY = useTransform(scrollY, [0, vh], ["0%", "-20%"]);
+  const cardY = useTransform(scrollY, [0, vh], [0, -vh * 0.25]);
 
   return (
     <section
@@ -39,12 +165,11 @@ export function Hero() {
         x={-1}
         y={-1}
         className={cn(
-          "absolute inset-0 z-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]",
+          "pointer-events-none absolute inset-0 z-0 h-full w-full stroke-gray-900/[0.09] opacity-100",
           "[mask-image:radial-gradient(1000px_circle_at_top_left,white,transparent)]"
         )}
       />
 
-      {/* Hero image uses a transparent PNG so the helmet can overflow the photo band. */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
@@ -60,48 +185,13 @@ export function Hero() {
           loading="eager"
           fetchPriority="high"
         />
+      </motion.div>
 
-        <div className="absolute inset-x-0 bottom-[8%] z-20 mx-auto w-full max-w-[1440px] px-5 sm:px-8 md:px-20">
-          <div className="flex w-[540px] gap-[16px] rounded-[4px] bg-white p-[16px] shadow-[0_8px_40px_rgba(0,0,0,0.18)]">
-            <div className="relative h-[238px] flex-1 overflow-hidden rounded-[4px]">
-              <img
-                alt="FlexLab"
-                src={laboratorioImage}
-                className="absolute inset-0 h-full w-full max-w-none object-cover"
-              />
-            </div>
-
-            <div className="flex h-[238px] shrink-0 flex-col items-start justify-between">
-              <div className="flex flex-col items-start gap-[8px]">
-                <div className="flex w-fit items-center gap-[3px] rounded-full bg-[#d4ec28] px-[8.64px] py-[4px]">
-                  <Sparkles aria-hidden="true" className="h-[10px] w-[10px] text-[#121312]" strokeWidth={2} />
-                  <span className="font-['Sora',sans-serif] text-[11px] font-normal leading-[14px] text-[#121312]">
-                    Novidade
-                  </span>
-                </div>
-                <p className="w-[250px] font-['Sora',sans-serif] text-[20px] font-normal leading-[1.4] text-[#121312]">
-                  FlexLab amplia testes com tecnologias
-                </p>
-                <p className="w-[238px] font-['Sora',sans-serif] text-[13px] font-normal leading-[1.4] text-[#555653]">
-                  Novas frentes de pesquisa conectam automação, dados e eficiência operacional para acelerar soluções que chegam ao cliente.
-                </p>
-              </div>
-
-              <motion.button
-                type="button"
-                onClick={() => scrollToSection("noticias")}
-                className="flex w-[112px] cursor-pointer items-center justify-center rounded-[4px] bg-black px-[37px] py-[12px]"
-                whileHover={liftHover}
-                whileTap={pressTap}
-                transition={motionTransition.fast}
-              >
-                <span className="font-['Sora',sans-serif] text-[16px] font-normal leading-[1.4] text-[#fdfdfc]">
-                  Ver
-                </span>
-              </motion.button>
-            </div>
-          </div>
-        </div>
+      <motion.div
+        style={{ y: shouldReduceMotion ? 0 : cardY }}
+        className="absolute inset-x-0 bottom-[4%] z-20 mx-auto w-full max-w-[1440px] px-5 will-change-transform sm:px-8 md:px-20"
+      >
+        <HeroNewsCardSlot />
       </motion.div>
 
       <motion.div

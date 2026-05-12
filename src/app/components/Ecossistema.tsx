@@ -19,12 +19,10 @@ import { useRef } from "react";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
 import { cn } from "@/lib/utils";
 import {
-  cardRevealVariants,
   liftHover,
   motionTransition,
   motionViewport,
   pressTap,
-  textRevealVariants,
 } from "@/lib/motion";
 import flexlabImage from "@/assets/ecossistema/flexlab-solar.webp";
 import reenergisaImage from "@/assets/ecossistema/reenergisa-building.webp";
@@ -197,14 +195,26 @@ function EcosystemSlide({
           scale: shouldReduceMotion ? 1 : scale,
           y: shouldReduceMotion ? 0 : y,
         }}
+        initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.92, y: 48 }}
+        whileInView="visible"
+        viewport={motionViewport}
+        variants={{
+          visible: {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            transition: {
+              type: "spring",
+              stiffness: 180,
+              damping: 24,
+              mass: 0.5,
+            },
+          },
+        }}
         className="sticky top-[4svh] flex h-[85svh] w-full items-center px-3 py-0 md:px-5"
       >
         <div className="relative mx-auto grid h-full w-full max-w-[1440px] grid-cols-1 items-center gap-8 px-5 py-8 md:grid-cols-12 md:gap-8 md:px-12 md:py-10">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={motionViewport}
-            variants={textRevealVariants}
+          <div
             className="relative z-10 flex min-h-[562px] flex-col items-start justify-between gap-14 md:col-span-5"
           >
             <div className="flex w-full flex-col gap-10">
@@ -279,30 +289,24 @@ function EcosystemSlide({
             </div>
 
             <EcosystemButton>{card.cta}</EcosystemButton>
-          </motion.div>
+          </div>
 
           <motion.div
             style={{
               scale: shouldReduceMotion ? 1 : imageScale,
               y: shouldReduceMotion ? 0 : imageY,
             }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={motionViewport}
-            variants={cardRevealVariants}
             className="relative z-10 h-[48svh] overflow-hidden rounded-none md:col-span-7 md:h-[633px]"
           >
-            <motion.div className="h-full w-full cursor-pointer" whileHover={liftHover} whileTap={pressTap}>
-              <motion.img
+            <div className="h-full w-full cursor-pointer">
+              <img
                 src={card.image}
                 alt={card.imageAlt}
                 className="h-full w-full object-cover"
                 loading={index === 0 ? "eager" : "lazy"}
                 decoding="async"
-                whileHover={{ scale: 1.025 }}
-                transition={motionTransition.fast}
               />
-            </motion.div>
+            </div>
           </motion.div>
         </div>
       </motion.div>

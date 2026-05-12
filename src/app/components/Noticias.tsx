@@ -65,7 +65,6 @@ function NewsCard({ item, index }: { item: NewsItem; index: number }) {
       initial="hidden"
       whileInView="visible"
       viewport={motionViewport}
-      whileHover="hover"
       custom={index}
       variants={{
         hidden: { opacity: 0, y: 24 },
@@ -77,35 +76,19 @@ function NewsCard({ item, index }: { item: NewsItem; index: number }) {
             delay: cardIndex * 0.08,
           },
         }),
-        hover: {
-          y: -4,
-          transition: motionTransition.fast,
-        },
       }}
     >
-      <motion.div
+      <div
         className="relative block aspect-[1.18] w-full overflow-hidden bg-[#e6e7e4] shadow-[0_15px_35px_-5px_rgba(0,0,0,0.1),0_10px_20px_-10px_rgba(0,0,0,0.05)]"
-        variants={{
-          hover: {
-            boxShadow:
-              "0 25px 50px -12px rgba(0,0,0,0.15), 0 12px 22px -14px rgba(0,0,0,0.12)",
-          },
-        }}
       >
-        <motion.img
+        <img
           src={item.image}
           alt={item.imageAlt}
           className="h-full w-full object-cover"
           loading={index === 0 ? "eager" : "lazy"}
           decoding="async"
-          variants={{
-            hover: {
-              scale: 1.035,
-              transition: motionTransition.fast,
-            },
-          }}
         />
-      </motion.div>
+      </div>
 
       <div className="flex flex-col items-start gap-4">
         <div className="flex h-[34px] items-center justify-center rounded-full bg-[#D4EC28] px-4">
