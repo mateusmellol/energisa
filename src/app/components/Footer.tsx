@@ -35,7 +35,7 @@ const COLUMNS = [
 export function Footer() {
   return (
     <footer className="bg-[#0e0f0e]" style={{ scrollSnapAlign: "start" }}>
-      <div className="max-w-[1440px] mx-auto px-5 md:px-20 py-10 lg:py-16">
+      <div className="max-w-[1440px] mx-auto px-5 md:px-12 py-10 lg:py-16">
         <div className="flex flex-col md:flex-row md:justify-between items-start gap-12 md:gap-8">
           {/* Logo and Copyright */}
           <div className="flex flex-col gap-3">
@@ -46,7 +46,7 @@ export function Footer() {
               whileHover={{ opacity: 0.8 }}
               whileTap={pressTap}
             >
-              <EnergisaLogo color="#CAD71D" scale={1.4} />
+              <EnergisaLogo color="#ffffff" />
             </motion.button>
             <span
               style={{

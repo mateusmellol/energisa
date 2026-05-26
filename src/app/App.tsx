@@ -1,10 +1,11 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
 import { Services } from "./components/Services";
 import { Statistics } from "./components/Statistics";
 import { FooterCTA } from "./components/FooterCTA";
 import { Footer } from "./components/Footer";
+import Lenis from "lenis";
 
 const TimelineSection = lazy(() =>
   import("./components/Timeline").then((module) => ({
@@ -25,6 +26,28 @@ const Noticias = lazy(() =>
 );
 
 export default function App() {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      gestureOrientation: "vertical",
+      normalizeWheel: true,
+    });
+
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
   return (
     <div className="w-full bg-white">
       <Header />

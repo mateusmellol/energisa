@@ -188,7 +188,7 @@ export function Services() {
       style={{
         y: shouldReduceMotion ? 0 : cardLift,
         paddingTop: "clamp(72px, 12vh, 132px)",
-        paddingBottom: "calc(12.5vh + 6px)",
+        paddingBottom: "calc(12.5vh - 26px)",
         scrollMarginTop: "80px",
       }}
     >
@@ -203,7 +203,7 @@ export function Services() {
           "[mask-image:radial-gradient(1000px_circle_at_bottom_left,white,transparent)]"
         )}
       />
-      <div className="max-w-[1440px] w-full mx-auto px-5 md:px-20 flex flex-col gap-10 relative z-10">
+      <div className="max-w-[1440px] w-full mx-auto px-5 md:px-12 flex flex-col gap-10 relative z-10">
         {/* Header */}
         <div className="flex flex-col gap-4">
           <h2

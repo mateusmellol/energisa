@@ -48,7 +48,7 @@ const TABS: Array<{
   {
     id: "agora",
     label: "Agora",
-    title: "Estamos prontos para inovar",
+    title: "Prontos para inovar",
     body: "Com investimentos massivos em tecnologia e inovação, a Energisa se posiciona na vanguarda da transição energética brasileira.",
     metrics: [
       { value: "11", label: "distribuidoras" },
@@ -270,7 +270,7 @@ function TimelineDesktop() {
           </Suspense>
         </div>
 
-        <div className="max-w-[1440px] mx-auto relative px-20 flex flex-col justify-center pointer-events-none h-full" style={{ zIndex: 3 }}>
+        <div className="max-w-[1440px] mx-auto relative px-5 md:px-12 flex flex-col justify-center pointer-events-none h-full" style={{ zIndex: 3 }}>
           <div className="relative z-10 flex flex-col gap-12 pointer-events-none" style={{ maxWidth: 480 }}>
             <div className="flex items-center gap-2 pointer-events-auto">
               {TABS.map((tab, i) => (

@@ -157,14 +157,10 @@ function EcosystemSlide({
   card,
   index,
   isLast,
-  id,
-  style,
 }: {
   card: EcosystemCard;
   index: number;
   isLast: boolean;
-  id?: string;
-  style?: React.CSSProperties;
 }) {
   const slideRef = useRef<HTMLElement | null>(null);
   const shouldReduceMotion = useReducedMotion();
@@ -186,8 +182,6 @@ function EcosystemSlide({
   return (
     <section
       ref={slideRef}
-      id={id}
-      style={style}
       className={cn("relative flex min-h-[87svh] justify-center", !isLast && "mb-0")}
     >
       <motion.div
@@ -314,9 +308,105 @@ function EcosystemSlide({
   );
 }
 
+function MobileEcosystemCard({
+  card,
+  index,
+}: {
+  card: EcosystemCard;
+  index: number;
+}) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ type: "spring", stiffness: 200, damping: 26, mass: 0.5 }}
+      className="flex flex-col"
+    >
+      {/* Image */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden">
+        <img
+          src={card.image}
+          alt={card.imageAlt}
+          className="h-full w-full object-cover"
+          loading={index === 0 ? "eager" : "lazy"}
+          decoding="async"
+        />
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-col gap-6 px-5 pt-7 pb-2">
+        <div className="flex flex-col items-start gap-3">
+          {card.eyebrow && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full bg-[#D4EC28] px-3 py-1.5 text-[13px] text-[#121312]"
+              style={{ fontFamily: "Sora, sans-serif" }}
+            >
+              <Sparkles size={14} strokeWidth={1.5} />
+              {card.eyebrow}
+            </span>
+          )}
+
+          <h2
+            style={{
+              fontFamily: "Sora, sans-serif",
+              fontSize: "32px",
+              fontWeight: 400,
+              lineHeight: 1.18,
+              color: "#000000",
+              letterSpacing: "-0.035em",
+            }}
+          >
+            {card.title}
+          </h2>
+        </div>
+
+        <p
+          className="text-[16px] leading-[1.55]"
+          style={{
+            fontFamily: "Sora, sans-serif",
+            color: "rgba(18, 19, 18, 0.48)",
+          }}
+        >
+          {card.intro}
+        </p>
+
+        <div className="grid grid-cols-2 gap-3">
+          {card.highlights.map((highlight) => {
+            const Icon = highlight.icon;
+            return (
+              <div key={highlight.label} className="pr-2 pb-1">
+                <div className="mb-2 inline-flex text-[#121312]">
+                  <Icon size={16} strokeWidth={2} aria-hidden="true" />
+                </div>
+                <div className="space-y-0.5">
+                  <p
+                    className="text-[13px] leading-none text-[#121312]"
+                    style={{ fontFamily: "Sora, sans-serif", fontWeight: 500 }}
+                  >
+                    {highlight.label}
+                  </p>
+                  <p
+                    className="text-[12px] leading-[1.45] text-[#121312]/58"
+                    style={{ fontFamily: "Sora, sans-serif" }}
+                  >
+                    {highlight.description}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <EcosystemButton>{card.cta}</EcosystemButton>
+      </div>
+    </motion.article>
+  );
+}
+
 export function Ecossistema() {
   return (
-    <section className="relative overflow-hidden bg-white pt-3 pb-0 md:pt-5 md:pb-0">
+    <section id="ecossistema" className="relative overflow-hidden bg-white pt-3 pb-0 md:pt-5 md:pb-0" style={{ scrollMarginTop: "80px" }}>
       <GridPattern
         width={40}
         height={40}
@@ -328,16 +418,22 @@ export function Ecossistema() {
         )}
       />
 
-      <div className="relative z-10">
+      {/* Desktop: sticky scroll cards */}
+      <div className="relative z-10 hidden md:block">
         {ECOSYSTEM_CARDS.map((card, index) => (
           <EcosystemSlide
             key={card.title}
-            id={index === 0 ? "ecossistema" : undefined}
             card={card}
             index={index}
             isLast={index === ECOSYSTEM_CARDS.length - 1}
-            style={index === 0 ? { scrollMarginTop: "80px" } : undefined}
           />
+        ))}
+      </div>
+
+      {/* Mobile: simple vertical stack */}
+      <div className="relative z-10 flex flex-col gap-12 py-10 md:hidden">
+        {ECOSYSTEM_CARDS.map((card, index) => (
+          <MobileEcosystemCard key={card.title} card={card} index={index} />
         ))}
       </div>
 

@@ -389,34 +389,6 @@ function StatColumn({
   );
 }
 
-function MobileInteractiveBar({ stat, idx, STATS_DATA_LENGTH }: any) {
-  return (
-    <motion.div
-      custom={idx}
-      variants={{
-        hidden: { scaleY: 0, opacity: 1 },
-        visible: (index: number) => ({
-          scaleY: 1,
-          opacity: 1,
-          transition: { duration: 1.2, ease: [0.77, 0, 0.175, 1], delay: index * 0.3 }
-        }),
-        discharged: (index: number) => ({
-          scaleY: 0,
-          opacity: 1,
-          transition: {
-            duration: 0.8,
-            ease: [0.55, 0, 1, 0.45],
-            delay: (STATS_DATA_LENGTH - 1 - index) * 0.08,
-          }
-        }),
-      }}
-      className="bg-[#D4EC28] h-12 w-full origin-bottom relative overflow-hidden"
-    >
-      <StaticDotPattern dotSpacing={16} />
-    </motion.div>
-  );
-}
-
 // ---- Desktop Version (from commit 14048f189dfc) ----
 
 function StatisticsDesktop() {
@@ -426,33 +398,7 @@ function StatisticsDesktop() {
   const showChargedValue = isCharged || animationMode === "discharge";
 
   return (
-    <div ref={sectionRef} className="h-svh w-full overflow-hidden relative bg-white">
-      {/* Background Grid Pattern — Top Left */}
-      <GridPattern
-        width={40}
-        height={40}
-        x={-1}
-        y={-1}
-        style={{
-          maskImage: "radial-gradient(760px 520px at top left, white 0%, white 52%, transparent 78%)",
-          WebkitMaskImage: "radial-gradient(760px 520px at top left, white 0%, white 52%, transparent 78%)",
-        }}
-        className={cn(
-          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]"
-        )}
-      />
-      {/* Background Grid Pattern — Bottom Right */}
-      <GridPattern
-        width={40}
-        height={40}
-        x={-1}
-        y={-1}
-        className={cn(
-          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]",
-          "[mask-image:radial-gradient(1000px_circle_at_bottom_right,white,transparent)]"
-        )}
-      />
-
+    <div ref={sectionRef} className="h-svh w-full overflow-hidden relative bg-transparent">
       <div className="h-full w-full">
         {/* Max-width wrapper acting as the main grid */}
         <div
@@ -474,7 +420,7 @@ function StatisticsDesktop() {
               gridTemplateColumns: "max-content 1fr 1fr",
               columnGap: 54,
               alignItems: "end",
-              padding: "calc(6.25vh + 10px) 80px 24px",
+              padding: "calc(6.25vh + 10px) 48px 24px",
             }}
           >
             {/* Title */}
@@ -529,7 +475,7 @@ function StatisticsDesktop() {
               height: "100%",
               display: "grid",
               gridTemplateColumns: "1fr 1fr 1fr",
-              padding: "0 80px",
+              padding: "0 48px",
               gap: "9px",
               transform: "translateY(-5%)",
             }}
@@ -573,11 +519,11 @@ function StatisticsMobile() {
   const showChargedValue = isCharged || animationMode === "discharge";
 
   return (
-    <div ref={sectionRef} className="h-full w-full px-5 bg-white" style={{ paddingTop: "calc(6rem + 6.25vh + 10px)", paddingBottom: "6rem" }}>
+    <div ref={sectionRef} className="h-full w-full px-5 bg-transparent" style={{ paddingTop: "17px", paddingBottom: "4rem" }}>
       <motion.div
         initial={false}
         animate={animationState}
-        className="flex flex-col gap-6 mb-12"
+        className="flex flex-col gap-6 mb-8"
       >
         <motion.h3
           variants={{
@@ -618,22 +564,115 @@ function StatisticsMobile() {
       <motion.div
         initial={false}
         animate={animationState}
-        className="flex flex-col gap-10"
-        style={{ marginTop: "10%" }}
+        className="flex flex-col gap-8"
       >
         {STATS_DATA.map((stat, idx) => (
-          <div key={idx} className="flex flex-col">
-            <StatColumn
-              stat={stat}
-              idx={idx}
-              shouldReduceMotion={shouldReduceMotion}
-              animationCycle={animationCycle}
-              animationState={animationState}
-              showChargedValue={showChargedValue}
-              barVariantMode="mobile"
-              barDelayStep={0.06}
-            />
-          </div>
+          <motion.div
+            key={idx}
+            custom={idx}
+            variants={{
+              hidden: () => ({ opacity: 0, y: shouldReduceMotion ? 2 : 22 }),
+              visible: (index: number) => ({
+                opacity: 1,
+                y: 2,
+                transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.12 + index * 0.06 },
+              }),
+              discharged: (index: number) => ({
+                opacity: 1,
+                y: shouldReduceMotion ? 2 : 22,
+                transition: {
+                  duration: 0.45,
+                  ease: [0.55, 0, 1, 0.45],
+                  delay: (STATS_DATA.length - 1 - index) * 0.06,
+                },
+              }),
+            }}
+            style={{
+              position: "relative",
+              width: "100%",
+              height: 48,
+            }}
+          >
+            {/* Horizontal Bar on the Left */}
+            <motion.div
+              custom={idx}
+              variants={{
+                hidden: { scaleX: 0, opacity: 1 },
+                visible: (index: number) => ({
+                  scaleX: 1,
+                  opacity: 1,
+                  transition: { duration: 1.2, ease: [0.77, 0, 0.175, 1], delay: index * 0.3 }
+                }),
+                discharged: (index: number) => ({
+                  scaleX: 0,
+                  opacity: 1,
+                  transition: {
+                    duration: 0.8,
+                    ease: [0.55, 0, 1, 0.45],
+                    delay: (STATS_DATA.length - 1 - index) * 0.08,
+                  }
+                }),
+              }}
+              style={{
+                background: "#D4EC28",
+                width: `calc(${stat.barHeight} - 24px)`,
+                height: "100%",
+                transformOrigin: "left",
+                position: "absolute",
+                left: 0,
+                top: 0,
+                borderRadius: 0,
+                overflow: "hidden",
+              }}
+            >
+              <StaticDotPattern dotSpacing={16} />
+            </motion.div>
+
+            {/* Value and Label on the Right (offset exactly 16px) */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                position: "absolute",
+                left: `calc(${stat.barHeight} - 8px)`,
+                top: "50%",
+                transform: "translateY(-50%)",
+                whiteSpace: "nowrap",
+                textAlign: "left",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "Sora, sans-serif",
+                  fontWeight: 300,
+                  fontSize: "32px",
+                  color: "#121312",
+                  lineHeight: 1,
+                  letterSpacing: "-0.04em",
+                }}
+              >
+                {showChargedValue ? (
+                  <NumberTicker key={`${animationCycle}-${stat.label}`} value={stat.value} duration={1200 + idx * 200} />
+                ) : (
+                  "0"
+                )}
+                {stat.suffix}
+              </span>
+              <span
+                style={{
+                  fontFamily: "Sora, sans-serif",
+                  fontWeight: 400,
+                  fontSize: "13px",
+                  color: "#121312",
+                  lineHeight: 1.25,
+                  marginTop: 2,
+                }}
+              >
+                {stat.label}
+              </span>
+            </div>
+          </motion.div>
         ))}
       </motion.div>
     </div>
@@ -649,13 +688,38 @@ export function Statistics() {
   return (
     <section
       id="impacto"
-      className="relative z-0 bg-white"
+      className="relative z-0 bg-white overflow-hidden"
       style={{
-        minHeight: "100svh",
-        scrollSnapAlign: "start",
+        minHeight: isMobile ? "auto" : "100svh",
+        scrollSnapAlign: isMobile ? "none" : "start",
         scrollMarginTop: "80px",
       }}
     >
+      {/* Background Grid Pattern — Top Left */}
+      <GridPattern
+        width={40}
+        height={40}
+        x={-1}
+        y={-1}
+        style={{
+          maskImage: "radial-gradient(760px 520px at top left, white 0%, white 52%, transparent 78%)",
+          WebkitMaskImage: "radial-gradient(760px 520px at top left, white 0%, white 52%, transparent 78%)",
+        }}
+        className={cn(
+          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]"
+        )}
+      />
+      {/* Background Grid Pattern — Bottom Right */}
+      <GridPattern
+        width={40}
+        height={40}
+        x={-1}
+        y={-1}
+        className={cn(
+          "absolute inset-0 h-full w-full opacity-100 pointer-events-none stroke-gray-900/[0.09]",
+          "[mask-image:radial-gradient(1000px_circle_at_bottom_right,white,transparent)]"
+        )}
+      />
       <div className="relative z-10 h-full w-full">
         {isMobile ? <StatisticsMobile /> : <StatisticsDesktop />}
       </div>

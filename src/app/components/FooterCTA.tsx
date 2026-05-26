@@ -22,7 +22,7 @@ export function FooterCTA() {
         <div className="absolute inset-0 z-50 bg-[linear-gradient(180deg,rgba(9,11,9,0.22)_0%,transparent_14%,transparent_86%,rgba(9,11,9,0.44)_100%)] pointer-events-none" />
       </div>
 
-      <div className="relative z-60 mx-auto flex min-h-[504px] w-full max-w-[1440px] flex-col items-center justify-center px-5 py-22 text-center md:min-h-[630px] md:px-20 pointer-events-none">
+      <div className="relative z-60 mx-auto flex min-h-[504px] w-full max-w-[1440px] flex-col items-center justify-center px-5 py-22 text-center md:min-h-[630px] md:px-12 pointer-events-none">
         <h4
           className="max-w-[620px] text-[#f6f8ed]"
           style={{
@@ -36,7 +36,7 @@ export function FooterCTA() {
           Vamos juntos <br /> mudar o futuro
         </h4>
         <motion.button
-          className="mt-10 inline-flex min-h-[52px] cursor-pointer items-center gap-3 rounded-[4px] bg-[#D4EC28] px-8 text-[#20201f] pointer-events-auto"
+          className="mt-10 inline-flex min-h-[52px] cursor-pointer items-center gap-1 rounded-[4px] bg-[#D4EC28] px-8 text-[#20201f] pointer-events-auto"
           style={{ fontFamily: "Sora, sans-serif" }}
           type="button"
           initial="rest"
