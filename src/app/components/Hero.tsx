@@ -15,10 +15,12 @@ import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
 import { scrollToSection } from "./navigation";
 
-const heroImage = `${import.meta.env.BASE_URL}Vector.png`;
+const heroImage = `${import.meta.env.BASE_URL}Group 2.png`;
+const heroImageMobile = `${import.meta.env.BASE_URL}Group 3.png`;
 
 const TILT_MAX = 3;
 const SPRING_CONFIG = { stiffness: 260, damping: 28, mass: 0.6 };
+
 
 function HeroNewsCard() {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -150,13 +152,13 @@ export function Hero() {
 
   const { scrollY } = useScroll();
   const imageY = useTransform(scrollY, [0, vh], ["0%", "-20%"]);
-  const textY = useTransform(scrollY, [0, vh], ["0%", "-20%"]);
+  const textY = useTransform(scrollY, [0, vh], ["0%", "-50%"]);
   const cardY = useTransform(scrollY, [0, vh], [0, -vh * 0.25]);
 
   return (
     <section
       id="hero"
-      className="relative h-[100svh] min-h-[760px] overflow-hidden bg-white"
+      className="relative h-[100svh] md:min-h-[760px] overflow-hidden bg-white"
       data-node-id="370:2123"
     >
       <GridPattern
@@ -175,66 +177,72 @@ export function Hero() {
         animate={{ opacity: 1, y: 0 }}
         style={{ y: shouldReduceMotion ? 0 : imageY }}
         transition={{ ...motionTransition.section, delay: 0.18 }}
-        className="absolute inset-x-0 bottom-0 z-10 h-[70%]"
+        className="absolute inset-0 z-10 overflow-hidden md:top-[calc(24px+10vh)] md:bottom-6 md:left-6 md:right-6 md:rounded-[8px]"
         data-node-id="370:2042"
       >
+        {/* Desktop Image */}
         <img
           src={heroImage}
           alt="Profissional da Energisa em campo solar, usando capacete e uniforme."
-          className="h-full w-full object-cover object-top"
+          className="hidden md:block h-full w-full object-cover"
+          style={{ objectPosition: "center 40%" }}
           loading="eager"
           fetchPriority="high"
         />
-      </motion.div>
-
-      <motion.div
-        style={{ y: shouldReduceMotion ? 0 : cardY }}
-        className="absolute inset-x-0 bottom-[4%] z-20 mx-auto w-full max-w-[1440px] px-5 will-change-transform sm:px-8 md:px-20"
-      >
-        <HeroNewsCardSlot />
+        {/* Mobile Image */}
+        <img
+          src={heroImageMobile}
+          alt="Profissional da Energisa em campo solar, usando capacete e uniforme."
+          className="block md:hidden h-full w-full object-cover"
+          style={{ objectPosition: "center 20%" }}
+          loading="eager"
+          fetchPriority="high"
+        />
+        {/* Desktop Gradient Overlay */}
+        <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent pointer-events-none" />
+        {/* Mobile Gradient Overlay */}
+        <div className="block md:hidden absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent pointer-events-none" />
       </motion.div>
 
       <motion.div
         style={{ y: shouldReduceMotion ? 0 : textY }}
         className={cn(
-          "relative z-20 mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-8 px-5 pb-10 pt-32",
-          "sm:px-8 sm:pt-36 md:grid-cols-12 md:items-start md:gap-x-6 md:px-20",
-          "md:pb-0 md:pt-[clamp(128px,8.8vw,168px)]"
+          "absolute z-20 left-0 right-0 bottom-[24px] md:bottom-24 mx-auto w-full max-w-[1440px] px-5",
+          "sm:px-8 md:px-12",
+          "flex flex-col items-start gap-[16px] md:gap-[25.2px] text-left"
         )}
         data-node-id="361:2793"
       >
-        <div className="md:col-span-6">
-          <motion.h1
-            initial={{ opacity: 0, x: -24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={motionTransition.section}
-            className="font-['Sora',sans-serif] text-[clamp(44px,3.64vw,72px)] font-normal leading-[1.35] tracking-normal text-[#20201f]"
-            data-node-id="361:2795"
-          >
-            A Energisa
-            <br />
-            move o Brasil
-          </motion.h1>
-        </div>
+        <motion.h1
+          initial={{ opacity: 0, x: -24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={motionTransition.section}
+          className="font-['Sora',sans-serif] text-[36px] md:text-[clamp(44px,3.64vw,72px)] font-normal leading-[1.15] tracking-normal text-white"
+          data-node-id="361:2795"
+        >
+          A Energisa
+          <br />
+          move o Brasil
+        </motion.h1>
 
         <motion.div
           initial={{ opacity: 0, x: -18 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ ...motionTransition.section, delay: 0.14 }}
-          className="flex w-full max-w-[491px] flex-col items-start gap-[25.2px] md:col-span-5 md:col-start-8"
+          className="flex w-full max-w-[491px] flex-col items-start gap-[14px] md:gap-[25.2px]"
           data-node-id="361:2797"
         >
-          <p className="font-['Sora',sans-serif] text-[clamp(16px,1.265vw,25px)] font-normal leading-[1.4] text-[#20201f] md:whitespace-nowrap">
+          <p className="font-['Sora',sans-serif] text-[14px] md:text-[clamp(16px,1.265vw,25px)] font-normal leading-[1.4] text-white md:whitespace-nowrap">
             De Norte a Sul. Quando uma luz
             <br />
             acende, é a Energisa que faz acontecer.
           </p>
 
-          <motion.div className="flex w-full flex-wrap items-center gap-[16.8px]" data-node-id="361:2801">
+          <motion.div className="flex w-full flex-wrap items-center gap-[12px] md:gap-[16.8px]" data-node-id="361:2801">
             <motion.button
               type="button"
               onClick={() => scrollToSection("solucoes")}
-              className="flex shrink-0 cursor-pointer items-center justify-center rounded-[4px] bg-[#d4ec28] px-[33.6px] py-[16.8px] text-center font-['Sora',sans-serif] text-[16.8px] font-normal leading-[25.2px] text-[#20201f]"
+              className="flex shrink-0 cursor-pointer items-center justify-center rounded-[4px] bg-[#d4ec28] px-[24px] py-[12px] md:px-[33.6px] md:py-[16.8px] text-center font-['Sora',sans-serif] text-[15px] md:text-[16.8px] font-normal leading-[1.5] md:leading-[25.2px] text-[#20201f]"
               whileHover={liftHover}
               whileTap={pressTap}
               transition={motionTransition.fast}
@@ -245,8 +253,8 @@ export function Hero() {
             <motion.button
               type="button"
               onClick={() => scrollToSection("timeline")}
-              className="flex shrink-0 cursor-pointer items-center justify-center rounded-[4px] border border-[#121312] px-[33.6px] py-[16.8px] text-center font-['Sora',sans-serif] text-[16.8px] font-normal leading-[25.2px] text-[#121312]"
-              whileHover={{ ...liftHover, backgroundColor: "rgba(18,19,18,0.04)" }}
+              className="flex shrink-0 cursor-pointer items-center justify-center rounded-[4px] border border-white px-[24px] py-[12px] md:px-[33.6px] md:py-[16.8px] text-center font-['Sora',sans-serif] text-[15px] md:text-[16.8px] font-normal leading-[1.5] md:leading-[25.2px] text-white"
+              whileHover={{ ...liftHover, backgroundColor: "rgba(255,255,255,0.08)" }}
               whileTap={pressTap}
               transition={motionTransition.fast}
               data-node-id="361:2805"
