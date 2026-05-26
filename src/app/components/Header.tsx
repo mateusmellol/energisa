@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import { EnergisaLogo } from "./EnergisaLogo";
 import { NAV_LINKS, getSectionId, scrollToSection } from "./navigation";
 import { liftHover, motionTransition, pressTap } from "@/lib/motion";
+import { useIsMobile } from "./ui/use-mobile";
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
   const handleClick = (e: React.MouseEvent) => {
@@ -28,11 +29,16 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 }
 
 export function Header() {
+  const isMobile = useIsMobile();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDarkSection, setIsDarkSection] = useState(false);
+  const [isInsideTimeline, setIsInsideTimeline] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const headerTheme = isDarkSection
+  const isHeaderDark = isDarkSection || (isMobile && !isScrolled);
+  const shouldHideHeader = isMobile && isInsideTimeline;
+
+  const headerTheme = isHeaderDark
     ? {
         backgroundColor: "rgba(0, 0, 0, 0.4)",
         borderColor: "rgba(255, 255, 255, 0.1)",
@@ -60,7 +66,7 @@ export function Header() {
         };
 
   const mobileIconTheme = {
-    color: isDarkSection ? "#FFFFFF" : "#20201f",
+    color: isHeaderDark ? "#FFFFFF" : "#20201f",
   };
 
   const scrollTo = (id: string) => {
@@ -84,10 +90,11 @@ export function Header() {
           const timelineRect = timeline?.getBoundingClientRect();
           const footerRect = footerCTA?.getBoundingClientRect();
 
-          const isInsideTimeline = Boolean(timelineRect && timelineRect.top <= 80 && timelineRect.bottom >= 80);
+          const isInsideTimelineValue = Boolean(timelineRect && timelineRect.top <= 80 && timelineRect.bottom >= 80);
           const isInsideFooter = Boolean(footerRect && footerRect.top <= 80);
 
-          setIsDarkSection(isInsideTimeline || isInsideFooter);
+          setIsInsideTimeline(isInsideTimelineValue);
+          setIsDarkSection(isInsideTimelineValue || isInsideFooter);
 
           ticking = false;
         });
@@ -100,18 +107,29 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (shouldHideHeader) {
+      setMobileOpen(false);
+    }
+  }, [shouldHideHeader]);
+
   return (
     <>
       <AnimatePresence initial={false}>
         <motion.header
           key="site-header"
           initial={false}
-          animate={{ y: 0, opacity: 1, ...headerTheme }}
+          animate={{
+            y: shouldHideHeader ? -96 : 0,
+            opacity: shouldHideHeader ? 0 : 1,
+            ...headerTheme,
+            pointerEvents: shouldHideHeader ? "none" : "auto",
+          }}
           exit={{ y: -96, opacity: 0 }}
           transition={{ ...motionTransition.layout, duration: 0.25 }}
           className="fixed top-0 left-0 right-0 z-50 flex h-20 items-center justify-between border-b"
         >
-        <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto px-5 md:px-20">
+        <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto px-5 md:px-12">
           <motion.button
             onClick={() => scrollToSection("hero")}
             className="cursor-pointer outline-none"
