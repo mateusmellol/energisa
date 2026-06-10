@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
 import { scrollToSection } from "./navigation";
 
-const heroImage = `${import.meta.env.BASE_URL}Group 2.png`;
-const heroImageMobile = `${import.meta.env.BASE_URL}Group 3.png`;
+const heroImage = `${import.meta.env.BASE_URL}hero-desktop.webp`;
+const heroImageMobile = `${import.meta.env.BASE_URL}hero-mobile.webp`;
 
 const TILT_MAX = 3;
 const SPRING_CONFIG = { stiffness: 260, damping: 28, mass: 0.6 };
