@@ -34,17 +34,40 @@ export default function App() {
       normalizeWheel: true,
     });
 
-    let rafId: number;
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
+    let rafId: number | null = null;
+    let idleTimeout: ReturnType<typeof setTimeout>;
+
+    function wakeUp() {
+      if (rafId === null) {
+        rafId = requestAnimationFrame(raf);
+      }
+      clearTimeout(idleTimeout);
+      idleTimeout = setTimeout(() => {
+        if (rafId !== null) {
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+      }, 300);
     }
 
-    rafId = requestAnimationFrame(raf);
+    function raf(time: number) {
+      lenis.raf(time);
+      if (rafId !== null) {
+        rafId = requestAnimationFrame(raf);
+      }
+    }
+
+    wakeUp();
+    lenis.on("scroll", wakeUp);
+
+    const interactions = ["wheel", "touchstart", "touchmove", "keydown", "mousedown"];
+    interactions.forEach((e) => window.addEventListener(e, wakeUp, { passive: true }));
 
     return () => {
       lenis.destroy();
-      cancelAnimationFrame(rafId);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      clearTimeout(idleTimeout);
+      interactions.forEach((e) => window.removeEventListener(e, wakeUp));
     };
   }, []);
 
