@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
@@ -138,60 +138,15 @@ function useImpactAnimation() {
 // ---- Interactive Bar Components ----
 
 function StaticDotPattern({ dotSpacing = 24 }: { dotSpacing?: number }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ width: 0, height: 0 });
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver((entries) => {
-      setSize({ width: entries[0].contentRect.width, height: entries[0].contentRect.height });
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const dots = useMemo(() => {
-    if (!size.width || !size.height) return null;
-    const columns = Math.ceil(size.width / dotSpacing) + 2;
-    const rows = Math.ceil(size.height / dotSpacing) + 2;
-    const elements = [];
-
-    for (let r = -1; r < rows; r++) {
-      for (let c = -1; c < columns; c++) {
-        let cx = c * dotSpacing;
-        let cy = r * dotSpacing;
-
-        // Evita renderizar bolas que ficariam cortadas nas bordas
-        const margin = 3;
-        if (cx < margin || cx > size.width - margin || cy < margin || cy > size.height - margin) {
-          continue;
-        }
-
-        elements.push(
-          <circle
-            key={`${r}-${c}`}
-            cx={cx}
-            cy={cy}
-            r={1.5}
-            fill="rgba(255, 255, 255, 0.7)"
-          />
-        );
-      }
-    }
-    return elements;
-  }, [size, dotSpacing]);
-
   return (
-    <div ref={containerRef} className="absolute inset-0 h-full w-full pointer-events-none overflow-hidden">
-      <svg
-        width="100%"
-        height="100%"
-        className="absolute inset-0 h-full w-full opacity-45"
-      >
-        {dots}
-      </svg>
-    </div>
+    <div
+      className="absolute inset-0 h-full w-full pointer-events-none overflow-hidden"
+      style={{
+        backgroundImage: `radial-gradient(circle, rgba(255, 255, 255, 0.32) 1.5px, transparent 1.5px)`,
+        backgroundSize: `${dotSpacing}px ${dotSpacing}px`,
+        backgroundPosition: `${dotSpacing / 2}px ${dotSpacing / 2}px`,
+      }}
+    />
   );
 }
 
