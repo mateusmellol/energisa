@@ -12,6 +12,7 @@ import {
 import laboratorioImage from "@/assets/noticias/inovacao-laboratorio.webp";
 import { liftHover, motionTransition, pressTap } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "./ui/use-mobile";
 import { GridPattern } from "@/registry/magicui/grid-pattern";
 import { scrollToSection } from "./navigation";
 
@@ -146,6 +147,8 @@ function HeroNewsCardSlot() {
 export function Hero() {
   const shouldReduceMotion = useReducedMotion();
 
+  const isMobile = useIsMobile();
+
   const [vh] = useState(() =>
     typeof window !== "undefined" ? window.innerHeight : 900
   );
@@ -153,7 +156,6 @@ export function Hero() {
   const { scrollY } = useScroll();
   const imageY = useTransform(scrollY, [0, vh], ["0%", "-20%"]);
   const textY = useTransform(scrollY, [0, vh], ["0%", "-50%"]);
-  const cardY = useTransform(scrollY, [0, vh], [0, -vh * 0.25]);
 
   return (
     <section
@@ -175,7 +177,7 @@ export function Hero() {
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ y: shouldReduceMotion ? 0 : imageY }}
+        style={{ y: shouldReduceMotion || isMobile ? 0 : imageY }}
         transition={{ ...motionTransition.section, delay: 0.18 }}
         className="absolute inset-0 z-10 overflow-hidden md:top-[calc(24px+10vh)] md:bottom-6 md:left-6 md:right-6 md:rounded-[8px]"
         data-node-id="370:2042"
@@ -205,7 +207,7 @@ export function Hero() {
       </motion.div>
 
       <motion.div
-        style={{ y: shouldReduceMotion ? 0 : textY }}
+        style={{ y: shouldReduceMotion || isMobile ? 0 : textY }}
         className={cn(
           "absolute z-20 left-0 right-0 bottom-[24px] md:bottom-24 mx-auto w-full max-w-[1440px] px-5",
           "sm:px-8 md:px-12",
