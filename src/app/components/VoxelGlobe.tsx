@@ -464,12 +464,11 @@ function GlobeMesh({
         renderOrder={1}
       >
         <primitive object={roundedGeometry} attach="geometry" />
-        <meshPhysicalMaterial
+        <meshBasicMaterial
           transparent
+          opacity={0.15}
           depthWrite={false}
           color="#262626"
-          roughness={0.1}
-          metalness={0.2}
           side={THREE.FrontSide}
         />
       </instancedMesh>
@@ -568,7 +567,7 @@ export function VoxelGlobe({
       {tiles !== null && (
         <Canvas
           camera={{ position: [0, 0, 8], fov: 45 }}
-          dpr={[1, 1.5]}
+          dpr={[1, 1.25]}
           frameloop={isInView ? 'always' : 'never'}
           gl={{ antialias: false, powerPreference: 'high-performance', alpha: false }}
           onCreated={({ gl }) => gl.setClearColor('#121312', 1)}
@@ -577,15 +576,8 @@ export function VoxelGlobe({
           <directionalLight position={[4.35, 5, 4.59]} intensity={1.2} color={ENERGISA_LIGHT_KEY} />
           <directionalLight position={[-3.69, 2, 3.93]} intensity={0.8} color={ENERGISA_LIGHT_FILL} />
           <pointLight position={[-4.23, 0, 9.06]} intensity={2.0} color={ENERGISA_LIGHT_RIM} />
-          <pointLight position={[-2.42, -5, 6.64]} intensity={0.8} color={ENERGISA_LIGHT_SOFT} />
-          <pointLight position={[7.13, -1, 1.09]} intensity={0.6} color={ENERGISA_LIGHT_FILL} />
-          <pointLight position={[-4.23, 10, 9.06]} intensity={1.2} color={ENERGISA_LIGHT_RIM} />
           <pointLight position={[5.5, -4.5, 4.5]} intensity={0.75} color={ENERGISA_LIGHT_SOFT} />
-          <pointLight position={[0, 10, 0]} intensity={0.8} />
-          <pointLight position={[0, -10, 0]} intensity={0.5} />
           <pointLight position={[-6.16, 3, 3.75]} intensity={1.1} color={ENERGISA_LIGHT_KEY} />
-          <directionalLight position={[-6.22, 4, 1.51]} intensity={0.85} color={ENERGISA_LIGHT_SOFT} />
-          <directionalLight position={[-3.93, -1, 3.69]} intensity={0.65} color={ENERGISA_LIGHT_FILL} />
 
           {tiles.length > 0 && (
             <GlobeMesh
