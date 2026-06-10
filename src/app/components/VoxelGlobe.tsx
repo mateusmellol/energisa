@@ -12,7 +12,7 @@ const LAT_STEPS = 60;
 const LON_STEPS = 120;
 const FALLBACK_TILE_COUNT = 2000;
 const HIGHLIGHT_COLOR = '#D4EC28';
-const GLOBE_IMAGE_URL = 'https://unpkg.com/three-globe/example/img/earth-water.png';
+const GLOBE_IMAGE_URL = `${import.meta.env.BASE_URL}earth-water.png`;
 
 const ENERGISA_LIGHT_KEY = '#FFFFFF';
 const ENERGISA_LIGHT_FILL = '#FFFFFF';
